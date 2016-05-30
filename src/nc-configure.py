@@ -81,5 +81,5 @@ def main():
 if __name__ == '__main__':
     main()
 else:
-    print "Should be executed as main script!"
+    print("Should be executed as main script!")
     exit(1)

@@ -9,7 +9,7 @@ class Api:
         pass
 
     def _verify_token(self):
-        # TODO: Implement
+        # TODO: Implement API call
         return True
 
     def verify_token(self):

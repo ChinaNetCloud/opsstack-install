@@ -1,5 +1,9 @@
 from os.path import isfile
-from ConfigParser import SafeConfigParser
+try:
+    from ConfigParser import SafeConfigParser as _confparser
+except:
+    # Perhaps running in Python3
+    from configparser import ConfigParser as _confparser
 
 _singleton = None
 
@@ -17,11 +21,11 @@ class _Configuration:
             self.create()
 
     def load(self):
-        self.config = SafeConfigParser()
+        self.config = _confparser()
         self.config.read(self.config_file)
 
     def create(self):
-        self.config = SafeConfigParser()
+        self.config = _confparser()
         self.config.read(self.config_file)
         self.config.add_section(_SECTNAME)
         self.save()
