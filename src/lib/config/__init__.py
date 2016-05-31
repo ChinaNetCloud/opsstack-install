@@ -51,10 +51,7 @@ def get_config():
     global _singleton
     if _singleton is None:
         _singleton = _Configuration()
-        return _singleton
-    else:
-        return _singleton
-    pass
+    return _singleton
 
 
 if __name__ == '__main__':
