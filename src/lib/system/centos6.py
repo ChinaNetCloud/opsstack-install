@@ -1,13 +1,16 @@
+import platform
+import subprocess
+
 from abstract import Abstract
 
 from lib import utils
 
 
-class Facts(Abstract):
+class System(Abstract):
     def __init__(self):
         self.os = "linux"
         self.os_name = "centos"
-        self.os_version = "7"
+        self.os_version = "6"
 
         self.is_ansible_present = None
         self.is_pip_present = None
@@ -36,4 +39,4 @@ class Facts(Abstract):
             self.is_pip_present = False
 
     def check_compatibility(self):
-        pass
+        return True

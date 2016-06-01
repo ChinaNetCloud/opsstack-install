@@ -2,11 +2,7 @@
 
 import os
 
-from lib import facts
-from lib import api
-from lib import config
 from lib import utils
-from lib import system_setup
 
 
 def verify_permissions():
@@ -23,14 +19,14 @@ def verify_permissions():
 def collect_facts():
     # TODO: i18n
     utils.out("Collecting system information...")
-    facts.collect_facts()
+    system.load()
     utils.out_ok()
 
 
 def check_compatibility():
     # TODO: i18n
     utils.out("Checking system compatibility...")
-    if facts.check_compatibility():
+    if system.load().check_compatibility():
         utils.out_ok()
     else:
         utils.out_not_ok()
@@ -51,7 +47,7 @@ def verify_api_token():
             utils.out_not_ok()
             # TODO: Sanity check!
             # TODO: i18n
-            token = raw_input("  Please enter OpsStack API token:")
+            token = utils.prompt("Please enter OpsStack API token:")
             if len(token) > 0:
                 config.get_config().set("api_token", token)
             continue
@@ -68,7 +64,7 @@ def verify_api_token():
 def is_zabbix_installed():
     # TODO: i18n
     utils.out("Checking if Zabbix already installed...")
-    if not utils.is_app_installed("zabbix"):
+    if not system.load().is_app_installed("zabbix"):
         utils.out_ok()
     else:
         utils.out_not_ok()
@@ -80,7 +76,7 @@ def is_zabbix_installed():
 def is_zabbix_running():
     # TODO: i18n
     utils.out("Checking if Zabbix agent is running...")
-    if not utils.is_proc_running("zabbix_agent"):
+    if not system.load().is_proc_running("zabbix_agent"):
         utils.out_ok()
     else:
         utils.out_not_ok()
@@ -92,6 +88,12 @@ def is_zabbix_running():
 def system_check():
     # 0. Check if running as root, else exit
     verify_permissions()
+    from lib import api
+    from lib import config
+    from lib import system
+    global api
+    global config
+    global system
     # 1. Collect system information
     collect_facts()
     # 1.1 Check compatibility, exit if not compatible
@@ -106,9 +108,9 @@ def system_check():
 
 def post_check():
     # TODO: i18n
-    utils.out("All checks done, can start installation...\n")
+    utils.out("All checks done, can start configuration...\n")
     while True:
-        confirmation = raw_input("\n\n  Please type \"Yes\" to continue or \"No\" to cancel: ")
+        confirmation = utils.prompt("\n\n  Please type \"Yes\" to continue or \"No\" to cancel: ")
         if confirmation == "Yes":
             return True
         elif confirmation == "No":
@@ -119,7 +121,7 @@ def post_check():
 
 
 def setup():
-    system_setup.get_setup().configure()
+    system.load().configure()
 
 
 def main():
