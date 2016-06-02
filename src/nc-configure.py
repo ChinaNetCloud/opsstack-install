@@ -6,30 +6,30 @@ from lib import utils
 
 
 def verify_permissions():
-    utils.out("Checking permissions...")
+    utils.out_progress_wait("Checking permissions...")
     if not os.geteuid() == 0:
-        utils.out_not_ok()
+        utils.out_progress_fail()
         # TODO: i18n
         utils.err("Not sufficient permissions, please run with sudo. Exiting...")
         exit(1)
     else:
-        utils.out_ok()
+        utils.out_progress_done()
 
 
 def collect_facts():
     # TODO: i18n
-    utils.out("Collecting system information...")
+    utils.out_progress_wait("Collecting system information...")
     system.load()
-    utils.out_ok()
+    utils.out_progress_done()
 
 
 def check_compatibility():
     # TODO: i18n
-    utils.out("Checking system compatibility...")
+    utils.out_progress_wait("Checking system compatibility...")
     if system.load().check_compatibility():
-        utils.out_ok()
+        utils.out_progress_done()
     else:
-        utils.out_not_ok()
+        utils.out_progress_fail()
         # TODO: i18n
         # TODO: Insert link to system requirements web page into message
         utils.err("Current system is not compatible. Please check documentation. Exiting...")
@@ -39,35 +39,34 @@ def check_compatibility():
 def verify_api_token():
     while True:
         # TODO: i18n
-        utils.out("Connecting to OpsStack...")
+        utils.out_progress_wait("Connecting to OpsStack...")
         token = config.get_config().get("api_token")
         if token is not None:
             pass
         else:
-            utils.out_not_ok()
+            utils.out_progress_fail()
             # TODO: Sanity check!
             # TODO: i18n
             token = utils.prompt("Please enter OpsStack API token:")
             if len(token) > 0:
                 config.get_config().set("api_token", token)
             continue
-        a = api.Api()
-        if a.verify_token():
-            utils.out_ok()
+        if api.load().verify_token():
+            utils.out_progress_done()
             break
         else:
-            utils.out_not_ok()
+            utils.out_progress_fail()
             # TODO: i18n
             utils.err("Invalid API token")
 
 
 def is_zabbix_installed():
     # TODO: i18n
-    utils.out("Checking if Zabbix already installed...")
+    utils.out_progress_wait("Checking if Zabbix already installed...")
     if not system.load().is_app_installed("zabbix"):
-        utils.out_ok()
+        utils.out_progress_done()
     else:
-        utils.out_not_ok()
+        utils.out_progress_fail()
         # TODO: i18n
         utils.err("Zabbix already installed. Aborting....")
         exit(1)
@@ -75,11 +74,11 @@ def is_zabbix_installed():
 
 def is_zabbix_running():
     # TODO: i18n
-    utils.out("Checking if Zabbix agent is running...")
+    utils.out_progress_wait("Checking if Zabbix agent is running...")
     if not system.load().is_proc_running("zabbix_agent"):
-        utils.out_ok()
+        utils.out_progress_done()
     else:
-        utils.out_not_ok()
+        utils.out_progress_fail()
         # TODO: i18n
         utils.err("Zabbix agent already running. Aborting....")
         exit(1)
@@ -107,10 +106,8 @@ def system_check():
 
 
 def post_check():
-    # TODO: i18n
-    utils.out("All checks done, can start configuration...\n")
     while True:
-        confirmation = utils.prompt("\n\n  Please type \"Yes\" to continue or \"No\" to cancel: ")
+        confirmation = utils.prompt("Please type \"Yes\" to continue or \"No\" to cancel: ")
         if confirmation == "Yes":
             return True
         elif confirmation == "No":

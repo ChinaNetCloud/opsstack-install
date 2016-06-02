@@ -1,9 +1,13 @@
 import socket
+import fcntl
+import struct
+import re
 
 from abstract import Abstract
 
 from lib import utils
 from lib import config
+from lib import api
 
 
 class System(Abstract):
@@ -17,6 +21,12 @@ class System(Abstract):
         self.is_ansible_present = None
         self.is_pip_present = None
         self.is_easy_install_present = None
+
+        self.local_hostname = None
+        self.local_domain = None
+        self.local_fqdn = None
+        self.customer_hostname = None
+        self.private_ip = None
 
         self._gather_facts()
 
@@ -39,6 +49,25 @@ class System(Abstract):
             self.is_pip_present = True
         else:
             self.is_pip_present = False
+        # Get private IP address (eth0)
+        # TODO: Improve private IP detection
+        try:
+            self.private_ip = self._get_ip_address("eth0")
+        except IOError:
+            pass
+        # Get local names
+        self.local_fqdn = socket.getfqdn()
+        self.local_hostname = socket.getfqdn().split(".")[0]
+        self.local_domain = socket.getfqdn().split(".", 1)[1]
+
+    @staticmethod
+    def _get_ip_address(ifname):
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        return socket.inet_ntoa(fcntl.ioctl(
+            s.fileno(),
+            0x8915,  # SIOCGIFADDR
+            struct.pack('256s', ifname[:15])
+        )[20:24])
 
     def check_compatibility(self):
         return True
@@ -62,38 +91,47 @@ class System(Abstract):
     def is_port_free(self, port_number):
         result = True
         try:
-            sock = socket.socket(socket.SO_REUSEPORT, socket.SO_REUSEADDR)
+            sock = socket.socket(socket.SO_REUSEADDR)
             sock.bind(('', port_number))
             sock.listen(5)
             sock.close()
-        except:
+        except socket.error:
             result = False
         return result
-
-    def configure(self):
-        # 1. Setup environment
-        self._setup_environemt()
-        # 2. Service discovery
-        self._service_discovery()
-        # 3. Prompt for details
-        self._collect_information()
-        # 4. Install monitoring
-        self._install_monitoring()
-        # 5. Run setup for discovered services
-        self._configure_service_monitoring()
 
     def _setup_environemt(self):
         self._enable_epel()
         self._install_ansible()
 
     def _service_discovery(self):
-        utils.out("Running service discovery...")
+        utils.out_progress_wait("Running service discovery...")
         # TODO: Implement
-        utils.out_ok()
+        utils.out_progress_done()
 
     def _collect_information(self):
-        # TODO: Implement
+        # Prompt for a hostname/purpose
+        while True:
+            name = utils.prompt("Please enter the server purpose to identify the system in OpsStack.\n" +
+                                "The purpose can be simple such as \"web\", \"app\", \"database\"\n" +
+                                "or complex such as \"web-test\", \"db-master\" etc.\n" +
+                                "Allowed characters are letters, numbers, underscore and hyphen.\n" +
+                                "Minimum 3, maximum 20 characters.\n\n" +
+                                "Please input the purpose: ")
+            if re.match(r'^[A-z0-9-_]{3,20}$', name.strip()) is not None:
+                self.customer_hostname = name.strip()
+                break
+            else:
+                utils.err("Invalid input!")
+        # TODO: Consider more input
         pass
+
+    def _register_server(self):
+        utils.out_progress_wait("Registering server with OpsStack...")
+        if api.load().register_server():
+            utils.out_progress_done()
+        else:
+            utils.out_progress_fail()
+            exit(1)
 
     def _install_monitoring(self):
         # TODO: Implement
@@ -101,12 +139,12 @@ class System(Abstract):
 
     def _configure_service_monitoring(self):
         # TODO: Implement
-        utils.out("Service configuration...")
-        utils.out_ok()
+        utils.out_progress_wait("Service configuration...")
+        utils.out_progress_done()
 
     def _install_ansible(self):
         if not self.is_ansible_present:
-            utils.out("Installing Ansible...")
+            utils.out_progress_wait("Installing Ansible...")
             if not self.config.get("ansible_installed") == "yes":
                 if not self.is_pip_present:
                     utils.execute("yum install -y python-pip")
@@ -117,19 +155,19 @@ class System(Abstract):
                 if rc == 0:
                     self.config.set("ansible_installed", "yes")
                 else:
-                    utils.out_not_ok()
+                    utils.out_progress_fail()
                     utils.err("Failed to install Ansible")
                     exit(1)
-            utils.out_ok()
+            utils.out_progress_done()
 
     def _enable_epel(self):
-        utils.out("Enabling EPEL repository...")
+        utils.out_progress_wait("Enabling EPEL repository...")
         if not self.config.get("epel_enabled") == "yes":
             rc, out, err = utils.execute("yum install epel-release -y")
             if rc == 0:
                 self.config.set("epel_enabled", "yes")
             else:
-                utils.out_not_ok()
+                utils.out_progress_fail()
                 utils.err("Failed to enable EPEL repository")
                 exit(1)
-        utils.out_ok()
+        utils.out_progress_done()

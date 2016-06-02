@@ -1,8 +1,9 @@
 from lib import config
 
+_singleton = None
 
 # Singleton
-class Api:
+class _Api:
     def __init__(self):
         self.config = config.get_config()
         self.token = None
@@ -22,6 +23,21 @@ class Api:
                 self.token = token
         # Call API to verify token
         return self._verify_token()
+
+    def register_server(self):
+        # TODO: Implement
+        return True
+
+    def confirm_configuration(self):
+        # TODO: Implement
+        return True
+
+
+def load():
+    global _singleton
+    if _singleton is None:
+        _singleton = _Api()
+    return _singleton
 
 
 if __name__ == '__main__':

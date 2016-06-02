@@ -5,20 +5,33 @@ RED = '\033[0;31m'
 GREEN = '\033[0;32m'
 NOCOLOR = '\033[0m'
 
+OUT_MESSAGE = None
+
+
+def out_progress_wait(message):
+    global OUT_MESSAGE
+    OUT_MESSAGE = message
+    sys.stdout.write('  => [ .... ] ' + OUT_MESSAGE)
+    sys.stdout.flush()
+
+
+def out_progress_done():
+    global OUT_MESSAGE
+    sys.stdout.write('\r')
+    sys.stdout.write('  => [ ' + GREEN + 'DONE' + NOCOLOR + ' ] ' + OUT_MESSAGE + "\n")
+    sys.stdout.flush()
+
+
+def out_progress_fail():
+    global OUT_MESSAGE
+    sys.stdout.write('\r')
+    sys.stdout.write('  => [ ' + RED + 'FAIL' + NOCOLOR + ' ] ' + OUT_MESSAGE + "\n")
+    sys.stdout.flush()
+
 
 def out(message):
-    sys.stdout.write('  => ' + message)
-    sys.stdout.flush()
-
-
-def out_ok():
-    sys.stdout.write('\t\t\t[  ' + GREEN + 'OK' + NOCOLOR + '  ]\n')
-    sys.stdout.flush()
-
-
-def out_not_ok():
-    sys.stdout.write('\t\t\t[  ' + RED + 'ERR' + NOCOLOR + '  ]\n')
-    sys.stdout.flush()
+    sys.stderr.write('\n' + message + '\n\n')
+    sys.stderr.flush()
 
 
 def err(message):
@@ -38,6 +51,18 @@ def prompt(prompt_string):
     result = input(prompt_string)
     print("")
     return result
+
+
+def confirm(prompt_string):
+    while True:
+        print("")
+        result = prompt(prompt_string + " [Y/n]:")
+        if result in ["", "y", "Y", "Yes", "YES"]:
+            return True
+        elif result in ["n", "N", "No", "NO"]:
+            return False
+        else:
+            continue
 
 
 # Define input for 2.x
