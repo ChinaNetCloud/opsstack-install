@@ -1,0 +1,12 @@
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Ensure CNC repository
+      template:
+        src=../templates/cnc.repo.j2
+        dest=/etc/yum.repos.d/CNC.repo
+        owner=root
+        group=root
+        mode=0644
+      when:
+        ansible_os_family == "RedHat" and ansible_distribution_major_version|int <= 7

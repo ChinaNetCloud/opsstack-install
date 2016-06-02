@@ -2,21 +2,23 @@ import socket
 import fcntl
 import struct
 import re
+import os
 
-from abstract import Abstract
+from common import Common
 
 from lib import utils
 from lib import config
 from lib import api
 
 
-class System(Abstract):
+class System(Common):
     def __init__(self):
-        self.config = config.get_config()
+        self.config = None
 
-        self.os = "linux"
-        self.os_name = "centos"
-        self.os_version = "7"
+        self.OS = "linux"
+        self.OS_NAME = "centos"
+        self.OS_VERSION = "7"
+        self.CONFIG_FILE = "/etc/.nc-config"
 
         self.is_ansible_present = None
         self.is_pip_present = None
@@ -28,9 +30,16 @@ class System(Abstract):
         self.customer_hostname = None
         self.private_ip = None
 
-        self._gather_facts()
+    def init(self):
+        self.config = config.load(self.CONFIG_FILE)
 
-    def _gather_facts(self):
+    def _verify_permissions(self):
+        if not os.geteuid() == 0:
+            return False
+        else:
+            return True
+
+    def _collect_facts(self):
         # Check if easy_install is present
         rc, out, err = utils.execute("easy_install --version")
         if rc == 0:
@@ -69,10 +78,18 @@ class System(Abstract):
             struct.pack('256s', ifname[:15])
         )[20:24])
 
-    def check_compatibility(self):
-        return True
+    def _check_compatibility(self):
+        result = True
+        if not self.config.get("zabbix_installed") == "yes":
+            if self._is_app_installed("'^zabbix[0-9]\{0,2\}-agent'"):
+                result = False
+            if self._is_proc_running("zabbix_agentd"):
+                result = False
+            if not self._is_port_free(10050):
+                result = False
+        return result
 
-    def is_app_installed(self, app_name):
+    def _is_app_installed(self, app_name):
         result = True
         rc, stdout, stderr = utils.execute("rpm -qa | grep " + app_name)
         if stdout == "" and stderr == "" and rc == 1:
@@ -80,7 +97,7 @@ class System(Abstract):
             result = False
         return result
 
-    def is_proc_running(self, proc_name):
+    def _is_proc_running(self, proc_name):
         result = True
         rc, stdout, stderr = utils.execute("ps faux | grep -v grep | grep " + proc_name)
         if stdout == "" and stderr == "" and rc == 1:
@@ -88,7 +105,7 @@ class System(Abstract):
             result = False
         return result
 
-    def is_port_free(self, port_number):
+    def _is_port_free(self, port_number):
         result = True
         try:
             sock = socket.socket(socket.SO_REUSEADDR)
@@ -102,28 +119,11 @@ class System(Abstract):
     def _setup_environemt(self):
         self._enable_epel()
         self._install_ansible()
+        self._enable_cnc_repo()
 
     def _service_discovery(self):
-        utils.out_progress_wait("Running service discovery...")
         # TODO: Implement
-        utils.out_progress_done()
-
-    def _collect_information(self):
-        # Prompt for a hostname/purpose
-        while True:
-            name = utils.prompt("Please enter the server purpose to identify the system in OpsStack.\n" +
-                                "The purpose can be simple such as \"web\", \"app\", \"database\"\n" +
-                                "or complex such as \"web-test\", \"db-master\" etc.\n" +
-                                "Allowed characters are letters, numbers, underscore and hyphen.\n" +
-                                "Minimum 3, maximum 20 characters.\n\n" +
-                                "Please input the purpose: ")
-            if re.match(r'^[A-z0-9-_]{3,20}$', name.strip()) is not None:
-                self.customer_hostname = name.strip()
-                break
-            else:
-                utils.err("Invalid input!")
-        # TODO: Consider more input
-        pass
+        return []
 
     def _register_server(self):
         utils.out_progress_wait("Registering server with OpsStack...")
@@ -134,40 +134,72 @@ class System(Abstract):
             exit(1)
 
     def _install_monitoring(self):
-        # TODO: Implement
+        utils.out_progress_wait("Installing basic monitoring...")
+        if not self.config.get("zabbix_installed") == "yes":
+            rc, out, err = utils.ansible_play("base_monitoring")
+            if rc == 0:
+                self.config.set("zabbix_installed", "yes")
+                utils.out_progress_done()
+            else:
+                utils.out_progress_fail()
+                utils.err("Failed to install basic monitoring")
+                exit(1)
+        else:
+            utils.out_progress_skip()
         pass
 
     def _configure_service_monitoring(self):
+        utils.out_progress_wait("Service configuration... (Not implemented)")
         # TODO: Implement
-        utils.out_progress_wait("Service configuration...")
         utils.out_progress_done()
 
     def _install_ansible(self):
-        if not self.is_ansible_present:
-            utils.out_progress_wait("Installing Ansible...")
-            if not self.config.get("ansible_installed") == "yes":
-                if not self.is_pip_present:
-                    utils.execute("yum install -y python-pip")
-                utils.execute("pip install --upgrade pip")
-                utils.execute("pip install --upgrade setuptools")
-                utils.execute("yum install -y gcc libffi-devel python-devel openssl-devel")
-                rc, out, err = utils.execute("pip install ansible==\'2.1.0\'")
-                if rc == 0:
-                    self.config.set("ansible_installed", "yes")
-                else:
-                    utils.out_progress_fail()
-                    utils.err("Failed to install Ansible")
-                    exit(1)
-            utils.out_progress_done()
+        utils.out_progress_wait("Installing Ansible...")
+        if not self.config.get("ansible_installed") == "yes" and not self.is_ansible_present:
+            if not self.is_pip_present:
+                utils.execute("yum install -y python-pip")
+            utils.execute("pip install --upgrade pip")
+            utils.execute("pip install --upgrade setuptools")
+            utils.execute("yum install -y gcc libffi-devel python-devel openssl-devel")
+            rc, out, err = utils.execute("pip install ansible==\'2.1.0\'")
+            if rc == 0:
+                self.config.set("ansible_installed", "yes")
+                utils.out_progress_done()
+            else:
+                utils.out_progress_fail()
+                utils.err("Failed to install Ansible")
+                exit(1)
+        else:
+            utils.out_progress_skip()
+
+    def _enable_cnc_repo(self):
+        utils.out_progress_wait("Enabling CNC repository...")
+        if not self.config.get("cnc_repo_enabled") == "yes":
+            rc, out, err = utils.ansible_play("cnc_repo")
+            if rc == 0:
+                self.config.set("cnc_repo_enabled", "yes")
+                utils.out_progress_done()
+            else:
+                utils.out_progress_fail()
+                utils.err("Failed to enable CNC repository")
+                exit(1)
+        else:
+            utils.out_progress_skip()
+        # Make sure CNC repo is enabled not only installed
+        utils.execute("yum-config-manager --enable cnc")
 
     def _enable_epel(self):
         utils.out_progress_wait("Enabling EPEL repository...")
-        if not self.config.get("epel_enabled") == "yes":
-            rc, out, err = utils.execute("yum install epel-release -y")
+        if not self.config.get("epel_repo_enabled") == "yes":
+            rc, out, err = utils.execute("yum install epel-release yum-utils -y")
             if rc == 0:
-                self.config.set("epel_enabled", "yes")
+                self.config.set("epel_repo_enabled", "yes")
+                utils.out_progress_done()
             else:
                 utils.out_progress_fail()
                 utils.err("Failed to enable EPEL repository")
                 exit(1)
-        utils.out_progress_done()
+        else:
+            utils.out_progress_skip()
+        # Make sure EPEL repo is enabled not only installed
+        utils.execute("yum-config-manager --enable epel")

@@ -1,8 +1,11 @@
 import subprocess
 import sys
+import os
 
 RED = '\033[0;31m'
 GREEN = '\033[0;32m'
+YELLOW = '\033[1;33m'
+BLUE = '\033[1;34m'
 NOCOLOR = '\033[0m'
 
 OUT_MESSAGE = None
@@ -12,6 +15,13 @@ def out_progress_wait(message):
     global OUT_MESSAGE
     OUT_MESSAGE = message
     sys.stdout.write('  => [ .... ] ' + OUT_MESSAGE)
+    sys.stdout.flush()
+
+
+def out_progress_skip():
+    global OUT_MESSAGE
+    sys.stdout.write('\r')
+    sys.stdout.write('  => [ ' + YELLOW + 'SKIP' + NOCOLOR + ' ] ' + OUT_MESSAGE + "\n")
     sys.stdout.flush()
 
 
@@ -29,8 +39,13 @@ def out_progress_fail():
     sys.stdout.flush()
 
 
+def out_progress_info(message):
+    sys.stdout.write('  => [ ' + BLUE + 'INFO' + NOCOLOR + ' ] ' + message + "\n")
+    sys.stdout.flush()
+
+
 def out(message):
-    sys.stderr.write('\n' + message + '\n\n')
+    sys.stderr.write(message)
     sys.stderr.flush()
 
 
@@ -64,6 +79,9 @@ def confirm(prompt_string):
         else:
             continue
 
+
+def ansible_play(name):
+    return execute("ansible-playbook " + os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/" + name + ".playbook.yml")
 
 # Define input for 2.x
 try:

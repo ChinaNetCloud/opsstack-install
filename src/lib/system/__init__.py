@@ -1,7 +1,8 @@
 import platform
 
+import abstract
 import centos7
-import centos6
+# import centos6
 
 _singleton = None
 
@@ -15,19 +16,12 @@ def load():
         os_version = platform.linux_distribution()[1].split('.')[0]
         if os == "Linux":
             if os_name == "centos":
-                if os_version == "6":
-                    _singleton = centos6.System()
-                elif os_version == "7":
+                if os_version == "7":
                     _singleton = centos7.System()
-        return _singleton
-    else:
-        return _singleton
-    pass
+                # elif os_version == "6":
+                #     _singleton = centos6.System()
+    return _singleton
 
-
-def check_compatibility():
-    global _singleton
-    return _singleton.check_compatibility()
 
 if __name__ == '__main__':
     exit(1)

@@ -1,4 +1,4 @@
-from os.path import isfile
+import os
 try:
     from ConfigParser import SafeConfigParser as _confparser
 except:
@@ -12,13 +12,15 @@ _SECTNAME = 'Config'
 
 # Singleton
 class _Configuration:
-    def __init__(self):
+    def __init__(self, config_file):
         self.config = None
-        self.config_file = "/etc/.nc-config"
-        if isfile(self.config_file):
+        self.config_file = config_file
+        if os.path.isfile(self.config_file):
             self.load()
         else:
             self.create()
+
+        self.set("install_path", os.path.abspath(os.path.dirname(__file__) + "../../"))
 
     def load(self):
         self.config = _confparser()
@@ -47,14 +49,15 @@ class _Configuration:
         self.save()
 
 
-def get_config():
+def load(config_file=None):
     global _singleton
     if _singleton is None:
-        _singleton = _Configuration()
+        if config_file is not None:
+            _singleton = _Configuration(config_file)
+        else:
+            raise Exception("Bad call")
     return _singleton
 
 
 if __name__ == '__main__':
     exit(1)
-else:
-    _singleton = _Configuration()

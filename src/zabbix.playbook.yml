@@ -1,7 +1,0 @@
-- hosts: localhost
-  connection: local
-  tasks:
-    - name: Install Zabbix agent
-      yum: state=present name=zabbix22-agent
-    - name: Enable Zabbix agent
-      service: name=zabbix-agent state=started enabled=yes

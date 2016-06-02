@@ -5,7 +5,7 @@ _singleton = None
 # Singleton
 class _Api:
     def __init__(self):
-        self.config = config.get_config()
+        self.config = config.load()
         self.token = None
         pass
 
