@@ -4,6 +4,9 @@ import os
 
 from lib import utils
 
+# TODO: Check if system has already been configured before, yes - verify to reconfigure
+# TODO: Find a unique identifier for the server (MAC? IP? Keys? All of the above?)
+
 
 def verify_permissions():
     utils.out_progress_wait("Checking permissions...")
