@@ -12,6 +12,7 @@ class Common(Abstract):
         self.check_compatibility()
         self.collect_facts()
         self.service_discovery()
+        self._verify_api_token()
 
     def configure(self):
         self._collect_information()
@@ -20,7 +21,7 @@ class Common(Abstract):
         self._install_monitoring()
         self._configure_service_monitoring()
 
-    def verify_api_token(self):
+    def _verify_api_token(self):
         while True:
             # TODO: i18n
             utils.out_progress_wait("Connecting to OpsStack...")

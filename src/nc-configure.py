@@ -10,7 +10,6 @@ from lib import system
 
 def main():
     system.load().before_configure()
-    system.load().verify_api_token()
     system.load().configure()
     pass
 
