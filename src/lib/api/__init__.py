@@ -1,17 +1,25 @@
 from lib import config
+import json
+try:
+    # Python 2.x
+    from urllib2 import urlopen
+    from urllib2 import URLError
+except ImportError:
+    # Python 3.x
+    from urllib.request import urlopen
+    from urllib import URLError
+
 
 _singleton = None
+
 
 # Singleton
 class _Api:
     def __init__(self):
         self.config = config.load()
         self.token = None
+        self.api_url = "https://opsstack-dev.service.chinanetcloud.com/api/v1"
         pass
-
-    def _verify_token(self):
-        # TODO: Implement API call
-        return True
 
     def verify_token(self):
         # Make sure we have self.token set
@@ -22,7 +30,7 @@ class _Api:
             else:
                 self.token = token
         # Call API to verify token
-        return self._verify_token()
+        return self._api_call('/verify')
 
     def register_server(self):
         # TODO: Implement
@@ -31,6 +39,27 @@ class _Api:
     def confirm_configuration(self):
         # TODO: Implement
         return True
+
+    def _api_call(self, route, post_data=None):
+        result = (None, None)
+        rc = False
+        url = self.api_url + route + "?apikey=" + self.token
+        try:
+            if post_data is not None:
+                response = urlopen(url, json.dumps(post_data))
+            else:
+                response = urlopen(url)
+            if response is not None:
+                if response.getcode() == "200":
+                    rc = True
+                try:
+                    data = json.loads(response.read())
+                except (TypeError, ValueError):
+                    data = None
+                result = (rc, data)
+        except URLError:
+            result = None
+        return result
 
 
 def load():

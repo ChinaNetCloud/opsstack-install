@@ -23,19 +23,18 @@ class Common(Abstract):
 
     def _verify_api_token(self):
         while True:
-            # TODO: i18n
-            utils.out_progress_wait("Connecting to OpsStack...")
             token = self.config.get("api_token")
             if token is not None:
                 pass
             else:
-                utils.out_progress_fail()
                 # TODO: Sanity check!
                 # TODO: i18n
                 token = utils.prompt("Please enter OpsStack API token:")
                 if len(token) > 0:
                     self.config.set("api_token", token)
                 continue
+            # TODO: i18n
+            utils.out_progress_wait("Connecting to OpsStack...")
             if api.load().verify_token():
                 utils.out_progress_done()
                 break
@@ -43,6 +42,7 @@ class Common(Abstract):
                 utils.out_progress_fail()
                 # TODO: i18n
                 utils.err("Invalid API token")
+                self.config.delete("api_token")
 
     def verify_permissions(self):
         utils.out_progress_wait("Checking permissions...")

@@ -1,7 +1,7 @@
 import os
 try:
     from ConfigParser import SafeConfigParser as _confparser
-except:
+except ImportError:
     # Perhaps running in Python3
     from configparser import ConfigParser as _confparser
 
@@ -46,6 +46,10 @@ class _Configuration:
 
     def set(self, key, value):
         self.config.set(_SECTNAME, key, value)
+        self.save()
+
+    def delete(self, key):
+        self.config.remove_option(_SECTNAME, key)
         self.save()
 
 
