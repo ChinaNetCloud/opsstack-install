@@ -1,7 +1,6 @@
 import socket
 import fcntl
 import struct
-import re
 import os
 
 from common import Common

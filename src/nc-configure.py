@@ -1,9 +1,6 @@
 #!/usr/bin/python
 
 from lib import system
-from lib import utils
-from lib import api
-from lib import config
 
 
 # TODO: Check if system has already been configured before, yes - verify to reconfigure
