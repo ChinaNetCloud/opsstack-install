@@ -1,5 +1,6 @@
 from lib import utils
 from lib import api
+from lib import services
 from abstract import Abstract
 
 import re
@@ -19,7 +20,7 @@ class Common(Abstract):
         self._register_server()
         self._setup_environemt()
         self._install_monitoring()
-        self._configure_service_monitoring()
+        self.service_configuration()
 
     def _verify_api_token(self):
         while True:
@@ -73,9 +74,17 @@ class Common(Abstract):
             exit(1)
 
     def service_discovery(self):
-        utils.out_progress_wait("Running service discovery... (Not implemented)")
-        self._service_discovery()
+        utils.out_progress_wait("Running service discovery...")
+        for service in services.servicelist:
+            if services.servicelist[service].discover(self):
+                self.services.append(services.servicelist[service])
         utils.out_progress_done()
+
+    def service_configuration(self):
+        utils.out("Running service monitoring configuration...")
+        for service in self.services:
+            if utils.confirm("Configure monitoring for '%s'?" % service.getname()):
+                service.configure(self)
 
     def _collect_information(self):
         # Prompt for a hostname/purpose if not entered before
@@ -97,3 +106,12 @@ class Common(Abstract):
             utils.out_progress_info("Server purpose is  '" + self.config.get('cust_hostname') + "'")
         # TODO: Consider more input
         pass
+
+    def is_app_installed(self, app_name):
+        return self._is_app_installed(app_name)
+
+    def is_proc_running(self, proc_name):
+        return self._is_proc_running(proc_name)
+
+    def is_port_free(self, port_number):
+        return self._is_port_free(port_number)

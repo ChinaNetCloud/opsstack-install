@@ -27,7 +27,7 @@ class Abstract(object):
     def _install_monitoring(self):
         raise NotImplementedError("Should have implemented this")
 
-    def _configure_service_monitoring(self):
+    def _service_configuration(self):
         raise NotImplementedError("Should have implemented this")
 
     def _is_app_installed(self, app_name):

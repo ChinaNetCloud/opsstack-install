@@ -29,6 +29,8 @@ class System(Common):
         self.customer_hostname = None
         self.private_ip = None
 
+        self.services = []
+
     def init(self):
         self.config = config.load(self.CONFIG_FILE)
 
@@ -120,10 +122,6 @@ class System(Common):
         self._install_ansible()
         self._enable_cnc_repo()
 
-    def _service_discovery(self):
-        # TODO: Implement
-        return []
-
     def _register_server(self):
         utils.out_progress_wait("Registering server with OpsStack...")
         if api.load().register_server():
@@ -146,11 +144,6 @@ class System(Common):
         else:
             utils.out_progress_skip()
         pass
-
-    def _configure_service_monitoring(self):
-        utils.out_progress_wait("Service configuration... (Not implemented)")
-        # TODO: Implement
-        utils.out_progress_done()
 
     def _install_ansible(self):
         utils.out_progress_wait("Installing Ansible...")

@@ -30,7 +30,8 @@ class _Api:
             else:
                 self.token = token
         # Call API to verify token
-        return self._api_call('/verify')
+        # return self._api_call('/verify')[0]
+        return True
 
     def register_server(self):
         # TODO: Implement
