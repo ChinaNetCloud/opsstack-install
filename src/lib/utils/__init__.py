@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import os
+import socket
 
 RED = '\033[0;31m'
 GREEN = '\033[0;32m'
@@ -82,6 +83,19 @@ def confirm(prompt_string):
 
 def ansible_play(name):
     return execute("ansible-playbook " + os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/" + name + ".playbook.yml")
+
+
+def test_connection(host, port):
+    result = False
+    sock = socket.socket()
+    try:
+        sock.connect((host, port))
+        sock.close()
+        result = True
+    except socket.error:
+        result = False
+    return result
+
 
 # Define input for 2.x
 try:

@@ -64,6 +64,19 @@ class Common(Abstract):
     def check_compatibility(self):
         # TODO: i18n
         utils.out_progress_wait("Checking system compatibility...")
+        # Check connectivity to outside on HTTP(S)
+        if not utils.test_connection('www.baidu.com', 80) or not utils.test_connection('www.baidu.com', 443):
+            utils.out_progress_fail()
+            # TODO: i18n
+            utils.err("Cannot connect to Internet")
+            exit(1)
+        # Check connectivity to outside on zbx trapper port
+        # TODO: Come up with better than hardcoded IP
+        if not utils.test_connection('54.222.237.59', 10051):
+            utils.out_progress_fail()
+            # TODO: i18n
+            utils.err("Cannot connect to Zabbix")
+            exit(1)
         if self._check_compatibility():
             utils.out_progress_done()
         else:
