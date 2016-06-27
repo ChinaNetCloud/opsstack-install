@@ -133,7 +133,7 @@ class System(Common):
     def _install_monitoring(self):
         utils.out_progress_wait("Installing basic monitoring...")
         if not self.config.get("zabbix_installed") == "yes":
-            rc, out, err = utils.ansible_play("base_monitoring")
+            rc, out, err = utils.ansible_play("rhel_base_monitoring")
             if rc == 0:
                 self.config.set("zabbix_installed", "yes")
                 utils.out_progress_done()
@@ -167,7 +167,7 @@ class System(Common):
     def _enable_cnc_repo(self):
         utils.out_progress_wait("Enabling CNC repository...")
         if not self.config.get("cnc_repo_enabled") == "yes":
-            rc, out, err = utils.ansible_play("cnc_repo")
+            rc, out, err = utils.ansible_play("rhel_cnc_repo")
             if rc == 0:
                 self.config.set("cnc_repo_enabled", "yes")
                 utils.out_progress_done()

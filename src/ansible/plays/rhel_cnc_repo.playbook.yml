@@ -3,7 +3,7 @@
   tasks:
     - name: Ensure CNC repository
       template:
-        src=../templates/cnc.repo.j2
+        src=../templates/cnc.yum.repo.j2
         dest=/etc/yum.repos.d/CNC.repo
         owner=root
         group=root
