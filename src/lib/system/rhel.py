@@ -68,7 +68,10 @@ class System(Common):
         # Get local names
         self.local_fqdn = socket.getfqdn()
         self.local_hostname = socket.getfqdn().split(".")[0]
-        self.local_domain = socket.getfqdn().split(".", 1)[1]
+        if len(socket.getfqdn().split(".")) > 1:
+            self.local_domain = socket.getfqdn().split(".", 1)[1]
+        else:
+            self.local_domain = ""
 
     @staticmethod
     def _get_ip_address(ifname):
@@ -152,7 +155,7 @@ class System(Common):
                 utils.execute("yum install -y python-pip")
             utils.execute("pip install --upgrade pip")
             utils.execute("pip install --upgrade setuptools")
-            utils.execute("yum install -y gcc libffi-devel python-devel openssl-devel")
+            utils.execute("yum install -y gcc libffi-devel python-devel openssl-devel libselinux-python")
             rc, out, err = utils.execute("pip install ansible==\'2.1.0\'")
             if rc == 0:
                 self.config.set("ansible_installed", "yes")

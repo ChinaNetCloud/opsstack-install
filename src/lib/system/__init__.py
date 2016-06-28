@@ -1,8 +1,7 @@
 import platform
 
 import abstract
-import centos7
-# import centos6
+import rhel
 
 _singleton = None
 
@@ -16,10 +15,8 @@ def load():
         os_version = platform.linux_distribution()[1].split('.')[0]
         if os == "Linux":
             if os_name == "centos":
-                if os_version == "7":
-                    _singleton = centos7.System()
-                # elif os_version == "6":
-                #     _singleton = centos6.System()
+                if os_version in ["6", "7"]:
+                    _singleton = rhel.System()
     return _singleton
 
 
