@@ -84,7 +84,7 @@ class System(Common):
 
     def _check_compatibility(self):
         result = True
-        if not self.config.get("zabbix_installed") == "yes":
+        if self.config.get("zabbix_installed") not in ["yes", "in_progress"]:
             if self._is_app_installed("'^zabbix[0-9]\{0,2\}-agent'"):
                 result = False
             if self._is_proc_running("zabbix_agentd"):
@@ -136,6 +136,7 @@ class System(Common):
     def _install_monitoring(self):
         utils.out_progress_wait("Installing basic monitoring...")
         if not self.config.get("zabbix_installed") == "yes":
+            self.config.set("zabbix_installed", "in_progress")
             rc, out, err = utils.ansible_play("rhel_base_monitoring")
             if rc == 0:
                 self.config.set("zabbix_installed", "yes")
@@ -151,6 +152,7 @@ class System(Common):
     def _install_ansible(self):
         utils.out_progress_wait("Installing Ansible...")
         if not self.config.get("ansible_installed") == "yes" and not self.is_ansible_present:
+            self.config.set("ansible_installed", "in_progress")
             if not self.is_pip_present:
                 utils.execute("yum install -y python-pip")
             utils.execute("pip install --upgrade pip")
