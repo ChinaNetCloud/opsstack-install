@@ -1,0 +1,21 @@
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Configure nc-haproxy
+      template:
+        src={{ item.src }}
+        dest={{ item.dest }}
+        owner=root
+        group=root
+        mode=0755
+      with_items: 
+        - src: ../files/cnc-haproxy-console 
+          dest: /sbin/cnc-haproxy-console
+        - src: ../files/cnc-haproxy-status
+          dest: /sbin/cnc-haproxy-status
+
+    - name: Ensure socat package installed
+      yum:
+        name=socat
+        state=present
+

@@ -1,0 +1,20 @@
+- hosts: localhost
+  connection: local
+  tasks:
+  - name: ensure httpd monitoring configuration
+    template:
+      src=../templates/httpd_zabbix.conf.j2
+      dest=/etc/httpd/conf.d/zabbix.conf
+      owner=root
+      group=root
+      mode=0644
+  - name: ensure zabbix vhost log folder and create zabbix log folder
+    file:
+      dest=/var/log/httpd/zabbix
+      owner=root
+      group=root
+      state=directory
+  - name: restart httpd
+    service:
+      name=httpd
+      state=restarted

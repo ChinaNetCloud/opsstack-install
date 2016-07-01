@@ -1,0 +1,196 @@
+#!/usr/bin/env python
+import sys
+import os
+import commands
+import datetime
+#import string_f
+import signal
+import time
+
+ansi = {
+  'reset': '\033[0;0m',
+  'red': '\033[1;31m',
+  'green': '\033[1;32m',
+  'blue': '\033[1;34m',
+  'cyan': '\033[1;36m',
+  'darkcyan': '\033[0;36m',
+}
+
+# Trap ctrl + c for pretty exits
+def signal_handler(signal, frame):
+  print "\n" + ansi['reset']
+  sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
+
+def add_justification(warez, spacing = 1):
+  tracker = []
+  i = 0
+  warez_count = len(warez)
+  stat_count = len(warez[0])
+          
+  # First, scan the individual columnts, looking for max lengths
+  tracker = [max(len(str(x)) for x in line) for line in zip(*warez)]
+  i = 0  
+         
+  # Next, we add spacing to each feild
+  while(i < stat_count):
+    q = 0
+    while(q < warez_count):
+      if(len(warez[q][i]) < tracker[i]):
+        diff = tracker[i] - len(warez[q][i])
+        while diff > 0:
+          warez[q][i] += " "
+          diff -= 1
+      q +=1
+      cur_s = 0
+      while(cur_s < spacing):
+        warez[q - 1][i] += " "
+        cur_s += 1
+    i += 1
+  return warez
+
+def spacer(warez):
+  spacer = {}
+  spacer['front'] = ansi['darkcyan'] + "|" + ansi['reset']
+  spacer['back'] = ansi['darkcyan'] + "|" + ansi['reset']
+
+  if(isinstance(warez,str)):
+    dash_count = 0
+    dash = ""
+    length = len(warez)
+    while (dash_count < (length + 0)):
+      dash += "-"
+      dash_count += 1
+    spacer['top'] = ansi['darkcyan'] + "/" + dash + "\\" + ansi['reset']
+    spacer['bottom'] = ansi['darkcyan'] + "\\" + dash + "/" + ansi['reset']
+    return spacer
+
+  if (isinstance(warez,list)):
+    length = 0 
+    dash_count = 0
+    dash = "" 
+    ele_count = int(0)
+    e_s = [] 
+    for line in warez:
+      if(len(line) > length):
+        length = len(line)
+    for line in warez:
+      extra_space = ""
+      if(len(line) != length):
+        diff = length - len(line)
+        while (diff > 0):
+          extra_space += " "
+          diff -= 1
+        e_s.append(ansi['darkcyan'] + extra_space + "  |" + ansi['reset'])
+        ele_count += 1
+      else:
+         e_s.append(ansi['darkcyan'] + "  |" + ansi['reset'])
+    while (dash_count < (length + 2)):
+      dash += "-"
+      dash_count += 1
+    spacer['top'] = ansi['darkcyan'] + "/" + dash + "\\" + ansi['reset']
+    spacer['bottom'] = ansi['darkcyan'] + "\\" + dash + "/" + ansi['reset']
+    return spacer, e_s
+
+def haproxy():
+  STATCMD = "echo \"show stat\" | socat unix-connect:/tmp/haproxy stdio"
+  raw_stats = str(commands.getoutput(STATCMD)).split("\n")
+  header = ["Pool", "Server", "Status", "Scur", "Stot", "SMx", "SR", "MxSR", "Qcur", "40x", "50x", "Uptime"]
+  haproxy = []
+  haproxy.append(header)
+  system = "" 
+  for line in raw_stats:
+    pool = [] 
+    line_ex = line.split(",")
+    if(len(line_ex) > 1):
+      if(line_ex[1] == "FRONTEND") and (line_ex[0] != "monitor1"):
+        buffer = ["", "","", "", "", "", "", "", "", "", "", ""]
+        pool.append(line_ex[0].strip())
+        pool.append("FRONTEND")
+        pool.append(line_ex[36])
+        pool.append(line_ex[4])   # scur
+        pool.append(line_ex[7])   # stot
+        pool.append(line_ex[5])   # smax
+        pool.append(line_ex[33])  # rate
+        pool.append(line_ex[35])  # rate_max
+        pool.append(line_ex[2])   # qcur
+        pool.append("")  # hrsp_4xx
+        pool.append("")  # hrsp_5xx
+        pool.append("")
+        haproxy.append(pool)
+        haproxy.append(buffer)
+      if((line_ex[1] != "FRONTEND") and (line_ex[1] != "BACKEND") and (line_ex[1] != "svname")):
+        if line_ex != "":
+        try:
+                uptime = str(datetime.timedelta(seconds=int(line_ex[23])))
+        except ValueError:
+        uptime = ""
+        else:
+            uptime = ""
+        pool.append(line_ex[0].strip())  # pxname
+        pool.append(line_ex[1].strip())  # svname
+        pool.append(line_ex[36] + "/" + line_ex[37] + " " + line_ex[38] + "ms/" + line_ex[17])  # check_status/check_code check_duration
+        pool.append(line_ex[4])   # scur
+        pool.append(line_ex[7])   # stot
+        pool.append(line_ex[5])   # smax
+        pool.append(line_ex[33])  # rate
+        pool.append(line_ex[35])  # rate_max
+        pool.append(line_ex[2])   # qcur
+        pool.append(line_ex[42])  # hrsp_4xx
+        pool.append(line_ex[43])  # hrsp_5xx
+        pool.append(uptime)
+        haproxy.append(pool)
+      if(line_ex[1] == "BACKEND") and (line_ex[0] != "monitor1"):
+        buffer = ["", "","", "", "", "", "", "", "", "", "", ""]
+        uptime = str(datetime.timedelta(seconds=int(line_ex[23])))
+        pool.append(line_ex[0].strip())  # pxname
+        pool.append(line_ex[1].strip())  # svname
+        pool.append("")
+        pool.append(line_ex[4])   # scur
+        pool.append(line_ex[7])   # stot
+        pool.append(line_ex[5])   # smax
+        pool.append(line_ex[33])  # rate
+        pool.append(line_ex[35])  # rate_max
+        pool.append(line_ex[2])   # qcur
+        pool.append("")  # hrsp_4xx
+        pool.append("")  # hrsp_5xx
+        pool.append(uptime)
+        haproxy.append(pool)
+        haproxy.append(buffer)
+        
+  return haproxy
+
+def display_stats(haproxy_stats, haproxy_border):
+  print haproxy_border['top']
+  i = 0
+  for stat in haproxy_stats:
+    if i != 0:
+      print haproxy_border['front'] + "".join(stat) + haproxy_border['back']
+    else:
+      print haproxy_border['front'] + ansi['green'] + "".join(stat) + haproxy_border['back']
+      i += 1
+  print haproxy_border['bottom']
+
+def main(argv):
+  if len(argv) == 1:
+    haproxy_stats = haproxy()
+    haproxy_stats = add_justification(haproxy_stats)
+    haproxy_border = spacer("".join(haproxy_stats[0]))
+    display_stats(haproxy_stats, haproxy_border)
+  elif len(argv) == 2:
+    try:
+      int(argv[1])
+      while(1):
+        os.system("clear")
+        haproxy_stats = haproxy()
+        haproxy_stats = add_justification(haproxy_stats)
+        haproxy_border = spacer("".join(haproxy_stats[0]))
+        display_stats(haproxy_stats, haproxy_border)
+        time.sleep(int(argv[1]))
+    except:
+      print "First argument should be an integer, repersenting seconds between polls"
+      print argv[1]
+
+if __name__ == "__main__":
+  main(sys.argv)
+
