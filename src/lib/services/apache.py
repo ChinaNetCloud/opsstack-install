@@ -22,6 +22,7 @@ class Apache(abstract.Abstract):
     @staticmethod
     def configure(system):
         utils.out_progress_wait("Configuring apache monitoring...")
+        #TODO ask customer to input apache vhost configuretaion folder if not in default folder /etc/httpd/conf.d ? or findout the path from the server?
         if not system.config.get("apache_monitoring_configured") == "yes" and not os.path.isfile('/etc/httpd/conf.d/zabbix.conf'):
             rc, out, err = utils.ansible_play("rhel_apache_monitoring")
             if rc == 0:

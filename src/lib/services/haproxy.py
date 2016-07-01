@@ -23,6 +23,7 @@ class Haproxy(abstract.Abstract):
     def configure(system):
         utils.out_progress_wait("Configuring nc-haproxy...")
         if not system.config.get("haproxy_configured") == "yes":
+            #TODO Modify haproxy.cfg to enable socat and haproxy status page?
             rc, out, err = utils.ansible_play("rhel_haproxy_configure")
             if rc == 0:
                 system.config.set("haproxy_configured", "yes")

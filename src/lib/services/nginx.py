@@ -22,7 +22,7 @@ class Nginx(abstract.Abstract):
     @staticmethod
     def configure(system):
         utils.out_progress_wait("Configuring nginx monitoring...")
-        #TODO ask customer to input nginx configuretaion folder if not in default folder /etc/nginx/conf.d ?
+        #TODO ask customer to input vhost nginx configuretaion folder if not in default folder /etc/nginx/conf.d ? or findout the path from the server?
         if not system.config.get("nginx_monitoring_configured") == "yes" and not os.path.exists('/etc/nginx/conf.d/zabbix.conf'):
             rc, out, err = utils.ansible_play("rhel_nginx_monitoring")
             if rc == 0:
