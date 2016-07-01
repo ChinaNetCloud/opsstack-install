@@ -23,7 +23,7 @@ msgid "Collecting system information..."
 msgstr "正在收集系统信息..."
 
 msgid "Running service discovery..."
-msgstr "正在发展主机服务..."
+msgstr "正在检查主机服务..."
 
 msgid "Please enter OpsStack API token:"
 msgstr "请输入OpsStack API token:"

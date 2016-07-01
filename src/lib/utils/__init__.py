@@ -13,9 +13,9 @@ NOCOLOR = '\033[0m'
 
 OUT_MESSAGE = None
 
-
+bin_path = sys.path[0]
 def language_translation(msg):
-    t = gettext.translation('nc-configure', 'locale', fallback=True)
+    t = gettext.translation('nc-configure', bin_path + '/locale', fallback=True)
     _ = t.ugettext
     message = _(msg)
     return message
