@@ -1,0 +1,65 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 201607.
+#
+
+msgid "Checking permissions..."
+msgstr "正在检查权限..."
+
+msgid "Checking system compatibility..."
+msgstr "正在检查系统的兼容性..."
+
+msgid "Cannot connect to Internet"
+msgstr "不能连接到互联网"
+
+msgid "Cannot connect to Zabbix"
+msgstr "不能连接到Zabbix服务器"
+
+msgid "Current system is not compatible. Please check documentation. Exiting..."
+msgstr "当前系统不兼容. 麻烦确认技术文档. 抱歉..."
+
+msgid "Collecting system information..."
+msgstr "正在收集系统信息..."
+
+msgid "Running service discovery..."
+msgstr "正在发展主机服务..."
+
+msgid "Please enter OpsStack API token:"
+msgstr "请输入OpsStack API token:"
+
+msgid "Connecting to OpsStack..."
+msgstr "正在连接OpsStack..."
+
+msgid "Please input the purpose: "
+msgstr "请输入主机的标签: "
+
+#
+msgid "Registering server with OpsStack..."
+msgstr "注册主机到OpsStack..."
+
+msgid "Enabling EPEL repository..."
+msgstr "启用EPEL包管理库..."
+
+msgid "Installing Ansible..."
+msgstr "正在安装Ansible..."
+
+msgid "Running service monitoring configuration..."
+msgstr "正在配置服务的监控..."
+
+#
+msgid "Invalid input!"
+msgstr "无效地输入!"
+
+msgid "DONE"
+msgstr "完成"
+
+msgid "SKIP"
+msgstr "忽略"
+
+msgid "FAIL"
+msgstr "失败"
+
+msgid "INFO"
+msgstr "信息"
+
