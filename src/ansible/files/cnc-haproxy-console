@@ -1,0 +1,414 @@
+#!/usr/bin/env python
+import sys
+import os
+import datetime
+import commands
+import signal
+
+haproxy_socket = "/tmp/haproxy"
+
+ansi = {
+  'reset': '\033[0;0m',
+  'red': '\033[1;31m',
+  'green': '\033[1;32m',
+  'blue': '\033[1;34m',
+  'cyan': '\033[1;36m',
+  'darkcyan': '\033[0;36m',
+}
+
+# Trap ctrl + c for pretty exits
+def signal_handler(signal, frame):
+  print "\n" + ansi['reset']
+  sys.exit(0)
+signal.signal(signal.SIGINT, signal_handler)
+
+def add_justification(warez, spacing = 1):
+  tracker = []
+  i = 0
+  warez_count = len(warez)
+  stat_count = len(warez[0])
+          
+  # First, scan the individual columnts, looking for max lengths
+  tracker = [max(len(str(x)) for x in line) for line in zip(*warez)]
+  i = 0  
+         
+  # Next, we add spacing to each feild
+  while(i < stat_count):
+    q = 0
+    while(q < warez_count):
+      if(len(warez[q][i]) < tracker[i]):
+        diff = tracker[i] - len(warez[q][i])
+        while diff > 0:
+          warez[q][i] += " "
+          diff -= 1
+      q +=1
+      cur_s = 0
+      while(cur_s < spacing):
+        warez[q - 1][i] += " "
+        cur_s += 1
+    i += 1
+  return warez
+
+def spacer(warez):
+  spacer = {}
+  spacer['front'] = ansi['darkcyan'] + "|" + ansi['reset']
+  spacer['back'] = ansi['darkcyan'] + "|" + ansi['reset']
+
+  if(isinstance(warez,str)):
+    dash_count = 0
+    dash = ""
+    length = len(warez)
+    while (dash_count < (length + 0)):
+      dash += "-"
+      dash_count += 1
+    spacer['top'] = ansi['darkcyan'] + "/" + dash + "\\" + ansi['reset']
+    spacer['bottom'] = ansi['darkcyan'] + "\\" + dash + "/" + ansi['reset']
+    return spacer
+
+  if (isinstance(warez,list)):
+    length = 0 
+    dash_count = 0
+    dash = "" 
+    ele_count = int(0)
+    e_s = [] 
+    for line in warez:
+      if(len(line) > length):
+        length = len(line)
+    for line in warez:
+      extra_space = ""
+      if(len(line) != length):
+        diff = length - len(line)
+        while (diff > 0):
+          extra_space += " "
+          diff -= 1
+        e_s.append(ansi['darkcyan'] + extra_space + "  |" + ansi['reset'])
+        ele_count += 1
+      else:
+         e_s.append(ansi['darkcyan'] + "  |" + ansi['reset'])
+    while (dash_count < (length + 2)):
+      dash += "-"
+      dash_count += 1
+    spacer['top'] = ansi['darkcyan'] + "/" + dash + "\\" + ansi['reset']
+    spacer['bottom'] = ansi['darkcyan'] + "\\" + dash + "/" + ansi['reset']
+    return spacer, e_s
+
+def haproxy():
+  STATCMD = "echo \"show stat\" | socat unix-connect:" + haproxy_socket + " stdio"
+  raw_stats = str(commands.getoutput(STATCMD)).split("\n")
+  header = ["Pool", "Server", "Status", "Scur", "Stot", "SMx", "SR", "MxSR", "Qcur", "40x", "50x", "Uptime"]
+  haproxy = []
+  haproxy.append(header)
+  system = "" 
+  for line in raw_stats:
+    pool = [] 
+    line_ex = line.split(",")
+    if(len(line_ex) > 1):
+      if((line_ex[1] != "FRONTEND") and (line_ex[1] != "BACKEND") and (line_ex[1] != "svname")):
+        try:
+          uptime = str(datetime.timedelta(seconds=int(line_ex[23])))
+        except ValueError:
+          if line_ex[23] == "" :
+            uptime=str(datetime.timedelta(seconds=int(0)))
+        pool.append(line_ex[0].strip())  # pxname
+        pool.append(line_ex[1].strip())  # svname
+        pool.append(line_ex[36] + "/" + line_ex[37] + " " + line_ex[38] + "ms/" + line_ex[17])  # check_status/check_code check_duration
+        pool.append(line_ex[4])   # scur
+        pool.append(line_ex[7])   # stot
+        pool.append(line_ex[5])   # smax
+        pool.append(line_ex[33])  # rate
+        pool.append(line_ex[35])  # rate_max
+        pool.append(line_ex[2])   # qcur
+        pool.append(line_ex[42])  # hrsp_4xx
+        pool.append(line_ex[43])  # hrsp_5xx
+        pool.append(uptime)
+        haproxy.append(pool)
+  return haproxy
+
+def display_stats(haproxy_stats, haproxy_border):
+  print haproxy_border['top']
+  i = 0
+  for stat in haproxy_stats:
+    if i != 0:
+      print haproxy_border['front'] + "".join(stat) + haproxy_border['back']
+    else:
+      print haproxy_border['front'] + ansi['green'] + "".join(stat) + haproxy_border['back']
+      i += 1
+  print haproxy_border['bottom']
+
+def gen_main_menu():
+  socat_info_cmd = "echo \"show info\" | socat unix-connect:" + haproxy_socket + " stdio"
+  socat_info = commands.getoutput(socat_info_cmd).split("\n")
+  socat_info_ver = socat_info[1].split()[1]
+  socat_info_node = socat_info[18].split()[1]
+  socat_info_desc = socat_info[19].split()[1]
+  socat_info_uptime = socat_info[6].split()[1] + " " + socat_info[6].split()[2]
+  socat_info_str = socat_info_ver + " : " + socat_info_node + " : " + socat_info_desc + " : " + socat_info_uptime
+  main_menu = []
+  main_menu.append(["CNC HAProxy Console"])
+#  main_menu.append(["  (a) Add server"])
+  main_menu.append(["  (d) Disable server"])
+  main_menu.append(["  (e) Enable server"])
+  main_menu.append([""])
+  main_menu.append(["  (s) Display current servers "])
+  main_menu.append([""])
+  main_menu.append(["  (zz) Quit"])
+  menu = []
+  menu.append(main_menu)
+
+  return main_menu
+
+
+def show_servers():
+#  os.system("clear")
+  haproxy_stats = haproxy()
+  haproxy_stats = add_justification(haproxy_stats)
+  haproxy_border = spacer("".join(haproxy_stats[0]))
+  display_stats(haproxy_stats, haproxy_border)
+  b = raw_input("Press any key to continue")
+
+def input_check(type, value):
+  if type == "port":
+    try:
+      int(value)
+    except:
+      return 0
+    if not 1 <= int(value) <= 65535:
+      return 0
+    return 1
+
+  if type == "ip_addr":
+    try:
+      octets = value.split(".")
+    except:
+      return 0
+    if (len(octets) != 4):
+      return 0
+    for octet in octets:
+      if not 0 <= int(octet) <= 256:
+        return 0
+    return 1
+
+  if type == "max_conn":
+    try:
+      int(value)
+    except:
+      return 0
+    if not 1 <= int(value) <= 10000:
+      return 0
+    return 1
+
+def display_pools():
+#  os.system("clear")
+  pools = []
+  pools_d = {}
+  haproxy_stats = haproxy()
+  pool_menu = []
+  char = 'a'
+  pools = []
+  server_list = []
+  server_list.append(["Which server do you want to disable:"])
+  for stat in haproxy_stats:
+    if stat[1] != "FRONTEND" and stat[0] not in pools and stat[1] != "" and stat[1] != "Server":
+      server_list.append([stat[0] + ":"])
+      pools.append(stat[0])
+      pool_servers = []
+      pool_servers.append("  (" + str(char) + ")" + stat[1] + " - " + stat[2])
+      pools_d[char] = stat[0] + "/" + stat[1]
+      server_list.append(pool_servers)
+      char = chr(ord(char) + 1)
+    elif stat[1] != "BACKEND" and stat[1] != "" and stat[1] != "Server" and stat[1] != "FRONTEND":
+      pool_servers = []
+      pool_servers.append("  (" + str(char) + ")" + stat[1] + " - " + stat[2])
+      pools_d[char] = stat[0] + "/" + stat[1]
+      server_list.append(pool_servers)
+      char = chr(ord(char) + 1)
+
+  server_list.append([""])
+  server_list.append(["  (zz) Quit"])
+  pool_menu = add_justification(server_list)
+  pool_border = spacer("".join(server_list[0]))
+  display_stats(pool_menu, pool_border)
+  return pools_d
+
+def enable_server(pools_d = ""):
+  if pools_d == "":
+    pools_d = display_pools()
+    answer = raw_input("Enable which server: ")
+    if answer == "zz":
+      sys.exit(0)
+    elif answer in pools_d:
+      enable_cmd = "echo \"enable server " + pools_d[answer] + "\" | socat unix-connect:" + haproxy_socket + " stdio"
+      commands.getoutput(enable_cmd)
+  else:
+    enable_cmd = "echo \"enable server " + pools_d + "\" | socat unix-connect:" + haproxy_socket + " stdio"
+    commands.getoutput(enable_cmd)
+
+  show_servers()
+
+
+def disable_server(pools_d = ""):
+  if pools_d == "":
+    pools_d = display_pools()
+    answer = raw_input("Disable which server: ")
+    if answer == "zz":
+      sys.exit(0)
+    elif answer in pools_d:
+      disable_cmd = "echo \"disable server " + pools_d[answer] + "\" | socat unix-connect:" + haproxy_socket + " stdio"
+      commands.getoutput(disable_cmd)
+  else:
+    disable_cmd = "echo \"disable server " + pools_d + "\" | socat unix-connect:" + haproxy_socket + " stdio"
+    commands.getoutput(disable_cmd)
+
+  show_servers()
+
+def commit_add(server_name, ip_addr, port, max_conn, pool):
+  commit_str = "add server " + pool + "/" + server_name + " " + ip_addr + ":" + port + " cookie " + server_name + " check maxconn " + max_conn
+  print commit_str
+  raw_input("")
+
+def add_server():
+#  os.system("clear")
+  pools = []
+  pools_d = {}
+  haproxy_stats = haproxy()
+  pool_menu = []
+  pool_menu.append(["Which pool do you want to add to:"])
+  char = 'a'
+  for stat in haproxy_stats:
+     if stat[0] not in pools and stat[0] != "Pool" and stat[0] != "":
+       pools.append(stat[0])
+       pool_menu.append([" (" + str(char) + ") " + stat[0]])
+       pools_d[char] = stat[0]
+       char = chr(ord(char) + 1)
+  pool_menu.append([""])
+  pool_menu.append([" (m) Main Menu"])
+  pool_menu.append([" (zz) Quit"])
+
+  pool_menu = add_justification(pool_menu)
+  pool_border = spacer("".join(pool_menu[0]))
+  display_stats(pool_menu, pool_border)
+  while 1:
+    input = raw_input(" Please enter selection: ")
+    if input == "zz":
+      sys.exit(0)
+    elif input == 'm':
+      break
+    else:
+      pool = pools_d.get(input, "")
+      if pool != "":
+        break
+  get_current_servers_cmd = "echo \"show stat\" | socat unix-connect:" + haproxy_socket + " stdio | grep -vE \"(FRONTEND|BACKEND)\" | grep " + pool
+  get_current_servers_out = commands.getoutput(get_current_servers_cmd).split("\n")
+  server_info = []
+  print ansi['green'] + "Current configuration: " + ansi['reset']
+  print ansi['green'] + "  Servername  ::  Max Conns" + ansi['reset']
+  for server in get_current_servers_out:
+    info = []
+    line_ex = server.split(",")
+    print "  " + line_ex[1] + " :: " + line_ex[6]
+    info.append(line_ex[1]) # server name
+    server_info.append(line_ex[1])
+  print
+  server_name = ""
+  input_chk = 0
+  while server_name == "" or input_chk == 0:
+    server_name = raw_input("Please enter new servername: ")
+    if server_name in server_info:
+      print ansi['red'] + server_name + " already in pool." + ansi['reset']
+    else:
+      input_chk = 1
+
+  ip_addr = ""
+  input_chk = 0
+  while ip_addr == "" or input_chk == 0:
+    ip_addr = raw_input("Please enter backend IP address: ")
+    input_chk = input_check("ip_addr", ip_addr)
+
+  port = 0
+  input_chk = 0
+  while port == 0 or input_chk == 0:
+    port = raw_input("Please enter backend port: ")
+    input_chk = input_check("port", port)
+
+  max_conn = 0
+  input_chk = 0
+  while max_conn == 0 or input_chk == 0:
+    max_conn = raw_input("Please enter max_conns: ")
+    input_chk = input_check("max_conn", max_conn)
+
+  print ansi['green'] + "Do you want to add " + ansi['reset']
+  print "  Host: " + server_name 
+  print "    IP: " + ip_addr
+  print "  Port: " + port
+  print " Conns: " + max_conn
+  print ansi['green'] + "to pool: " + pool + ansi['reset']
+  answer = ""
+  while answer == "":
+    answer = raw_input("[y/n]")
+    if answer == 'y':
+      commit_add(server_name, ip_addr, port, max_conn, pool)
+    elif answer == 'n':
+      break
+  
+
+def sanity_check():
+  socat_cmd = "which socat"
+  if commands.getoutput(socat_cmd).split("\n")[0] != "/usr/bin/socat":
+    print ansi['red'] + "socat not installed! Please run 'yum install socat'" + ansi['reset']
+    sys.exit(1)
+
+  config_chk_cmd = "grep \"level admin\" /etc/haproxy/haproxy.cfg"
+  config_chk_ret = commands.getoutput(config_chk_cmd).split("\n")
+  if len(config_chk_ret) > 1:
+    print ansi['red'] + "Please add 'stats socket  /tmp/haproxy level admin' to haproxy.cfg" + ansi['reset']
+    sys.exit(1)
+
+ 
+
+def main(argv):
+  if len(argv) != 1 and len(argv) != 3:
+    if argv[1] == "show":
+      show_servers()
+      print "Example: "
+      print "  cnc-haproxy-console disable www-pool1/srv-example-web1_80"
+      sys.exit(0)
+    else:
+      print "Usage: "
+      print "  cnc-haproxy-console                                - console menu "
+      print "  cnc-haproxy-console [enable/disable] pool/server   - enable/disable servers"
+      print "Example: "
+      print "  cnc-haproxy-console disable www-pool1/srv-example-web1_80"
+      sys.exit(1)
+  if len(argv) == 1:
+    input = ""
+    sanity_check()
+    main_menu = gen_main_menu()
+    main_menu_j = add_justification(main_menu)
+    main_menu_b = spacer("".join(main_menu[0]))
+    while input != "zz":
+#      os.system("clear")
+      display_stats(main_menu, main_menu_b)
+      input = raw_input("Selection: ")
+      if input == 's':
+        show_servers()
+#      elif input == 'a':
+#        add_server()
+      elif input == 'd':
+        disable_server()
+      elif input == 'e':
+        enable_server()
+  elif argv[1] != "enable" and argv[1] != "disable":
+    print "Usage: "
+    print "  cnc-haproxy-console                                - console menu "
+    print "  cnc-haproxy-console [enable/disable] pool/server   - enable/disable servers"
+    print "Example: "
+    print "  cnc-haproxy-console disable www-pool1/srv-example-web1_80"
+  else:
+    if argv[1] == "enable":
+      enable_server(argv[2])
+    else:
+      disable_server(argv[2])    
+    
+
+if __name__ == "__main__":
+  main(sys.argv)

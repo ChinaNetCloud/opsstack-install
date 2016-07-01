@@ -1,0 +1,20 @@
+- hosts: localhost
+  connection: local
+  tasks:
+  - name: ensure nginx monitoring configuration
+    template:
+      src=../templates/nginx_zabbix.conf.j2
+      dest=/etc/nginx/conf.d/zabbix.conf
+      owner=root
+      group=root
+      mode=0644
+  - name: ensure zabbix vhost log folder and create zabbix log folder
+    file:
+      dest=/var/log/nginx/zabbix
+      owner=root
+      group=root
+      state=directory
+  - name: restart nginx
+    service:
+      name=nginx
+      state=restarted

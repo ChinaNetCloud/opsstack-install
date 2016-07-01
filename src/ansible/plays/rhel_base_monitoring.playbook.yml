@@ -1,28 +1,17 @@
 - hosts: localhost
   connection: local
   tasks:
-    - name: Save SELinux settings
-      set_fact: selinux="{{ ansible_selinux }}"
-      when: ansible_selinux.config_mode != "disabled"
-    - name: Disable SElinux
-      selinux: state=disabled
-      when: selinux is defined
-    - name: Ensure zabbix-agent is installed
-      yum: name=zabbix-agent state=present disablerepo=epel disable_gpg_check=yes
+    - name: Install Zabbix agent
+      yum: state=latest name=zabbix22-agent
     - name: Install CNC Zabbix custom scripts
-      yum: name=nc-zabbix-custom-scripts state=latest disable_gpg_check=yes
+      yum: name=nc-zabbix-custom-scripts state=latest
     - name: Fix Zabbix config file
-      lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^Hostname=(.*)$' line='Hostname=whatever' backrefs=yes
-    - name: Change Zabbix to active agent
-      lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^Server\=127\.0\.0\.1\,(.*)$' line='Server=127.0.0.1,\1\nServerActive=127.0.0.1,\1' backrefs=yes
-    - name: Fix Zabbix config file permissions
-      file: path=/etc/zabbix/zabbix_agentd.conf owner=root group=root mode="u=rw,g=r,o=r"
+      lineinfile: dest=/etc/zabbix_agentd.conf state=present regexp='^(.*)HOSTNAME(.*)$' line='' backrefs=yes
     - name: Fix Zabbix HOME
       lineinfile: dest=/etc/passwd state=present regexp='^(.*)\/var\/lib\/zabbix(.*)$' line='\1/home/zabbix\2' backrefs=yes
+    - name: Change Zabbix to active agent
+      lineinfile: dest=/etc/zabbix_agentd.conf state=present regexp='^Server\=127\.0\.0\.1\,(.*)$' line='Server=127.0.0.1,\1\nServerActive=127.0.0.1,\1' backrefs=yes
     - name: Restart crond to use new locations
       service: name=crond state=restarted
     - name: Enable Zabbix agent
       service: name=zabbix-agent state=restarted enabled=yes
-    - name: Enable SElinux
-      selinux: state="{{ selinux.config_mode }}" policy="{{ selinux.type }}"
-      when: selinux is defined
