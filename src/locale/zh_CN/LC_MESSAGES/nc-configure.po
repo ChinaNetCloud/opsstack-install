@@ -4,51 +4,72 @@
 # 201607.
 #
 
-msgid "Checking permissions..."
+msgid "CHECK_PREM"
 msgstr "正在检查权限..."
 
-msgid "Checking system compatibility..."
+msgid "CHECK_SYS_COMP"
 msgstr "正在检查系统的兼容性..."
 
-msgid "Cannot connect to Internet"
+msgid "CANNOT_CONNECT_INTERNET"
 msgstr "不能连接到互联网"
 
-msgid "Cannot connect to Zabbix"
+msgid "CANNOT_CONNECT_ZABBIX"
 msgstr "不能连接到Zabbix服务器"
 
-msgid "Current system is not compatible. Please check documentation. Exiting..."
+msgid "NOT_COMP_EXIT"
 msgstr "当前系统不兼容. 麻烦确认技术文档. 抱歉..."
 
-msgid "Collecting system information..."
+msgid "COLLECT_SYS_INFO"
 msgstr "正在收集系统信息..."
 
-msgid "Running service discovery..."
+msgid "RUN_SERVICE_DISCOVERY"
 msgstr "正在检查主机服务..."
 
-msgid "Please enter OpsStack API token:"
+msgid "INPUT_OPSSTACK_API"
 msgstr "请输入OpsStack API token:"
 
-msgid "Connecting to OpsStack..."
+msgid "CONNECT_OPSSTACK"
 msgstr "正在连接OpsStack..."
 
-msgid "Please input the purpose: "
+msgid "INPUT_PURPOSE"
 msgstr "请输入主机的标签: "
 
 #
-msgid "Registering server with OpsStack..."
+msgid "REGISTER_SER_OPSSTACK"
 msgstr "注册主机到OpsStack..."
 
-msgid "Enabling EPEL repository..."
+msgid "ENABLE_EPEL"
 msgstr "启用EPEL包管理库..."
 
-msgid "Installing Ansible..."
+msgid "INSTALL_ANSIBLE"
 msgstr "正在安装Ansible..."
 
-msgid "Running service monitoring configuration..."
+msgid "FAILED_INSTALL_ANSIBLE"
+msgstr  "安装Ansible 失败"
+
+msgid "ENABLE_CNC_REPO"
+msgstr "启用CNC 包管理库..."
+
+msgid "FAILED_ENABLE_CNC_REPO"
+msgstr "启用CNC包管理库失败"
+
+msgid "INSTALL_BASIC_MON"
+msgstr "安装基本的监控..."
+
+msgid "FAILED_INSTALL_BASIC_MON"
+msgstr "安装基本的监控失败"
+
+msgid "RUN_MONITOR_CONFIG"
 msgstr "正在配置服务的监控..."
 
+msgid "CONFIGURE_MONITOR_SERVER"
+msgstr "为 %s 配置监控?"
+
+msgid "SERVER_PURPOSE"
+msgstr "主机的标签是 %s"
+
 #
-msgid "Invalid input!"
+msgid "INVALID_INPUT"
 msgstr "无效地输入!"
 
 msgid "DONE"
@@ -62,4 +83,3 @@ msgstr "失败"
 
 msgid "INFO"
 msgstr "信息"
-

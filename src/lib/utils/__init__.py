@@ -84,7 +84,11 @@ def prompt(prompt_string):
     return result
 
 
-def confirm(prompt_string):
+def print_str(s, *args):
+    s = language_translation(s)
+    return (s %(args))
+
+def confirm(prompt_string, *args):
     prompt_string = language_translation(prompt_string)
     while True:
         print("")

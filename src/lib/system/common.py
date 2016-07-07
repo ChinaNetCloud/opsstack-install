@@ -30,12 +30,12 @@ class Common(Abstract):
             else:
                 # TODO: Sanity check!
                 # TODO: i18n
-                token = utils.prompt("Please enter OpsStack API token:")
+                token = utils.prompt("INPUT_OPSSTACK_API")
                 if len(token) > 0:
                     self.config.set("api_token", token)
                 continue
             # TODO: i18n
-            utils.out_progress_wait("Connecting to OpsStack...")
+            utils.out_progress_wait("CONNECT_OPSSTACK")
             if api.load().verify_token():
                 utils.out_progress_done()
                 break
@@ -46,7 +46,7 @@ class Common(Abstract):
                 self.config.delete("api_token")
 
     def verify_permissions(self):
-        utils.out_progress_wait("Checking permissions...")
+        utils.out_progress_wait("CHECK_PREM")
         if not self._verify_permissions():
             utils.out_progress_fail()
             # TODO: i18n
@@ -57,25 +57,25 @@ class Common(Abstract):
 
     def collect_facts(self):
         # TODO: i18n
-        utils.out_progress_wait("Collecting system information...")
+        utils.out_progress_wait("COLLECT_SYS_INFO")
         self._collect_facts()
         utils.out_progress_done()
 
     def check_compatibility(self):
         # TODO: i18n
-        utils.out_progress_wait("Checking system compatibility...")
+        utils.out_progress_wait("CHECK_SYS_COMP")
         # Check connectivity to outside on HTTP(S)
         if not utils.test_connection('www.baidu.com', 80) or not utils.test_connection('www.baidu.com', 443):
             utils.out_progress_fail()
             # TODO: i18n
-            utils.err("Cannot connect to Internet")
+            utils.err("CANNOT_CONNECT_INTERNET")
             exit(1)
         # Check connectivity to outside on zbx trapper port
         # TODO: Come up with better than hardcoded IP
         if not utils.test_connection('54.222.237.59', 10051):
             utils.out_progress_fail()
             # TODO: i18n
-            utils.err("Cannot connect to Zabbix")
+            utils.err("CANNOT_CONNECT_ZABBIX")
             exit(1)
         if self._check_compatibility():
             utils.out_progress_done()
@@ -83,20 +83,22 @@ class Common(Abstract):
             utils.out_progress_fail()
             # TODO: i18n
             # TODO: Insert link to system requirements web page into message
-            utils.err("Current system is not compatible. Please check documentation. Exiting...")
+            utils.err("NOT_COMP_EXIT")
             exit(1)
 
     def service_discovery(self):
-        utils.out_progress_wait("Running service discovery...")
+        utils.out_progress_wait("RUN_SERVICE_DISCOVERY")
         for service in services.servicelist:
             if services.servicelist[service].discover(self):
                 self.services.append(services.servicelist[service])
         utils.out_progress_done()
 
     def service_configuration(self):
-        utils.out("Running service monitoring configuration...")
+        utils.out("RUN_MONITOR_CONFIG")
         for service in self.services:
-            if utils.confirm("Configure monitoring for '%s'?" % service.getname()):
+            configure_mon_str = "CONFIGURE_MONITOR_SERVER"
+            prompt_string = utils.print_str(configure_mon_str, service.getname())
+            if utils.confirm(prompt_string):
                 service.configure(self)
 
     def _collect_information(self):
@@ -108,15 +110,16 @@ class Common(Abstract):
             utils.out("Allowed characters are letters, numbers, underscore and hyphen.\n")
             utils.out("Minimum 3, maximum 20 characters.\n")
             while True:
-                name = utils.prompt("Please input the purpose: ")
+                name = utils.prompt("INPUT_PURPOSE")
                 if re.match(r'^[A-z0-9-_]{3,20}$', name.strip()) is not None:
                     self.customer_hostname = name.strip()
                     self.config.set("cust_hostname", self.customer_hostname)
                     break
                 else:
-                    utils.err("Invalid input!")
+                    utils.err("INVALID_INPUT")
         else:
-            utils.out_progress_info("Server purpose is  '" + self.config.get('cust_hostname') + "'")
+            server_purpose_info = utils.print_str( "SERVER_PURPOSE", self.config.get('cust_hostname'))
+            utils.out_progress_info(server_purpose_info)
         # TODO: Consider more input
         pass
 

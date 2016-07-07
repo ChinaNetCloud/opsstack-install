@@ -126,7 +126,7 @@ class System(Common):
         self._enable_cnc_repo()
 
     def _register_server(self):
-        utils.out_progress_wait("Registering server with OpsStack...")
+        utils.out_progress_wait("REGISTER_SER_OPSSTACK")
         if api.load().register_server():
             utils.out_progress_done()
         else:
@@ -134,7 +134,7 @@ class System(Common):
             exit(1)
 
     def _install_monitoring(self):
-        utils.out_progress_wait("Installing basic monitoring...")
+        utils.out_progress_wait("INSTALL_BASIC_MON")
         if not self.config.get("zabbix_installed") == "yes":
             self.config.set("zabbix_installed", "in_progress")
             rc, out, err = utils.ansible_play("rhel_base_monitoring")
@@ -143,14 +143,14 @@ class System(Common):
                 utils.out_progress_done()
             else:
                 utils.out_progress_fail()
-                utils.err("Failed to install basic monitoring")
+                utils.err("FAILED_INSTALL_BASIC_MON")
                 exit(1)
         else:
             utils.out_progress_skip()
         pass
 
     def _install_ansible(self):
-        utils.out_progress_wait("Installing Ansible...")
+        utils.out_progress_wait("INSTALL_ANSIBLE")
         if not self.config.get("ansible_installed") == "yes" and not self.is_ansible_present:
             self.config.set("ansible_installed", "in_progress")
             if not self.is_pip_present:
@@ -164,13 +164,13 @@ class System(Common):
                 utils.out_progress_done()
             else:
                 utils.out_progress_fail()
-                utils.err("Failed to install Ansible")
+                utils.err("FAILED_INSTALL_ANSIBLE")
                 exit(1)
         else:
             utils.out_progress_skip()
 
     def _enable_cnc_repo(self):
-        utils.out_progress_wait("Enabling CNC repository...")
+        utils.out_progress_wait("ENABLE_CNC_REPO")
         if not self.config.get("cnc_repo_enabled") == "yes":
             rc, out, err = utils.ansible_play("rhel_cnc_repo")
             if rc == 0:
@@ -178,7 +178,7 @@ class System(Common):
                 utils.out_progress_done()
             else:
                 utils.out_progress_fail()
-                utils.err("Failed to enable CNC repository")
+                utils.err("FAILED_ENABLE_CNC_REPO")
                 exit(1)
         else:
             utils.out_progress_skip()
@@ -186,7 +186,7 @@ class System(Common):
         utils.execute("yum-config-manager --enable cnc")
 
     def _enable_epel(self):
-        utils.out_progress_wait("Enabling EPEL repository...")
+        utils.out_progress_wait("ENABLE_EPEL")
         if not self.config.get("epel_repo_enabled") == "yes":
             rc, out, err = utils.execute("yum install epel-release yum-utils -y")
             if rc == 0:
