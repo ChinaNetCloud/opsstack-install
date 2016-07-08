@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 201607.
+#
+
+msgid "CHECK_PREM"
+msgstr "正在检查权限..."
+
+msgid "CHECK_SYS_COMP"
+msgstr "正在检查系统的兼容性..."
+
+msgid "CANNOT_CONNECT_INTERNET"
+msgstr "不能连接到互联网"
+
+msgid "CANNOT_CONNECT_ZABBIX"
+msgstr "不能连接到Zabbix服务器"
+
+msgid "NOT_COMP_EXIT"
+msgstr "当前系统不兼容. 麻烦确认技术文档. 抱歉..."
+
+msgid "COLLECT_SYS_INFO"
+msgstr "正在收集系统信息..."
+
+msgid "RUN_SERVICE_DISCOVERY"
+msgstr "正在检查主机服务..."
+
+msgid "INPUT_OPSSTACK_API"
+msgstr "请输入OpsStack API token:"
+
+msgid "CONNECT_OPSSTACK"
+msgstr "正在连接OpsStack..."
+
+msgid "INPUT_PURPOSE"
+msgstr "请输入主机的标签: "
+
+#
+msgid "REGISTER_SER_OPSSTACK"
+msgstr "注册主机到OpsStack..."
+
+msgid "ENABLE_EPEL"
+msgstr "启用EPEL包管理库..."
+
+msgid "INSTALL_ANSIBLE"
+msgstr "正在安装Ansible..."
+
+msgid "FAILED_INSTALL_ANSIBLE"
+msgstr  "安装Ansible 失败"
+
+msgid "ENABLE_CNC_REPO"
+msgstr "启用CNC 包管理库..."
+
+msgid "FAILED_ENABLE_CNC_REPO"
+msgstr "启用CNC包管理库失败"
+
+msgid "INSTALL_BASIC_MON"
+msgstr "安装基本的监控..."
+
+msgid "FAILED_INSTALL_BASIC_MON"
+msgstr "安装基本的监控失败"
+
+msgid "RUN_MONITOR_CONFIG"
+msgstr "正在配置服务的监控..."
+
+msgid "CONFIGURE_MONITOR_SERVER"
+msgstr "为 %s 配置监控?"
+
+msgid "SERVER_PURPOSE"
+msgstr "主机的标签是 %s"
+
+#
+msgid "INVALID_INPUT"
+msgstr "无效地输入!"
+
+msgid "DONE"
+msgstr "完成"
+
+msgid "SKIP"
+msgstr "忽略"
+
+msgid "FAIL"
+msgstr "失败"
+
+msgid "INFO"
+msgstr "信息"
