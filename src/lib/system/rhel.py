@@ -11,12 +11,12 @@ from lib import api
 
 
 class System(Common):
-    def __init__(self):
+    def __init__(self, name, version):
         self.config = None
 
         self.OS = "linux"
-        self.OS_NAME = "centos"
-        self.OS_VERSION = "7"
+        self.OS_NAME = name
+        self.OS_VERSION = version
         self.CONFIG_FILE = "/etc/.nc-config"
 
         self.is_ansible_present = None
@@ -27,7 +27,13 @@ class System(Common):
         self.local_domain = None
         self.local_fqdn = None
         self.customer_hostname = None
-        self.private_ip = None
+        self.interfaces = [
+            {
+                'name': 'eth0',
+                'type': 'physical',
+                'ipv4': None
+            }
+        ]
 
         self.services = []
 
@@ -62,7 +68,7 @@ class System(Common):
         # Get private IP address (eth0)
         # TODO: Improve private IP detection
         try:
-            self.private_ip = self._get_ip_address("eth0")
+            self.interfaces[0]['ipv4'] = self._get_ip_address("eth0")
         except IOError:
             pass
         # Get local names
@@ -127,7 +133,27 @@ class System(Common):
 
     def _register_server(self):
         utils.out_progress_wait("REGISTER_SER_OPSSTACK")
-        if api.load().register_server():
+        services = []
+        for s in self.services:
+            services.append({
+                'name': s.getname(),
+                'version': '',
+                'listen': []
+            })
+        data = {
+            'purpose': self.customer_hostname,
+            'hostname': self.local_hostname,
+            'os':[
+                {
+                    'name': self.OS,
+                    'distribution': self.OS_NAME,
+                    'version': self.OS_VERSION
+                }
+            ],
+            'interfaces': self.interfaces,
+            'services': services
+        }
+        if api.load().register_server(data):
             utils.out_progress_done()
         else:
             utils.out_progress_fail()
