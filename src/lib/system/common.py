@@ -21,13 +21,12 @@ class Common(Abstract):
         self._setup_environemt()
         self._install_monitoring()
         self.service_configuration()
+        self.confirm_configuration()
 
     def _verify_api_token(self):
         while True:
             token = self.config.get("api_token")
-            if token is not None:
-                pass
-            else:
+            if token is None:
                 # TODO: Sanity check!
                 # TODO: i18n
                 token = utils.prompt("Please enter OpsStack API token:")

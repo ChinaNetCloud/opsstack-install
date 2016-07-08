@@ -16,7 +16,7 @@ def load():
         if os == "Linux":
             if os_name == "centos":
                 if os_version in ["6", "7"]:
-                    _singleton = rhel.System()
+                    _singleton = rhel.System(platform.linux_distribution()[0], platform.linux_distribution()[1])
     return _singleton
 
 
