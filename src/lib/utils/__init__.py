@@ -102,8 +102,9 @@ def confirm(prompt_string, *args):
 
 
 def ansible_play(name):
-    return execute("ansible-playbook " + os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/" + name + ".playbook.yml")
-
+    #return execute("ansible-playbook " + os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/" + name + ".playbook.yml")
+    plays_folder = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/"
+    return execute("ansible-playbook " + plays_folder + name + ".playbook.yml" + " -e '@" + plays_folder + "variables.yml'")
 
 def test_connection(host, port):
     result = False

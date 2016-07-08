@@ -121,10 +121,10 @@ def haproxy():
         haproxy.append(buffer)
       if((line_ex[1] != "FRONTEND") and (line_ex[1] != "BACKEND") and (line_ex[1] != "svname")):
         if line_ex != "":
-        try:
-                uptime = str(datetime.timedelta(seconds=int(line_ex[23])))
-        except ValueError:
-        uptime = ""
+	    try:
+            	uptime = str(datetime.timedelta(seconds=int(line_ex[23])))
+	    except ValueError:
+		uptime = ""
         else:
             uptime = ""
         pool.append(line_ex[0].strip())  # pxname
@@ -193,4 +193,3 @@ def main(argv):
 
 if __name__ == "__main__":
   main(sys.argv)
-
