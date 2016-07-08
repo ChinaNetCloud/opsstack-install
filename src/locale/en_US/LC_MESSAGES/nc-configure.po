@@ -1,0 +1,85 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# 201607.
+#
+
+msgid "CHECK_PREM"
+msgstr "Checking permissions..."
+
+msgid "CHECK_SYS_COMP"
+msgstr "Checking system compatibility..."
+
+msgid "CANNOT_CONNECT_INTERNET"
+msgstr "Cannot connect to Internet"
+
+msgid "CANNOT_CONNECT_ZABBIX"
+msgstr "Cannot connect to Zabbix"
+
+msgid "NOT_COMP_EXIT"
+msgstr "Current system is not compatible. Please check documentation. Exiting..."
+
+msgid "COLLECT_SYS_INFO"
+msgstr "Collecting system information..."
+
+msgid "RUN_SERVICE_DISCOVERY"
+msgstr "Running service discovery..."
+
+msgid "INPUT_OPSSTACK_API"
+msgstr "Please enter OpsStack API token:"
+
+msgid "CONNECT_OPSSTACK"
+msgstr "Connecting to OpsStack..."
+
+msgid "INPUT_PURPOSE"
+msgstr "Please input the purpose: "
+
+#
+msgid "REGISTER_SER_OPSSTACK"
+msgstr "Registering server with OpsStack..."
+
+msgid "ENABLE_EPEL"
+msgstr "Enabling EPEL repository..."
+
+msgid "ENABLE_CNC_REPO"
+msgstr "Enabling CNC repository..."
+
+msgid "FAILED_ENABLE_CNC_REPO"
+msgstr "Failed to enable CNC repository"
+
+msgid "INSTALL_ANSIBLE"
+msgstr "Installing Ansible..."
+
+msgid "FAILED_INSTALL_ANSIBLE"
+msgstr  "Failed to install Ansible"
+
+msgid "INSTALL_BASIC_MON"
+msgstr "Installing basic monitoring..."
+
+msgid "FAILED_INSTALL_BASIC_MON"
+msgstr "Failed to install basic monitoring"
+
+msgid "RUN_MONITOR_CONFIG"
+msgstr "Running service monitoring configuration..."
+
+msgid "CONFIGURE_MONITOR_SERVER"
+msgstr "Configure monitor for %s?"
+
+msgid "SERVER_PURPOSE"
+msgstr "Server purpose is %s"
+
+#
+msgid "INVALID_INPUT"
+msgstr "Invalid input!"
+
+msgid "DONE"
+msgstr "DONE"
+
+msgid "SKIP"
+msgstr "SKIP"
+
+msgid "FAIL"
+msgstr "FAIL"
+
+msgid "INFO"
+msgstr "INFO"
