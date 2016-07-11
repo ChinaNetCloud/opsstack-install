@@ -100,6 +100,16 @@ class Common(Abstract):
             if utils.confirm(prompt_string):
                 service.configure(self)
 
+    def confirm_configuration(self):
+        utils.out_progress_wait("CONFIRM_API_CALL")
+        result = api.load().confirm_configuration()
+        if not result:
+            utils.out_progress_fail()
+            # TODO: Show error message
+            exit(1)
+        else:
+            utils.out_progress_done()
+
     def _collect_information(self):
         # Prompt for a hostname/purpose if not entered before
         if self.config.get('cust_hostname') is None:

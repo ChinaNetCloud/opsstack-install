@@ -83,3 +83,6 @@ msgstr "失败"
 
 msgid "INFO"
 msgstr "信息"
+
+msgid "CONFIRM_API_CALL"
+msgstr "Enabling monitoring in OpsStack"

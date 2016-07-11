@@ -83,3 +83,6 @@ msgstr "FAIL"
 
 msgid "INFO"
 msgstr "INFO"
+
+msgid "CONFIRM_API_CALL"
+msgstr "Enabling monitoring in OpsStack"
