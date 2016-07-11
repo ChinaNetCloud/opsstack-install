@@ -133,31 +133,36 @@ class System(Common):
 
     def _register_server(self):
         utils.out_progress_wait("REGISTER_SER_OPSSTACK")
-        services = []
-        for s in self.services:
-            services.append({
-                'name': s.getname(),
-                'version': '',
-                'listen': []
-            })
-        data = {
-            'purpose': self.customer_hostname,
-            'hostname': self.local_hostname,
-            'os':[
-                {
-                    'name': self.OS,
-                    'distribution': self.OS_NAME,
-                    'version': self.OS_VERSION
-                }
-            ],
-            'interfaces': self.interfaces,
-            'services': services
-        }
-        if api.load().register_server(data):
-            utils.out_progress_done()
+        if self.config.get('opsstack_host_id') is not None:
+            # TODO: Must connect to the OpsStack to see if server still active and submit new configuration (new services in case of reconfiguration)
+            # Already registered, skipping
+            utils.out_progress_skip()
         else:
-            utils.out_progress_fail()
-            exit(1)
+            services = []
+            for s in self.services:
+                services.append({
+                    'name': s.getname(),
+                    'version': '',
+                    'listen': []
+                })
+            data = {
+                'purpose': self.customer_hostname,
+                'hostname': self.local_hostname,
+                'os':[
+                    {
+                        'name': self.OS,
+                        'distribution': self.OS_NAME,
+                        'version': self.OS_VERSION
+                    }
+                ],
+                'interfaces': self.interfaces,
+                'services': services
+            }
+            if api.load().register_server(data):
+                utils.out_progress_done()
+            else:
+                utils.out_progress_fail()
+                exit(1)
 
     def _install_monitoring(self):
         utils.out_progress_wait("INSTALL_BASIC_MON")
