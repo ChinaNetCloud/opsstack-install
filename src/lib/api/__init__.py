@@ -48,7 +48,7 @@ class _Api:
     def confirm_configuration(self):
         result = False
         method = "/hosts/%s/actions/monitoring.enable" % self.config.get('opsstack_host_id')
-        success, response = self._api_call(method)
+        success, response = self._api_call(method, json.loads("{\"what\":\"that\"}"))
         if success:
             result = True
         return result
