@@ -95,10 +95,19 @@ class Common(Abstract):
     def service_configuration(self):
         utils.out("RUN_MONITOR_CONFIG")
         for service in self.services:
-            configure_mon_str = "CONFIGURE_MONITOR_SERVER"
+            if self.config.get('service_%s' % service.getname()) is not None:
+                configure_mon_str = "RECONFIGURE_SERVICE_CONFIRMATION"
+            else:
+                configure_mon_str = "CONFIGURE_MONITOR_SERVER"
             prompt_string = utils.print_str(configure_mon_str, service.getname())
             if utils.confirm(prompt_string):
-                service.configure(self)
+                try:
+                    service.configure(self)
+                    self.config.set('service_%s' % service.getname(), 'yes')
+                except:
+                    # TODO: Need better error message
+                    msg = "GENERIC_SERVICE_CONFIG_ERROR"
+                    utils.err(utils.print_str(msg, service.getname()))
 
     def confirm_configuration(self):
         utils.out_progress_wait("CONFIRM_API_CALL")
