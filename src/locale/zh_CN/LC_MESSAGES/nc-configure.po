@@ -19,6 +19,9 @@ msgstr "不能连接到Zabbix服务器"
 msgid "NOT_COMP_EXIT"
 msgstr "当前系统不兼容. 麻烦确认技术文档. 抱歉..."
 
+msgid "NOT_CORRECT_PERM"
+msgstr "没有足够的权限，请用sudo或切换到root后运行该命令，抱歉..."
+
 msgid "COLLECT_SYS_INFO"
 msgstr "正在收集系统信息..."
 
@@ -30,6 +33,9 @@ msgstr "请输入OpsStack API token:"
 
 msgid "CONNECT_OPSSTACK"
 msgstr "正在连接OpsStack..."
+
+msgid "PURPOSE_INFO"
+msgstr "请输入主机的标签，类似于 'web', 'app', 'database'\n或者复杂些的标签，'web-test','db-test',等等\n标签允许使用字母、数字、下划线、连字符,\n最小3个，最多20个字符，目前不支持汉字。"
 
 msgid "INPUT_PURPOSE"
 msgstr "请输入主机的标签: "
@@ -85,4 +91,4 @@ msgid "INFO"
 msgstr "信息"
 
 msgid "CONFIRM_API_CALL"
-msgstr "Enabling monitoring in OpsStack"
+msgstr "启用对主机的监控"

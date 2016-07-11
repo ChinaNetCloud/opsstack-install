@@ -59,7 +59,7 @@ def out_progress_info(message):
 
 def out(message):
     message = language_translation(message)
-    sys.stderr.write(message)
+    sys.stderr.write('\n' + message + '\n')
     sys.stderr.flush()
 
 
