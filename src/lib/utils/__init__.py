@@ -85,8 +85,13 @@ def prompt(prompt_string):
 
 
 def print_str(s, *args):
+    result = s
     s = language_translation(s)
-    return (s %(args))
+    try:
+        result = (s %(args))
+    except TypeError:
+        pass
+    return result
 
 def confirm(prompt_string, *args):
     prompt_string = language_translation(prompt_string)
