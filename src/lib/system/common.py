@@ -49,7 +49,7 @@ class Common(Abstract):
         if not self._verify_permissions():
             utils.out_progress_fail()
             # TODO: i18n
-            utils.err("Not sufficient permissions, please run with sudo. Exiting...")
+            utils.err("NOT_CORRECT_PERM")
             exit(1)
         else:
             utils.out_progress_done()
@@ -113,11 +113,7 @@ class Common(Abstract):
     def _collect_information(self):
         # Prompt for a hostname/purpose if not entered before
         if self.config.get('cust_hostname') is None:
-            utils.out("\nPlease enter the server purpose.\n")
-            utils.out("The purpose can be simple such as \"web\", \"app\", \"database\"\n")
-            utils.out("or complex such as \"web-test\", \"db-master\" etc.\n")
-            utils.out("Allowed characters are letters, numbers, underscore and hyphen.\n")
-            utils.out("Minimum 3, maximum 20 characters.\n")
+            utils.out("PURPOSE_INFO")
             while True:
                 name = utils.prompt("INPUT_PURPOSE")
                 if re.match(r'^[A-z0-9-_]{3,20}$', name.strip()) is not None:
