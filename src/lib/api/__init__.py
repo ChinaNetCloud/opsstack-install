@@ -1,5 +1,8 @@
-from lib import config
 import json
+
+from lib import config
+from lib.utils import args
+
 try:
     # Python 2.x
     from urllib2 import urlopen
@@ -22,6 +25,8 @@ class _Api:
         pass
 
     def verify_token(self):
+        if args.get_args().DRY_RUN:
+            return True
         result = False
         # Make sure we have self.token set
         if self.token is None:
@@ -38,6 +43,8 @@ class _Api:
         return result
 
     def register_server(self, data):
+        if args.get_args().DRY_RUN:
+            return True
         result = False
         success, response = self._api_call('/hosts', post_data=data)
         if success:
@@ -46,6 +53,8 @@ class _Api:
         return result
 
     def confirm_configuration(self):
+        if args.get_args().DRY_RUN:
+            return True
         result = False
         method = "/hosts/%s/actions/monitoring.enable" % self.config.get('opsstack_host_id')
         success, response = self._api_call(method, json.loads("{\"what\":\"that\"}"))
