@@ -14,9 +14,6 @@ def main():
     pass
 
 if __name__ == '__main__':
-    import sys
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
     main()
 else:
     print("Should be executed as main script!")
