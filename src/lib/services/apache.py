@@ -23,6 +23,8 @@ class Apache(abstract.Abstract):
     @staticmethod
     def getconf(system):
         result = False
+        httpd_conf = None
+        httpd_dir = None
         rc, out, err = utils.execute("httpd -V")
         if rc == 0 and out != "":
             for line in out.split('\n'):
@@ -39,14 +41,17 @@ class Apache(abstract.Abstract):
 
     @staticmethod
     def configure(system):
+        httpd_restart = "no"
         utils.out_progress_wait("Configuring apache monitoring...")
 	result, httpd_conf, httpd_dir = Apache.getconf(system)
 	if result == False:
             utils.out("Could not detect '%s' configuration path,\n" % Apache.getname())
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
             return
+        if utils.confirm("Do you want to restart '%s' after configure monitoring?" % Apache.getname()):
+            httpd_restart = "yes"
         if not system.config.get("apache_monitoring_configured") == "yes": 
-            rc, out, err = utils.ansible_play("rhel_apache_monitoring", "httpd_dir=%s httpd_conf=%s" % (httpd_dir, httpd_conf))
+            rc, out, err = utils.ansible_play("rhel_apache_monitoring", "httpd_dir=%s httpd_conf=%s, httpd_restart=%s" % (httpd_dir, httpd_conf, httpd_restart))
             if rc == 0:
                 system.config.set("apache_monitoring_configured", "yes")
                 utils.out_progress_done()
