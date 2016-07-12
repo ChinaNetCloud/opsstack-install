@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 from lib import system
+from lib.utils import argparse
+from lib.utils import args
 
 
 # TODO: Check if system has already been configured before, yes - verify to reconfigure
@@ -14,6 +16,9 @@ def main():
     pass
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='CNC configuration tool')
+    parser.add_argument('-d', '--dry-run', action='store_true', dest='DRY_RUN')
+    args.set_args(parser.parse_args())
     main()
 else:
     print("Should be executed as main script!")
