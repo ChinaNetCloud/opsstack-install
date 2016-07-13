@@ -20,6 +20,7 @@ class Common(Abstract):
         self._register_server()
         self._setup_environemt()
         self._install_monitoring()
+        self.configure_syslog()
         self.service_configuration()
         self.confirm_configuration()
 
@@ -108,6 +109,17 @@ class Common(Abstract):
                     # TODO: Need better error message
                     msg = "GENERIC_SERVICE_CONFIG_ERROR"
                     utils.err(utils.print_str(msg, service.getname()))
+
+    def configure_syslog(self):
+        utils.out_progress_wait("RUN_SYSLOG_CONFIGURATION")
+        if self.config.get('syslog_configured') is not None:
+            utils.out_progress_skip()
+            return
+        try:
+            self._configure_syslog()
+            utils.out_progress_done()
+        except:
+            utils.out_progress_fail()
 
     def confirm_configuration(self):
         utils.out_progress_wait("CONFIRM_API_CALL")
