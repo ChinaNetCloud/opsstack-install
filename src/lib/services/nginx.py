@@ -22,41 +22,33 @@ class Nginx(abstract.Abstract):
 
     @staticmethod
     def getconf(system):
-	result = True
-	if not system.config.get("nginx_vars") == "yes":
-            rc, out, err = utils.execute("nginx -V")
-            # The nginx configure parameters will be wrote to stderr
-            if rc == 0 and err != "":
-                if re.match(r".*(\-\-conf\-path\=.*nginx\.conf).*", err.split('\n')[-2]):
-                    info = re.match(r".*(\-\-conf\-path\=.*nginx\.conf).*", err.split('\n')[-2]).group(1)
-                    conf_file = info.split('=')[1]
-                    conf_dir = os.path.dirname(conf_file)
-            else:
-                result = False
-            plays_vars = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/variables.yml"
-            with open(plays_vars, 'a') as f:
-                f.write("nginx_conf_file: %s\n" % conf_file)
-                f.write("nginx_conf_dir: %s\n" % conf_dir)
-            if utils.confirm("Do you want to restart '%s' after configure monitoring?" % Nginx.getname()):
-                with open(plays_vars, 'a') as f:
-                    f.write("nginx_restart: yes")
-            else:
-                utils.out("Please restart nginx manually later so that it can be monitored")
-                with open(plays_vars, 'a') as f:
-                    f.write("nginx_restart: no")
-            system.config.set("nginx_vars", "yes")
-	return result
+        result = False
+        conf_file = None 
+        conf_dir = None 
+        rc, out, err = utils.execute("nginx -V")
+        # The nginx configure parameters will be wrote to stderr
+        if rc == 0 and err != "":
+            if re.match(r".*(\-\-conf\-path\=.*nginx\.conf).*", err.split('\n')[-2]):
+                info = re.match(r".*(\-\-conf\-path\=.*nginx\.conf).*", err.split('\n')[-2]).group(1)
+                conf_file = info.split('=')[1]
+                conf_dir = os.path.dirname(conf_file)
+                if os.path.exists(conf_file):
+                    result = True
+        return result, conf_file, conf_dir
 
     @staticmethod
     def configure(system):
-        utils.out_progress_wait("Configuring '%s' monitoring..." % Nginx.getname())
-	if not Nginx.getconf(system):
-	    utils.out("Could not detect '%s' configuration path,\n" % Nginx.getname())
+        nginx_restart = "false"
+        result, nginx_file, nginx_dir = Nginx.getconf(system)
+        if result == False:
+            utils.out("Could not detect '%s' configuration path,\n" % Nginx.getname())
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
-            system.config.set("nginx_monitoring_configured", "yes")
-	    return
+            return
+        if utils.confirm("RESTART_NGINX_SERVICE?"):
+            nginx_restart = "true"
+        utils.out_progress_wait("CONFIGURE_NGINX_MONITOR")
         if not system.config.get("nginx_monitoring_configured") == "yes":
-            rc, out, err = utils.ansible_play("rhel_nginx_monitoring")
+            rc, out, err = utils.ansible_play("rhel_nginx_monitoring", "nginx_conf_dir=%s nginx_conf_file=%s nginx_restart=%s" % (nginx_dir, nginx_file, nginx_restart))
             if rc == 0:
                 system.config.set("nginx_monitoring_configured", "yes")
                 utils.out_progress_done()

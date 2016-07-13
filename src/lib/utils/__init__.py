@@ -106,10 +106,17 @@ def confirm(prompt_string, *args):
             continue
 
 
-def ansible_play(name):
+def ansible_play(name, extra_vars=None):
     #return execute("ansible-playbook " + os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/" + name + ".playbook.yml")
     plays_folder = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/"
-    return execute("ansible-playbook " + plays_folder + name + ".playbook.yml" + " -e '@" + plays_folder + "variables.yml'")
+    if extra_vars is None:
+        rc, stdout, stderr = execute("ansible-playbook " + plays_folder + name + ".playbook.yml")
+#    elif not re.search(r'=', extra_vars):
+#        err("Bad format, extra_vars should be smt like: a=1 b=2")
+#        exit(1)
+    else:
+        rc, stdout, stderr = execute("ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\"")
+    return rc, stdout, stderr
 
 def test_connection(host, port):
     result = False
