@@ -13,7 +13,7 @@
       state=present
       insertafter='^\t?\s*include {{ nginx_conf_dir }}.*'
       regexp='\tinclude {{ nginx_conf_dir }}.*'
-      line='#cnc monitoring configuration\n    include {{ nginx_conf_dir }}/cnc-conf.d/zabbix.conf;'
+      line='\n    include {{ nginx_conf_dir }}/cnc-conf.d/zabbix.conf;' 
 
   - name: ensure nginx monitoring configuration
     template:
@@ -39,7 +39,7 @@
       name=nginx
       state=restarted
     when:
-      "{{ nginx_restart }} == 'yes' and nginx_test.stdout|int == 0"
+      "{{ nginx_restart }} == 'true' and nginx_test.stdout|int == 0"
 
   - name: notify customer if nginx test failed
     command: echo "nginx configuration syntax is incorrect, please fix it and then restart nginx"

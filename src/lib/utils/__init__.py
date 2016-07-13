@@ -111,9 +111,9 @@ def ansible_play(name, extra_vars=None):
     plays_folder = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/"
     if extra_vars is None:
         rc, stdout, stderr = execute("ansible-playbook " + plays_folder + name + ".playbook.yml")
-    elif not re.search(r'=', extra_vars):
-        err("Bad format, extra_vars should be smt like: a=1 b=2")
-        exit(1)
+#    elif not re.search(r'=', extra_vars):
+#        err("Bad format, extra_vars should be smt like: a=1 b=2")
+#        exit(1)
     else:
         rc, stdout, stderr = execute("ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\"")
     return rc, stdout, stderr

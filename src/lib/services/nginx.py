@@ -38,17 +38,17 @@ class Nginx(abstract.Abstract):
 
     @staticmethod
     def configure(system):
-        nginx_restart = "no"
-        utils.out_progress_wait("Configuring '%s' monitoring..." % Nginx.getname())
+        nginx_restart = "false"
         result, nginx_file, nginx_dir = Nginx.getconf(system)
         if result == False:
             utils.out("Could not detect '%s' configuration path,\n" % Nginx.getname())
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
             return
-        if utils.confirm("Do you want to restart '%s' after configure monitoring?" % Nginx.getname()):
-            nginx_restart = "yes"
+        if utils.confirm("RESTART_NGINX_SERVICE?"):
+            nginx_restart = "true"
+        utils.out_progress_wait("CONFIGURE_NGINX_MONITOR")
         if not system.config.get("nginx_monitoring_configured") == "yes":
-            rc, out, err = utils.ansible_play("rhel_nginx_monitoring", "nginx_conf_dir=%s nginx_conf_file=%s nginx_restart =%s" % (nginx_file, nginx_dir, nginx_restart))
+            rc, out, err = utils.ansible_play("rhel_nginx_monitoring", "nginx_conf_dir=%s nginx_conf_file=%s nginx_restart=%s" % (nginx_dir, nginx_file, nginx_restart))
             if rc == 0:
                 system.config.set("nginx_monitoring_configured", "yes")
                 utils.out_progress_done()

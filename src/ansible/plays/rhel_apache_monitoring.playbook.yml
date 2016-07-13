@@ -39,7 +39,7 @@
       name=httpd
       state=restarted
     when:
-      "{{ httpd_restart }} == 'yes' and httpd_test.stdout|int == 0"
+      "{{ httpd_restart }} == 'true' and httpd_test.stdout|int == 0"
 
   - name: notify customer if httpd test failed
     command: echo "apache configuration syntax is incorrect, please fix it and then restart httpd"
