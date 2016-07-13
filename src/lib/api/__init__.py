@@ -49,6 +49,7 @@ class _Api:
         success, response = self._api_call('/hosts', post_data=data)
         if success:
             self.config.set('opsstack_host_id', response['data']['id'])
+            self.config.set('opsstack_host_name', response['data']['name'])
             result = True
         return result
 
