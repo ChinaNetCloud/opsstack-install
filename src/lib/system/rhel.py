@@ -180,6 +180,14 @@ class System(Common):
             utils.out_progress_skip()
         pass
 
+    def _configure_syslog(self):
+        hostname = self.config.get('opsstack_host_name')
+        if hostname is None:
+            hostname = "srv-nc-config-test"
+        rc, out, err = utils.ansible_play("rhel_syslog", "opsstack_hostname=%s" % hostname)
+        if not rc == 0:
+            raise Exception("Failed to configure logging")
+
     def _install_ansible(self):
         utils.out_progress_wait("INSTALL_ANSIBLE")
         if not self.config.get("ansible_installed") == "yes" and not self.is_ansible_present:

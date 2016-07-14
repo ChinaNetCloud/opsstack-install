@@ -1,0 +1,31 @@
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Check for require variables
+      fail: msg="Cannot find required variable"
+      when: opsstack_hostname is undefined
+    - name: Detect rssylog running
+      shell: ps faux | grep -v grep | grep rsyslog
+      register: rsyslog_running
+      changed_when: False
+      ignore_errors: yes
+    - name: Detect syslog-ng running
+      shell: ps faux | grep -v grep | grep syslog-ng
+      register: syslogng_running
+      changed_when: False
+      ignore_errors: yes
+    - name: Check that only one is running
+      fail: msg="Found both rsyslog and syslog-ng running. Aborting."
+      when: rsyslog_running.rc==0 and syslogng_running.rc==0
+    - name: Install CNC rsyslog configuration file
+      template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf owner=root group=root backup=yes mode=0644
+      when: rsyslog_running.rc==0
+    - name: Restart rsyslog
+      service: name=rsyslog state=restarted
+      when: rsyslog_running.rc==0
+    - name: Install CNC syslog-ng configuration file
+      template: src=../templates/syslog-ng.conf.j2 dest=/etc/syslog-ng/syslog-ng.conf owner=root group=root backup=yes mode=0644
+      when: syslogng_running.rc==0
+    - name: Restart syslog-ng
+      service: name=syslog-ng state=restarted
+      when: syslogng_running.rc==0
