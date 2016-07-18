@@ -5,6 +5,8 @@ import socket
 
 import gettext
 
+from lib import log
+
 RED = '\033[0;31m'
 GREEN = '\033[0;32m'
 YELLOW = '\033[1;33m'
@@ -14,11 +16,14 @@ NOCOLOR = '\033[0m'
 OUT_MESSAGE = None
 
 bin_path = sys.path[0]
+
+
 def language_translation(msg):
     t = gettext.translation('nc-configure', bin_path + '/locale', fallback=True)
     _ = t.ugettext
     message = _(msg)
     return message
+
 
 def out_progress_wait(message):
     global OUT_MESSAGE
@@ -88,10 +93,11 @@ def print_str(s, *args):
     result = s
     s = language_translation(s)
     try:
-        result = (s %(args))
+        result = (s % args)
     except TypeError:
         pass
     return result
+
 
 def confirm(prompt_string, *args):
     prompt_string = language_translation(prompt_string)
@@ -107,16 +113,18 @@ def confirm(prompt_string, *args):
 
 
 def ansible_play(name, extra_vars=None):
-    #return execute("ansible-playbook " + os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/" + name + ".playbook.yml")
     plays_folder = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/"
     if extra_vars is None:
         rc, stdout, stderr = execute("ansible-playbook " + plays_folder + name + ".playbook.yml")
-#    elif not re.search(r'=', extra_vars):
-#        err("Bad format, extra_vars should be smt like: a=1 b=2")
-#        exit(1)
     else:
         rc, stdout, stderr = execute("ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\"")
+    if rc != 0:
+        log.get_logger().log("Running playbook %s failed. Please see output below" % name)
+        log.get_logger().log("ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\"")
+        log.get_logger().log(stdout)
+        log.get_logger().log(stderr)
     return rc, stdout, stderr
+
 
 def test_connection(host, port):
     result = False
