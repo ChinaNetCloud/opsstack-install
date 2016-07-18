@@ -34,16 +34,16 @@ class Apache(abstract.Abstract):
                     conf_file = re.search(r'(SERVER_CONFIG_FILE=\".*\")', line).group(1).split("=")[1].strip('\"\'')
             if conf_dir != "" and conf_file != "":
                 httpd_conf = os.path.join(conf_dir, conf_file)
-		httpd_dir = os.path.split(os.path.dirname(httpd_conf))[0]
-		if os.path.exists(httpd_conf):
-		    result = True
-	return result, httpd_conf, httpd_dir
+        httpd_dir = os.path.split(os.path.dirname(httpd_conf))[0]
+        if os.path.exists(httpd_conf):
+            result = True
+        return result, httpd_conf, httpd_dir
 
     @staticmethod
     def configure(system):
         httpd_restart = "false"
-	result, httpd_conf, httpd_dir = Apache.getconf(system)
-	if result == False:
+        result, httpd_conf, httpd_dir = Apache.getconf(system)
+        if result == False:
             utils.out("Could not detect '%s' configuration path,\n" % Apache.getname())
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
             return
