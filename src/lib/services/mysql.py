@@ -65,3 +65,4 @@ class MySQL(abstract.Abstract):
                     utils.out_progress_fail()
                     exit(1)
         utils.out_progress_done()
+
