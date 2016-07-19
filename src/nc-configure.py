@@ -3,6 +3,7 @@
 from lib import system
 from lib.utils import argparse
 from lib.utils import args
+from lib import log
 
 
 # TODO: Check if system has already been configured before, yes - verify to reconfigure
@@ -11,9 +12,10 @@ from lib.utils import args
 
 
 def main():
+    log.get_logger().log("Starting nc-configure process")
     system.load().before_configure()
     system.load().configure()
-    pass
+    log.get_logger().log("Finished nc-configure process")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='CNC configuration tool')

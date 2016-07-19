@@ -8,16 +8,19 @@ from common import Common
 from lib import utils
 from lib import config
 from lib import api
+from lib import log
 
 
 class System(Common):
     def __init__(self, name, version):
+        log.get_logger().log("Running RHEL init")
         self.config = None
 
         self.OS = "linux"
         self.OS_NAME = name
         self.OS_VERSION = version
         self.CONFIG_FILE = "/etc/.nc-config"
+        self.LOG_FILE = "/var/log/nc-configure.log"
 
         self.is_ansible_present = None
         self.is_pip_present = None
@@ -31,7 +34,9 @@ class System(Common):
             {
                 'name': 'eth0',
                 'type': 'physical',
-                'ipv4': None
+                'ip4': "",
+                'ip6': "",
+                'mac': ""
             }
         ]
 
@@ -42,6 +47,7 @@ class System(Common):
 
     def _verify_permissions(self):
         if not os.geteuid() == 0:
+            log.get_logger().log("Running as non-root user")
             return False
         else:
             return True
@@ -68,7 +74,7 @@ class System(Common):
         # Get private IP address (eth0)
         # TODO: Improve private IP detection
         try:
-            self.interfaces[0]['ipv4'] = self._get_ip_address("eth0")
+            self.interfaces[0]['ip4'] = self._get_ip_address("eth0")
         except IOError:
             pass
         # Get local names
@@ -93,10 +99,13 @@ class System(Common):
         if self.config.get("zabbix_installed") not in ["yes", "in_progress"]:
             if self._is_app_installed("'^zabbix[0-9]\{0,2\}-agent'"):
                 result = False
+                log.get_logger().log("Zabbix already installed. Not by us. Aborting.")
             if self._is_proc_running("zabbix_agentd"):
                 result = False
+                log.get_logger().log("Zabbix agent is already running and is not installed by us. Aborting.")
             if not self._is_port_free(10050):
                 result = False
+                log.get_logger().log("Zabbix port is already taken. And it is not us. Aborting.")
         return result
 
     def _is_app_installed(self, app_name):
@@ -146,7 +155,7 @@ class System(Common):
                     'listen': []
                 })
             data = {
-                'purpose': self.customer_hostname,
+                'purpose': self.config.get('cust_hostname'),
                 'hostname': self.local_hostname,
                 'os':[
                     {
@@ -186,7 +195,7 @@ class System(Common):
             hostname = "srv-nc-config-test"
         rc, out, err = utils.ansible_play("rhel_syslog", "opsstack_hostname=%s" % hostname)
         if not rc == 0:
-            raise Exception("Failed to configure logging")
+            raise Exception(err)
 
     def _install_ansible(self):
         utils.out_progress_wait("INSTALL_ANSIBLE")
@@ -202,6 +211,7 @@ class System(Common):
                 self.config.set("ansible_installed", "yes")
                 utils.out_progress_done()
             else:
+
                 utils.out_progress_fail()
                 utils.err("FAILED_INSTALL_ANSIBLE")
                 exit(1)

@@ -1,6 +1,7 @@
 import json
 
 from lib import config
+from lib import log
 from lib.utils import args
 
 try:
@@ -66,6 +67,11 @@ class _Api:
     def _api_call(self, method, post_data=None):
         result = (False, None)
         url = self.api_url % (method, self.token)
+        log.get_logger().log("Executing API call to %s" % url)
+        if post_data is not None:
+            log.get_logger().log("Payload is %s" % json.dumps(post_data))
+        else:
+            log.get_logger().log("No payload for request. Will use GET instead of POST")
         try:
             if post_data is not None:
                 response = urlopen(url, json.dumps(post_data))
@@ -79,12 +85,17 @@ class _Api:
                 try:
                     data = json.loads(response.read())
                 except (TypeError, ValueError):
-                    data = None
+                    data = response.read()
                 result = (rc, data)
+                if not rc:
+                    log.get_logger().log("Request failed with response code %d" % response.getcode())
+                    log.get_logger().log("Response content was %s" % data)
             else:
                 result = (False, None)
-        except URLError:
-            pass
+                log.get_logger().log("API request failed.")
+        except URLError as e:
+            log.get_logger().log("API request failed with below error")
+            log.get_logger().log(e)
         return result
 
 
