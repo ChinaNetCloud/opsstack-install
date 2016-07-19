@@ -1,6 +1,5 @@
 import abstract
 import os
-import re
 
 from lib import utils
 
@@ -10,7 +9,7 @@ class Phpfpm(abstract.Abstract):
 
     @staticmethod
     def getname():
-        return 'nginx'
+        return 'phpfpm'
 
     @staticmethod
     def discover(system):
@@ -36,7 +35,7 @@ class Phpfpm(abstract.Abstract):
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/phpfpm-monitoring\n")
             return
         if utils.confirm("RESTART_PHPFPM_SERVICE?"):
-            nginx_restart = "true"
+            phpfpm_restart = "true"
         utils.out_progress_wait("CONFIGURE_PHPFPM_MONITOR")
         if not system.config.get("phpfpm_monitoring_configured") == "yes":
             rc, out, err = utils.ansible_play("rhel_phpfpm_monitoring", "phpfpm_restart=%s" % (phpfpm_restart))
