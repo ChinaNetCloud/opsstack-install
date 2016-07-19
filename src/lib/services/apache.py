@@ -35,8 +35,8 @@ class Apache(abstract.Abstract):
             if conf_dir != "" and conf_file != "":
                 httpd_conf = os.path.join(conf_dir, conf_file)
                 httpd_dir = os.path.split(os.path.dirname(httpd_conf))[0]
-		    if os.path.exists(httpd_conf):
-		        result = True
+                if os.path.exists(httpd_conf):
+                    result = True
         return result, httpd_conf, httpd_dir
 
     @staticmethod
