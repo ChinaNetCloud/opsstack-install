@@ -44,7 +44,7 @@ class Nginx(abstract.Abstract):
             utils.out("Could not detect '%s' configuration path,\n" % Nginx.getname())
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
             return
-        if utils.confirm("RESTART_NGINX_SERVICE?"):
+        if utils.confirm("RESTART_NGINX_SERVICE"):
             nginx_restart = "true"
         utils.out_progress_wait("CONFIGURE_NGINX_MONITOR")
         if not system.config.get("nginx_monitoring_configured") == "yes":
