@@ -89,3 +89,12 @@ msgstr "INFO"
 
 msgid "CONFIRM_API_CALL"
 msgstr "Enabling monitoring in OpsStack"
+
+msgid "RUN_SYSLOG_CONFIGURATION"
+msgstr "Running syslog configuration..."
+
+msgid "RECONFIGURE_SERVICE_CONFIRMATION"
+msgstr "Do you want to re-configure service monitoring configuration for %s?"
+
+msgid "GENERIC_SERVICE_CONFIG_ERROR"
+msgstr "%s service config error info"

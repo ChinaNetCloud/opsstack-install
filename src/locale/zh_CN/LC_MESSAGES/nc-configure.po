@@ -92,3 +92,12 @@ msgstr "信息"
 
 msgid "CONFIRM_API_CALL"
 msgstr "启用对主机的监控"
+
+msgid "RUN_SYSLOG_CONFIGURATION"
+msgstr "正在配置syslog..."
+
+msgid "RECONFIGURE_SERVICE_CONFIRMATION"
+msgstr "想重新配置为 %s 配置服务的监控吗?"
+
+msgid "GENERIC_SERVICE_CONFIG_ERROR"
+msgstr "%s 服务配置的错误信息"
