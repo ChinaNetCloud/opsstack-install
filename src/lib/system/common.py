@@ -114,7 +114,7 @@ class Common(Abstract):
         utils.out_progress_wait("RUN_SERVICE_DISCOVERY")
         for service in services.servicelist:
             if services.servicelist[service].discover(self):
-                log.get_logger().log("Found service %s" % service.getname())
+                log.get_logger().log("Found service %s" % services.servicelist[service].getname())
                 self.services.append(services.servicelist[service])
         utils.out_progress_done()
 
