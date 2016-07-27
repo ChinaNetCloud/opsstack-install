@@ -26,3 +26,6 @@ package:
 
 deploy:
 	mv $(SRC_DIR)/*.rpm $(AGGREGATE_PATH)/
+
+clean:
+	rm -rf $(SRC_DIR)/*.rpm $(SRC_DIR)/*.deb
