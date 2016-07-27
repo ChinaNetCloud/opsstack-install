@@ -1,11 +1,12 @@
 NAME=nc-configure
-VERSION=1.0.0
+VERSION=1.0.$(BUILD_NUMBER)
 SRC_DIR=$(shell pwd)
 PREFIX=/var/lib/netcloud/nc-configure
 ARCHITECTURE=all
 BEFORE_INSTALL=--before-install $(SRC_DIR)/before_install.sh
 AFTER_INSTALL=--after-install $(SRC_DIR)/after_install.sh
 AFTER_REMOVE=--after-remove $(SRC_DIR)/after_remove.sh
+AGGREGATE_PATH=/repo-aggregate
 
 .PHONY: package
 package:
@@ -22,3 +23,6 @@ package:
 		--template-scripts \
 		--deb-no-default-config-files \
 		--force
+
+deploy:
+	mv $(SRC_DIR)/*.rpm $(AGGREGATE_PATH)/
