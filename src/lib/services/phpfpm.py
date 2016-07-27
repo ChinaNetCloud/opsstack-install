@@ -34,7 +34,7 @@ class Phpfpm(abstract.Abstract):
             utils.out("Could not detect '%s' configuration path,\n" % Phpfpm.getname())
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/phpfpm-monitoring\n")
             return
-        if utils.confirm("RESTART_PHPFPM_SERVICE?"):
+        if utils.confirm("RESTART_PHPFPM_SERVICE"):
             phpfpm_restart = "true"
         utils.out_progress_wait("CONFIGURE_PHPFPM_MONITOR")
         if not system.config.get("phpfpm_monitoring_configured") == "yes":

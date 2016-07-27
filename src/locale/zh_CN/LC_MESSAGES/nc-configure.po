@@ -101,3 +101,24 @@ msgstr "想重新配置为 %s 配置服务的监控吗?"
 
 msgid "GENERIC_SERVICE_CONFIG_ERROR"
 msgstr "%s 服务配置的错误信息"
+
+# service nginx
+msgid "RESTART_NGINX_SERVICE"
+msgstr "重启 nginx 服务?"
+
+msgid "CONFIGURE_NGINX_MONITOR"
+msgstr "正在配置 nginx 的监控..."
+
+# service apache
+msgid "RESTART_APACHE_SERVICE"
+msgstr "重启 apache 服务?"
+
+msgid "CONFIGURE_APACHE_MONITORING"
+msgstr "正在配置 apache 的监控..."
+
+# service php-fpm
+msgid "RESTART_PHPFPM_SERVICE"
+msgstr "重启 php-fpm 服务?"
+
+msgid "CONFIGURE_PHPFPM_MONITOR"
+msgstr "正在配置 php-fpm 的监控..."

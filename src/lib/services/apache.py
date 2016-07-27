@@ -47,7 +47,7 @@ class Apache(abstract.Abstract):
             utils.out("Could not detect '%s' configuration path,\n" % Apache.getname())
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
             return
-        if utils.confirm("RESTART_APACHE_SERVICE?"):
+        if utils.confirm("RESTART_APACHE_SERVICE"):
             httpd_restart = "true"
         utils.out_progress_wait("CONFIGURE_APACHE_MONITORING")
         if not system.config.get("apache_monitoring_configured") == "yes": 
