@@ -1,5 +1,5 @@
 NAME=nc-configure
-VERSION=1.0.0
+VERSION=1.0.$(BUILD_NUMBER)
 SRC_DIR=$(shell pwd)
 PREFIX=/var/lib/netcloud/nc-configure
 ARCHITECTURE=all
