@@ -115,12 +115,13 @@ def confirm(prompt_string, *args):
 def ansible_play(name, extra_vars=None):
     plays_folder = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/"
     if extra_vars is None:
-        rc, stdout, stderr = execute("ansible-playbook " + plays_folder + name + ".playbook.yml")
+        playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml"
     else:
-        rc, stdout, stderr = execute("ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\"")
+        playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\""
+    rc, stdout, stderr = execute(playbook_cmd)
     if rc != 0:
         log.get_logger().log("Running playbook %s failed. Please see output below" % name)
-        log.get_logger().log("ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\"")
+        log.get_logger().log(playbook_cmd)
         log.get_logger().log(stdout)
         log.get_logger().log(stderr)
     return rc, stdout, stderr
