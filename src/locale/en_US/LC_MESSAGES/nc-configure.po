@@ -105,21 +105,21 @@ msgstr "%s service config error info"
 
 # service nginx
 msgid "RESTART_NGINX_SERVICE"
-msgstr "Restart nginx service?"
+msgstr "Do you want to restart nginx service after monitoring configured?"
 
 msgid "CONFIGURE_NGINX_MONITOR"
 msgstr "Running nginx monitor configuration..."
 
 # service apache
 msgid "RESTART_APACHE_SERVICE"
-msgstr "Restart apache service?"
+msgstr "Do you want to restart apache service after monitoring configured?"
 
 msgid "CONFIGURE_APACHE_MONITORING"
 msgstr "Running apache monitor configuration..."
 
 # service php-fpm
 msgid "RESTART_PHPFPM_SERVICE"
-msgstr "Restart php-fpm service?"
+msgstr "Do you want to restart php-fpm service after monitoring configured?"
 
 msgid "CONFIGURE_PHPFPM_MONITOR"
 msgstr "Running php-fpm monitor configuration..."
