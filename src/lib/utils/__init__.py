@@ -19,9 +19,12 @@ bin_path = sys.path[0]
 
 
 def language_translation(msg):
-    t = gettext.translation('nc-configure', bin_path + '/locale', fallback=True)
-    _ = t.ugettext
-    message = _(msg)
+    try:
+        t = gettext.translation('nc-configure', bin_path + '/locale', fallback=True)
+        _ = t.ugettext
+        message = _(msg)
+    except UnicodeDecodeError:
+        message = msg
     return message
 
 
@@ -82,10 +85,10 @@ def execute(cmd):
 
 
 def prompt(prompt_string):
-    print("")
+    # print("")
     prompt_string = language_translation(prompt_string)
     result = input(prompt_string)
-    print("")
+    # print("")
     return result
 
 
