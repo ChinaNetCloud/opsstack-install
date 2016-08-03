@@ -4,6 +4,7 @@ import apache
 import mysql
 import phpfpm
 import java
+import mongo
 
 
 servicelist = {
@@ -12,5 +13,6 @@ servicelist = {
     'apache': apache.Apache,
     'phpfpm': phpfpm.Phpfpm,
     'java': java.Java,
+    'mongodb': mongo.MongoDB,
     'mysql': mysql.MySQL
 }
