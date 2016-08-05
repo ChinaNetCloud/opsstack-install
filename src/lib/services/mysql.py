@@ -1,7 +1,4 @@
 import abstract
-import os
-import re
-import getpass
 from random import choice
 import string
 
@@ -34,7 +31,8 @@ class MySQL(abstract.Abstract):
 
     @staticmethod
     def configure(system):
-        if not utils.confirm("CREATE_MONITOR_USER?"):
+        info = utils.print_str("CREATE_MONITOR_USER", MySQL.getname())
+        if not utils.confirm(info):
             utils.out_progress_skip()
             return False
         nccheckdb_passwd = MySQL.generate_passwd()
@@ -46,7 +44,8 @@ class MySQL(abstract.Abstract):
         rc, out, err = utils.execute("ss -ntlp -A inet | awk -F: '/mysql/&&/LISTEN/{print $2}' | awk '{print $1}'")
         if rc != 0 or out == '':
             utils.out_progress_fail()
-            utils.err("Failed to get mysql listening port")
+            err_info = utils.print_str("FAILED_GET_LISTEN_PORT", MySQL.getname())
+            utils.err(err_info)
             exit(1)
         cmd1 = ''' -e "CREATE USER 'nccheckdb'@'localhost' IDENTIFIED BY '%s'"''' % nccheckdb_passwd
         cmd2 = ''' -e "CREATE USER 'nccheckdb'@'127.0.0.1' IDENTIFIED BY '%s'"''' % nccheckdb_passwd
@@ -56,8 +55,10 @@ class MySQL(abstract.Abstract):
         cmd6 = ''' -e "GRANT SELECT (Select_priv) ON mysql.user TO 'nccheckdb'@'127.0.0.1'"'''
         cmd7 = ''' -e "flush privileges"'''
         for port in out.strip().split('\n'):
-            mysql_root = getpass.getpass("%s_MYSQL_ROOT_PASSWD:" % port)
-            utils.out_progress_wait("CONFIGURE_MYSQL_%s_MONITOR" % port)
+            root_pass_str = utils.print_str("MYSQL_ROOT_PASSWD", port)
+            mysql_root = utils.prompt_pass(root_pass_str)
+            conf_string = utils.print_str("CONFIGURE_MYSQL_MONITOR", port)
+            utils.out_progress_wait(conf_string)
             mysql_cmd = "mysql -N -uroot -p" + mysql_root + " -P " + port
             for cmd in [cmd1, cmd2, cmd3, cmd4, cmd5, cmd6, cmd7]:
                 rc, out, err = utils.execute(mysql_cmd + cmd)

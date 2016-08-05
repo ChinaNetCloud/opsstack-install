@@ -123,3 +123,28 @@ msgstr "Do you want to restart php-fpm service after monitoring configured?"
 
 msgid "CONFIGURE_PHPFPM_MONITOR"
 msgstr "Running php-fpm monitor configuration..."
+
+# haproxy
+msgid "CONFIGURE_NC_HAPROXY"
+msgstr "Configuring nc-haproxy..."
+
+msgid "FAILED_CONF_HAPROXY"
+msgstr "Failed to configure nc-haproxy"
+
+# service mysql
+msgid "MYSQL_ROOT_PASSWD"
+msgstr "mysql(port %s) root password:"
+
+msgid "CONFIGURE_MYSQL_MONITOR"
+msgstr "Configure mysql(port %s) monitor"
+
+# mysql & mongo
+msgid "CREATE_MONITOR_USER"
+msgstr "Creating %s monitor user?"
+
+msgid "FAILED_GET_LISTEN_PORT"
+msgstr "Failed to get %s listening port"
+
+# mongo
+msgid "CREATE_MON_USER_DOC"
+msgstr "Please create monitoring user manually refer to CNC Documentation."

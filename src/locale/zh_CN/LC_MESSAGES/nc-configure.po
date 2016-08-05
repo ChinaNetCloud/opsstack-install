@@ -122,3 +122,24 @@ msgstr "配置完成后, 重启 php-fpm 服务?"
 
 msgid "CONFIGURE_PHPFPM_MONITOR"
 msgstr "正在配置 php-fpm 的监控..."
+
+# haproxy
+msgid "CONFIGURE_NC_HAPROXY"
+msgstr "配置 nc-haproxy..."
+
+msgid "FAILED_CONF_HAPROXY"
+msgstr "配置 nc-haproxy 失败"
+
+# service mysql
+msgid "MYSQL_ROOT_PASSWD"
+msgstr "mysql(端口 %s)的 root 密码:"
+
+msgid "CONFIGURE_MYSQL_MONITOR"
+msgstr "配置 mysql(端口 %s) 的监控"
+
+# mysql & mongo
+msgid "CREATE_MONITOR_USER"
+msgstr "创建 %s 监控的用户?"
+
+msgid "FAILED_GET_LISTEN_PORT"
+msgstr "没有获取到 %s 的侦听端口"
