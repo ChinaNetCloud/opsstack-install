@@ -1,5 +1,4 @@
 import abstract
-import getpass
 from random import choice
 import string
 
@@ -36,14 +35,16 @@ class MongoDB(abstract.Abstract):
         rc, out, err = utils.execute(
             "ss -ntlp -A inet | awk -F: '/mongod/&&/LISTEN/{print $2}' | awk '{print $1}'|head -1")
         if rc != 0 or out == '':
-            utils.err("Failed to get %s listening port" % MongoDB.getname())
+            err_info = utils.print_str("FAILED_GET_LISTEN_PORT", MongoDB.getname())
+            utils.err(err_info)
             exit(1)
         else:
             port = out.strip()
-        confirmation = utils.confirm("CREATE_%s_MONITOR_USER?" % MongoDB.getname())
+        confirm_str = utils.print_str("CREATE_MONITOR_USER", MongoDB.getname())
+        confirmation = utils.confirm(confirm_str)
         if confirmation is False:
             utils.out("Zabbix Monitoring User Is Required." % MongoDB.getname())
-            utils.out("Please create monitoring user manually refer to CNC Documentation.")
+            utils.out("CREATE_MON_USER_DOC")
             exit(1)
         user = getpass.getpass("%s_Mongo_AdminDB_User:" % port)
         passwd = getpass.getpass("%s_Mongo_AdminDB_Passwd:" % port)

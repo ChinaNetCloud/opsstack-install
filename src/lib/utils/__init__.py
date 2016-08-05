@@ -4,6 +4,7 @@ import os
 import socket
 
 import gettext
+import getpass
 
 from lib import log
 
@@ -89,6 +90,13 @@ def prompt(prompt_string):
     prompt_string = language_translation(prompt_string)
     result = input(prompt_string)
     # print("")
+    return result
+
+
+def prompt_pass(pass_string):
+    print("")
+    pass_string = language_translation(pass_string)
+    result = getpass.getpass(pass_string)
     return result
 
 

@@ -103,23 +103,40 @@ msgid "GENERIC_SERVICE_CONFIG_ERROR"
 msgstr "%s service config error info"
 
 
-# service nginx
-msgid "RESTART_NGINX_SERVICE"
-msgstr "Do you want to restart nginx service after monitoring configured?"
+# service nginx/apache/php-fpm
+msgid "RESTART_SERVICE"
+msgstr "Do you want to restart %s service after monitoring configured?"
 
-msgid "CONFIGURE_NGINX_MONITOR"
-msgstr "Running nginx monitor configuration..."
+msgid "CONFIGURE_MONITOR"
+msgstr "Running %s monitor configuration..."
 
-# service apache
-msgid "RESTART_APACHE_SERVICE"
-msgstr "Do you want to restart apache service after monitoring configured?"
+msgid "NOT_DETECT_CONF_PATH"
+msgstr "Could not detect %s configuration path"
 
-msgid "CONFIGURE_APACHE_MONITORING"
-msgstr "Running apache monitor configuration..."
+msgid "FAILED_CONFIGURE_MONITOR"
+msgstr "Failed to configure %s monitoring"
 
-# service php-fpm
-msgid "RESTART_PHPFPM_SERVICE"
-msgstr "Do you want to restart php-fpm service after monitoring configured?"
+# haproxy
+msgid "CONFIGURE_NC_HAPROXY"
+msgstr "Configuring nc-haproxy..."
 
-msgid "CONFIGURE_PHPFPM_MONITOR"
-msgstr "Running php-fpm monitor configuration..."
+msgid "FAILED_CONF_HAPROXY"
+msgstr "Failed to configure nc-haproxy"
+
+# service mysql
+msgid "MYSQL_ROOT_PASSWD"
+msgstr "mysql(port %s) root password:"
+
+msgid "CONFIGURE_MYSQL_MONITOR"
+msgstr "Configure mysql(port %s) monitor"
+
+# mysql & mongo
+msgid "CREATE_MONITOR_USER"
+msgstr "Creating %s monitor user?"
+
+msgid "FAILED_GET_LISTEN_PORT"
+msgstr "Failed to get %s listening port"
+
+# mongo
+msgid "CREATE_MON_USER_DOC"
+msgstr "Please create monitoring user manually refer to CNC Documentation."

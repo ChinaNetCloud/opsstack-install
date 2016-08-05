@@ -40,13 +40,13 @@ class Nginx(abstract.Abstract):
     def configure(system):
         nginx_restart = "false"
         result, nginx_file, nginx_dir = Nginx.getconf(system)
-        if result == False:
-            utils.out("Could not detect '%s' configuration path,\n" % Nginx.getname())
+        if not result:
+            utils.out(utils.print_str("NOT_DETECT_CONF_PATH", Nginx.getname()))
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
             return
-        if utils.confirm("RESTART_NGINX_SERVICE"):
+        if utils.confirm(utils.print_str("RESTART_SERVICE", Nginx.getname())):
             nginx_restart = "true"
-        utils.out_progress_wait("CONFIGURE_NGINX_MONITOR")
+        utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Nginx.getname()))
         if not system.config.get("nginx_monitoring_configured") == "yes":
             rc, out, err = utils.ansible_play("rhel_nginx_monitoring", "nginx_conf_dir=%s nginx_conf_file=%s nginx_restart=%s" % (nginx_dir, nginx_file, nginx_restart))
             if rc == 0:
@@ -54,7 +54,7 @@ class Nginx(abstract.Abstract):
                 utils.out_progress_done()
             else:
                 utils.out_progress_fail()
-                utils.err("Failed to install '%s' monitoring" % Nginx.getname())
+                utils.err(utils.print_str("FAILED_CONFIGURE_MONITOR", Nginx.getname()))
                 exit(1)
         else:
             utils.out_progress_skip()

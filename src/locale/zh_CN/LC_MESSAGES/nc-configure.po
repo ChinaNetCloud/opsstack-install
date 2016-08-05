@@ -102,23 +102,36 @@ msgstr "想重新为 %s 配置服务的监控吗?"
 msgid "GENERIC_SERVICE_CONFIG_ERROR"
 msgstr "%s 服务配置的错误信息"
 
-# service nginx
-msgid "RESTART_NGINX_SERVICE"
-msgstr "配置完成后, 重启 nginx 服务?"
+# service nginx/apache/php-fpm
+msgid "RESTART_SERVICE"
+msgstr "配置完成后, 重启 %s 服务?"
 
-msgid "CONFIGURE_NGINX_MONITOR"
-msgstr "正在配置 nginx 的监控..."
+msgid "CONFIGURE_MONITOR"
+msgstr "正在配置 %s 的监控..."
 
-# service apache
-msgid "RESTART_APACHE_SERVICE"
-msgstr "配置完成后, 重启 apache 服务?"
+msgid "NOT_DETECT_CONF_PATH"
+msgstr "不能够发现 %s 的配置路径"
 
-msgid "CONFIGURE_APACHE_MONITORING"
-msgstr "正在配置 apache 的监控..."
+msgid "FAILED_CONFIGURE_MONITOR"
+msgstr "配置 %s 的监控失败"
 
-# service php-fpm
-msgid "RESTART_PHPFPM_SERVICE"
-msgstr "配置完成后, 重启 php-fpm 服务?"
+# haproxy
+msgid "CONFIGURE_NC_HAPROXY"
+msgstr "配置 nc-haproxy..."
 
-msgid "CONFIGURE_PHPFPM_MONITOR"
-msgstr "正在配置 php-fpm 的监控..."
+msgid "FAILED_CONF_HAPROXY"
+msgstr "配置 nc-haproxy 失败"
+
+# service mysql
+msgid "MYSQL_ROOT_PASSWD"
+msgstr "mysql(端口 %s)的 root 密码:"
+
+msgid "CONFIGURE_MYSQL_MONITOR"
+msgstr "配置 mysql(端口 %s) 的监控"
+
+# mysql & mongo
+msgid "CREATE_MONITOR_USER"
+msgstr "创建 %s 监控的用户?"
+
+msgid "FAILED_GET_LISTEN_PORT"
+msgstr "没有获取到 %s 的侦听端口"
