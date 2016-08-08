@@ -137,6 +137,15 @@ msgstr "Creating %s monitor user?"
 msgid "FAILED_GET_LISTEN_PORT"
 msgstr "Failed to get %s listening port"
 
+msgid "FAILED_CREATE_MON_USER"
+msgstr "Falied to create monitoring user for %s"
+
 # mongo
 msgid "CREATE_MON_USER_DOC"
 msgstr "Please create monitoring user manually refer to CNC Documentation."
+
+msgid "MONGO_ADMIN_USER"
+msgstr "Mongo [Port %s] admin db user: "
+
+msgid "MONGO_ADMIN_PASS"
+msgstr "Mongo [Port %s] admin db password: "
