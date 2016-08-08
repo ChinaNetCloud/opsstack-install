@@ -131,7 +131,20 @@ msgstr "配置 mysql(端口 %s) 的监控"
 
 # mysql & mongo
 msgid "CREATE_MONITOR_USER"
-msgstr "创建 %s 监控的用户?"
+msgstr "是否允许创建 %s 监控的用户?"
 
 msgid "FAILED_GET_LISTEN_PORT"
 msgstr "没有获取到 %s 的侦听端口"
+
+msgid "FAILED_CREATE_MON_USER"
+msgstr "创建 %s 的监控用户失败"
+
+# mongo
+msgid "CREATE_MON_USER_DOC"
+msgstr "麻烦你查阅相关的文档创建mongodb的监控用户, 抱歉."
+
+msgid "MONGO_ADMIN_USER"
+msgstr "Mongo [端口 %s] 数据库管理员用户名: "
+
+msgid "MONGO_ADMIN_PASS"
+msgstr "Mongo [端口 %s] 数控库管理员密码: "

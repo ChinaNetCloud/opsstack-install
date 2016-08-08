@@ -1,8 +1,9 @@
 import abstract
 from random import choice
 import string
-
+import json
 from lib import utils
+
 
 class MongoDB(abstract.Abstract):
     def __init__(self):
@@ -46,8 +47,8 @@ class MongoDB(abstract.Abstract):
             utils.out("Zabbix Monitoring User Is Required." % MongoDB.getname())
             utils.out("CREATE_MON_USER_DOC")
             exit(1)
-        user = getpass.getpass("%s_Mongo_AdminDB_User:" % port)
-        passwd = getpass.getpass("%s_Mongo_AdminDB_Passwd:" % port)
+        user = utils.prompt(utils.print_str("MONGO_ADMIN_USER", port))
+        passwd = utils.prompt_pass(utils.print_str("MONGO_ADMIN_PASS", port))
         if user != '':
             mongo_admin_user = user
         if passwd != '':
@@ -55,49 +56,24 @@ class MongoDB(abstract.Abstract):
         pars['user'] = mongo_admin_user
         pars['passwd'] = mongo_admin_passwd
         pars['port'] = port
-        pars['nccheckdb'] = MongoDB.generate_passwd()
+        pars['nccheckdb_pwd'] = MongoDB.generate_passwd()
         return pars
 
     @staticmethod
     def configure(system):
         pars = MongoDB.get_pars()
-        utils.out_progress_wait("CONFIGURE_%s_MONITOR" % MongoDB.getname())
-        if pars['user'] is None and pars['passwd'] is None:
-            mongo_conn_cmd = "/usr/bin/mongo admin --port %s --quiet" % pars['port']
-        else:
-            mongo_conn_cmd = "/usr/bin/mongo admin -u %s -p %s --port %s --quiet" % (pars['user'], pars['passwd'], pars['port'])
-        rc, out, err = utils.execute(mongo_conn_cmd + ''' --eval "db.isMaster()['ismaster']"''')
-        if rc != 0 or out == "":
+        pars_json = json.dumps(pars)
+        utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", MongoDB.getname()))
+        if not system.config.get("mongo_monitoring_configured") == "yes":
+            rc, out, err = utils.ansible_play("rhel_mongo_monitoring", pars_json)
+        if rc != 0:
             utils.out_progress_fail()
-            utils.err("Falied to connect to %s !" % MongoDB.getname())
-            exit(1)
-        elif out.strip() == "false":
-            utils.out_progress_skip()
-            utils.out("This is a slave instance, please refer to CNC Documentation to configure monitoring")
-            return False
-        rc1, out1, err1 = utils.execute(mongo_conn_cmd + ''' --eval "db.getUser('nccheckdb')"''')
-        if out1.strip() != "null":
-            utils.out_progress_skip()
-            utils.out("Mongo monitoring user \'nccheckdb\' already exist")
-            return True
-        else:
-            rc2, out2, err2 = utils.execute(mongo_conn_cmd + ''' --eval "
-                                            db.createUser({
-                                                user: 'nccheckdb',
-                                                pwd: '%s',
-                                                roles: [{
-                                                  'role': 'read',
-                                                  'db': 'admin'
-                                                  }]
-                                              })"''' % pars['nccheckdb'])
-        if rc2 != 0:
-            utils.out_progress_fail()
-            utils.err("Falied to create monitoring user for %s !" % MongoDB.getname())
+            utils.err(utils.print_str("FAILED_CREATE_MON_USER", MongoDB.getname()))
             exit(1)
         else:
             with open('/home/zabbix/conf/nc_mongo_check.conf', 'w') as mongo_conf:
                 mongo_conf.write('MONGO_USER="nccheckdb"\n')
-                mongo_conf.write('MONGO_PWD="%s"\n' % pars['nccheckdb'])
+                mongo_conf.write('MONGO_PWD="%s"\n' % pars['nccheckdb_pwd'])
                 mongo_conf.write('MONGO_HOST="localhost"\n')
                 mongo_conf.write('MONGO_PORT="%s"' % pars['port'])
             utils.out_progress_done()
