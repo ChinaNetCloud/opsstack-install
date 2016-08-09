@@ -218,6 +218,31 @@ class System(Common):
         else:
             utils.out_progress_skip()
 
+    def _install_nc_collector(self):
+        utils.out_progress_wait("INSTALL_NC_COLLECTOR")
+        if not self.config.get("cnc_repo_enabled") == "yes":
+            utils.out_progress_fail()
+            utils.err("CNC_REPO_NOT_ENABLED")
+            exit(1)
+        elif self.config.get("cnc_repo_enabled") == "yes" and not self.config.get("nc_collector_installed") == "yes":
+            rc, out, err = utils.execute("yum install -y nc-collector.noarch")
+            if rc == 0:
+                self.config.set("nc_collector_installed", "yes")
+                utils.out_progress_done()
+            else:
+                utils.out_progress_fail()
+                utils.err("FAILED_INSTALL_NC_COLLECTOR")
+                exit(1)
+        else:
+            utils.out_progress_skip()
+        '''
+            Make sure crond has been reloaded after installing nc_collector.
+            Currently, it will reload crond with the command "/etc/init.d/crond reload" during installing nc_collector,
+            but this will fail in CentOS7, so add following command to make crond is reloaded correctly.
+            This can be removed in the future if we fixed this in our rpm package.
+        '''
+        utils.execute("service crond reload")
+
     def _enable_cnc_repo(self):
         utils.out_progress_wait("ENABLE_CNC_REPO")
         if not self.config.get("cnc_repo_enabled") == "yes":

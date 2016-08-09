@@ -157,3 +157,13 @@ msgstr "Mongo [端口 %s] 数据库管理员用户名: "
 
 msgid "MONGO_ADMIN_PASS"
 msgstr "Mongo [端口 %s] 数控库管理员密码: "
+
+#nc_collector
+msgid "INSTALL_NC_COLLECTOR"
+msgstr "正在安装nc_collector工具包..."
+
+msgid "CNC_REPO_NOT_ENABLED"
+msgstr "CNC 安装包仓库没有被启用, 无法安装nc_collector工具包"
+
+msgid "FAILED_INSTALL_NC_COLLECTOR"
+msgstr "nc_collector工具包安装失败"
