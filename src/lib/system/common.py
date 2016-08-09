@@ -35,6 +35,8 @@ class Common(Abstract):
         self._install_monitoring()
         log.get_logger().log("Configuring syslog")
         self.configure_syslog()
+        log.get_logger().log("Installing nc_collector")
+        self._install_nc_collector()
         log.get_logger().log("Running configuration for each discovered service")
         self.service_configuration()
         log.get_logger().log("Sending confirmation API request")
