@@ -37,7 +37,7 @@
       state=directory
 
   - name: test nginx configuration file
-    command: /sbin/nginx -t
+    command: nginx -t
     register: nginx_test
 
   - name: restart nginx
