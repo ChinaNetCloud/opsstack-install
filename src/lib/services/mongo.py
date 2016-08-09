@@ -44,8 +44,8 @@ class MongoDB(abstract.Abstract):
         confirm_str = utils.print_str("CREATE_MONITOR_USER", MongoDB.getname())
         confirmation = utils.confirm(confirm_str)
         if confirmation is False:
-            utils.out("Zabbix Monitoring User Is Required." % MongoDB.getname())
-            utils.out("CREATE_MON_USER_DOC")
+            utils.out(utils.print_str("Zabbix_Monitoring_User_Required", MongoDB.getname()))
+            utils.out(utils.print_str("CREATE_USER_DOC", MongoDB.getname()))
             exit(1)
         user = utils.prompt(utils.print_str("MONGO_ADMIN_USER", port))
         passwd = utils.prompt_pass(utils.print_str("MONGO_ADMIN_PASS", port))
@@ -63,12 +63,12 @@ class MongoDB(abstract.Abstract):
     def configure(system):
         pars = MongoDB.get_pars()
         pars_json = json.dumps(pars)
-        utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", MongoDB.getname()))
+        utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MongoDB.getname(), pars['port']))
         if not system.config.get("mongo_monitoring_configured") == "yes":
             rc, out, err = utils.ansible_play("rhel_mongo_monitoring", pars_json)
         if rc != 0:
             utils.out_progress_fail()
-            utils.err(utils.print_str("FAILED_CREATE_MON_USER", MongoDB.getname()))
+            utils.err(utils.print_str("FAILED_CREATE_USER", MongoDB.getname()))
             exit(1)
         else:
             with open('/home/zabbix/conf/nc_mongo_check.conf', 'w') as mongo_conf:

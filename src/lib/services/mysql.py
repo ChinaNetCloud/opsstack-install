@@ -1,6 +1,7 @@
 import abstract
 from random import choice
 import string
+import json
 
 from lib import utils
 
@@ -30,40 +31,61 @@ class MySQL(abstract.Abstract):
         return ''.join(passwd)
 
     @staticmethod
-    def configure(system):
-        info = utils.print_str("CREATE_MONITOR_USER", MySQL.getname())
-        if not utils.confirm(info):
-            utils.out_progress_skip()
-            return False
-        nccheckdb_passwd = MySQL.generate_passwd()
-        with open('/home/zabbix/conf/mysql_credentials', 'w') as mysql_file:
-            mysql_file.write('[client]\n')
-            mysql_file.write('user=nccheckdb\n')
-            mysql_file.write('password=%s\n' % nccheckdb_passwd)
-            mysql_file.write('host=localhost')
-        rc, out, err = utils.execute("ss -ntlp -A inet | awk -F: '/mysql/&&/LISTEN/{print $2}' | awk '{print $1}'")
-        if rc != 0 or out == '':
-            utils.out_progress_fail()
-            err_info = utils.print_str("FAILED_GET_LISTEN_PORT", MySQL.getname())
-            utils.err(err_info)
+    def get_pars():
+        pars = {}
+        mysql_root_pass = None
+        port = None
+        rc, out, err = utils.execute(
+            "ss -ntlp -A inet | awk -F: '/mysqld/&&/LISTEN/{print $2}' | awk '{print $1}'| sort | head -1")
+        if rc != 0 or out.strip() == '':
+            out_info = utils.print_str("FAILED_GET_LISTEN_PORT", MySQL.getname())
+            utils.out(out_info)
+            port = 3306
+        else:
+            port = out.strip()
+        confirm_str = utils.print_str("CREATE_MONITOR_USER", MySQL.getname())
+        confirmation = utils.confirm(confirm_str)
+        if confirmation is False:
+            utils.out(utils.print_str("Zabbix_Monitoring_User_Required", MySQL.getname()))
+            utils.out(utils.print_str("CREATE_USER_DOC", MySQL.getname()))
             exit(1)
-        cmd1 = ''' -e "CREATE USER 'nccheckdb'@'localhost' IDENTIFIED BY '%s'"''' % nccheckdb_passwd
-        cmd2 = ''' -e "CREATE USER 'nccheckdb'@'127.0.0.1' IDENTIFIED BY '%s'"''' % nccheckdb_passwd
-        cmd3 = ''' -e "GRANT PROCESS, REPLICATION CLIENT on *.* TO 'nccheckdb'@'localhost'"'''
-        cmd4 = ''' -e "GRANT SELECT (Select_priv) ON mysql.user TO 'nccheckdb'@'localhost'"'''
-        cmd5 = ''' -e "GRANT PROCESS, REPLICATION CLIENT on *.* TO 'nccheckdb'@'127.0.0.1'"'''
-        cmd6 = ''' -e "GRANT SELECT (Select_priv) ON mysql.user TO 'nccheckdb'@'127.0.0.1'"'''
-        cmd7 = ''' -e "flush privileges"'''
-        for port in out.strip().split('\n'):
-            root_pass_str = utils.print_str("MYSQL_ROOT_PASSWD", port)
-            mysql_root = utils.prompt_pass(root_pass_str)
-            conf_string = utils.print_str("CONFIGURE_MYSQL_MONITOR", port)
-            utils.out_progress_wait(conf_string)
-            mysql_cmd = "mysql -N -uroot -p" + mysql_root + " -P " + port
-            for cmd in [cmd1, cmd2, cmd3, cmd4, cmd5, cmd6, cmd7]:
-                rc, out, err = utils.execute(mysql_cmd + cmd)
-                if rc != 0:
-                    utils.out_progress_fail()
-                    exit(1)
-        utils.out_progress_done()
+        confirm_slave_str = utils.print_str("SLAVE_CHECK", MySQL.getname(), port)
+        slave_confirmation = utils.confirm(confirm_slave_str)
+        if slave_confirmation is True:
+            utils.out(utils.print_str("SLAVE_SKIP", MySQL.getname()))
+            utils.out(utils.print_str("CREATE_USER_DOC", MySQL.getname()))
+            pars['slave'] = True
+            return pars
+        else:
+            pars['slave'] = False
+        passwd = utils.prompt_pass(utils.print_str("MYSQL_ROOT_PASSWD: ", port))
+        if passwd != '':
+            mysql_root_pass = passwd
+        pars['user'] = 'root'
+        pars['mysql_root_pass'] = mysql_root_pass
+        pars['mysql_port'] = port
+        pars['mysql_nccheckdb_pass'] = MySQL.generate_passwd()
+        return pars
+
+    @staticmethod
+    def configure(system):
+        if not system.config.get("mysql_monitoring_configured") == "yes":
+            pars = MySQL.get_pars()
+            if pars['slave'] is True:
+                system.config.set("mysql_monitoring_configured", "yes")
+                return True
+            pars_json = json.dumps(pars)
+            utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), pars['mysql_port']))
+            rc, out, err = utils.ansible_play("rhel_mysql_monitoring", pars_json)
+            if rc != 0:
+                utils.out_progress_fail()
+                utils.err(utils.print_str("FAILED_CREATE_USER", MySQL.getname()))
+                exit(1)
+            else:
+                system.config.set("mysql_monitoring_configured", "yes")
+                utils.out_progress_done()
+        else:
+            utils.out_progress_skip()
+
+
 
