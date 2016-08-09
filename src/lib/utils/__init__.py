@@ -4,6 +4,7 @@ import os
 import socket
 
 import gettext
+import getpass
 
 from lib import log
 
@@ -19,9 +20,12 @@ bin_path = sys.path[0]
 
 
 def language_translation(msg):
-    t = gettext.translation('nc-configure', bin_path + '/locale', fallback=True)
-    _ = t.ugettext
-    message = _(msg)
+    try:
+        t = gettext.translation('nc-configure', bin_path + '/locale', fallback=True)
+        _ = t.ugettext
+        message = _(msg)
+    except UnicodeDecodeError:
+        message = msg
     return message
 
 
@@ -82,10 +86,17 @@ def execute(cmd):
 
 
 def prompt(prompt_string):
-    print("")
+    # print("")
     prompt_string = language_translation(prompt_string)
     result = input(prompt_string)
+    # print("")
+    return result
+
+
+def prompt_pass(pass_string):
     print("")
+    pass_string = language_translation(pass_string)
+    result = getpass.getpass(pass_string)
     return result
 
 
@@ -115,12 +126,13 @@ def confirm(prompt_string, *args):
 def ansible_play(name, extra_vars=None):
     plays_folder = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/"
     if extra_vars is None:
-        rc, stdout, stderr = execute("ansible-playbook " + plays_folder + name + ".playbook.yml")
+        playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml"
     else:
-        rc, stdout, stderr = execute("ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\"")
+        playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\""
+    rc, stdout, stderr = execute(playbook_cmd)
     if rc != 0:
         log.get_logger().log("Running playbook %s failed. Please see output below" % name)
-        log.get_logger().log("ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\"")
+        log.get_logger().log(playbook_cmd)
         log.get_logger().log(stdout)
         log.get_logger().log(stderr)
     return rc, stdout, stderr

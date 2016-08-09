@@ -103,23 +103,59 @@ msgid "GENERIC_SERVICE_CONFIG_ERROR"
 msgstr "%s service config error info"
 
 
-# service nginx
-msgid "RESTART_NGINX_SERVICE"
-msgstr "Restart nginx service?"
+# service nginx/apache/php-fpm
+msgid "RESTART_SERVICE"
+msgstr "Do you want to restart %s service after monitoring configured?"
 
-msgid "CONFIGURE_NGINX_MONITOR"
-msgstr "Running nginx monitor configuration..."
+msgid "CONFIGURE_MONITOR"
+msgstr "Running %s monitor configuration..."
 
-# service apache
-msgid "RESTART_APACHE_SERVICE"
-msgstr "Restart apache service?"
+msgid "NOT_DETECT_CONF_PATH"
+msgstr "Could not detect %s configuration path"
 
-msgid "CONFIGURE_APACHE_MONITORING"
-msgstr "Running apache monitor configuration..."
+msgid "FAILED_CONFIGURE_MONITOR"
+msgstr "Failed to configure %s monitoring"
 
-# service php-fpm
-msgid "RESTART_PHPFPM_SERVICE"
-msgstr "Restart php-fpm service?"
+# haproxy
+msgid "CONFIGURE_NC_HAPROXY"
+msgstr "Configuring nc-haproxy..."
 
-msgid "CONFIGURE_PHPFPM_MONITOR"
-msgstr "Running php-fpm monitor configuration..."
+msgid "FAILED_CONF_HAPROXY"
+msgstr "Failed to configure nc-haproxy"
+
+# service mysql
+msgid "MYSQL_ROOT_PASSWD"
+msgstr "mysql(port %s) root password:"
+
+# mysql & mongo
+msgid "CREATE_MONITOR_USER"
+msgstr "Do you want to create %s monitoring user?"
+
+msgid "FAILED_GET_LISTEN_PORT"
+msgstr "Failed to get %s service listening port"
+
+msgid "FAILED_CREATE_USER"
+msgstr "Failed to create % service monitoring user"
+
+msgid "Zabbix_Monitoring_User_Required"
+msgstr "Should create at least one %s user for monitoring"
+
+msgid "CREATE_USER_DOC"
+msgstr "Please create %s user refer to CNC documentation"
+
+msgid "SLAVE_CHECK"
+msgstr "Is this %s (port %s) instance a slave?"
+
+msgid "SLAVE_SKIP"
+msgstr "Can not create %s user in a slave instance"
+
+msgid "CONFIGURE_DATABASE_MONITOR"
+msgstr "Configuring %s (port %s) monitoring"
+
+# mongo
+msgid "MONGO_ADMIN_USER"
+msgstr "Mongo [port %s] Admin User: "
+
+msgid "MONGO_ADMIN_PASS"
+msgstr "Mongo [port %s] Admin Password: "
+

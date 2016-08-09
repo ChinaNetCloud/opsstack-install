@@ -30,13 +30,13 @@ class Phpfpm(abstract.Abstract):
     def configure(system):
         phpfpm_restart = "false"
         result = Phpfpm.getconf(system)
-        if result == False:
-            utils.out("Could not detect '%s' configuration path,\n" % Phpfpm.getname())
+        if not result:
+            utils.out(utils.print_str("NOT_DETECT_CONF_PATH", Phpfpm.getname()))
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/phpfpm-monitoring\n")
             return
-        if utils.confirm("RESTART_PHPFPM_SERVICE"):
+        if utils.confirm(utils.print_str("RESTART_SERVICE", Phpfpm.getname())):
             phpfpm_restart = "true"
-        utils.out_progress_wait("CONFIGURE_PHPFPM_MONITOR")
+        utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Phpfpm.getname()))
         if not system.config.get("phpfpm_monitoring_configured") == "yes":
             rc, out, err = utils.ansible_play("rhel_phpfpm_monitoring", "phpfpm_restart=%s" % (phpfpm_restart))
             if rc == 0:
@@ -44,7 +44,7 @@ class Phpfpm(abstract.Abstract):
                 utils.out_progress_done()
             else:
                 utils.out_progress_fail()
-                utils.err("Failed to install '%s' monitoring" % Phpfpm.getname())
+                utils.err(utils.print_str("FAILED_CONFIGURE_MONITOR", Phpfpm.getname()))
                 exit(1)
         else:
             utils.out_progress_skip()

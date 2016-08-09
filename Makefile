@@ -1,5 +1,5 @@
 NAME=nc-configure
-VERSION=1.0.$(BUILD_NUMBER)
+VERSION=$(BUILD_NAME)
 SRC_DIR=$(shell pwd)
 PREFIX=/var/lib/netcloud/nc-configure
 ARCHITECTURE=all
@@ -26,3 +26,6 @@ package:
 
 deploy:
 	mv $(SRC_DIR)/*.rpm $(AGGREGATE_PATH)/
+
+clean:
+	rm -rf $(SRC_DIR)/*.rpm $(SRC_DIR)/*.deb

@@ -43,13 +43,13 @@ class Apache(abstract.Abstract):
     def configure(system):
         httpd_restart = "false"
         result, httpd_conf, httpd_dir = Apache.getconf(system)
-        if result == False:
-            utils.out("Could not detect '%s' configuration path,\n" % Apache.getname())
+        if not result:
+            utils.out(utils.print_str("NOT_DETECT_CONF_PATH", Apache.getname()))
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
             return
-        if utils.confirm("RESTART_APACHE_SERVICE"):
+        if utils.confirm(utils.print_str("RESTART_SERVICE", Apache.getname())):
             httpd_restart = "true"
-        utils.out_progress_wait("CONFIGURE_APACHE_MONITORING")
+        utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Apache.getname()))
         if not system.config.get("apache_monitoring_configured") == "yes": 
             rc, out, err = utils.ansible_play("rhel_apache_monitoring", "httpd_dir=%s httpd_conf=%s httpd_restart=%s" % (httpd_dir, httpd_conf, httpd_restart))
             if rc == 0:
@@ -57,7 +57,7 @@ class Apache(abstract.Abstract):
                 utils.out_progress_done()
             else:
                 utils.out_progress_fail()
-                utils.err("Failed to install apache monitoring")
+                utils.err(utils.print_str("FAILED_CONFIGURE_MONITOR", Apache.getname()))
                 exit(1)
         else:
             utils.out_progress_skip()
