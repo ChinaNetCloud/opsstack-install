@@ -7,8 +7,8 @@
 msgid "CHOOSE_LANG"
 msgstr "Please choose language number:"
 
-msgid "LANG_NUM_ERR"
-msgstr "Please choose valid language number"
+msgid "LANG_USE_DEFAULT"
+msgstr "The wrong language order number, will use system language settings."
 
 msgid "CHECK_PREM"
 msgstr "Checking permissions..."

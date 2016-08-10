@@ -80,9 +80,11 @@ class Common(Abstract):
         if lang_num in choose_dict.keys():
             lang_str = choose_dict[lang_num]["value"]
         else:
-            utils.err("LANG_NUM_ERR")
-            exit(1)
-        os.environ['LANG'] = lang_str
+            lang_str = None
+        if lang_str is not None:
+            os.environ['LANG'] = lang_str
+        else:
+            utils.out("LANG_USE_DEFAULT")
         locale.setlocale(locale.LC_ALL, "")
 
     def verify_permissions(self):
