@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 from lib import utils
 from lib import api
 from lib import services
 from lib import log
 from abstract import Abstract
 
+import os
+import locale
 import re
 import logging
 LOGGER = logging.getLogger()
@@ -11,6 +14,8 @@ LOGGER = logging.getLogger()
 
 class Common(Abstract):
     def before_configure(self):
+        log.get_logger().log("Choose running language")
+        self.choose_language()
         log.get_logger().log("Verifying permissions")
         self.verify_permissions()
         log.get_logger().log("Running init")
@@ -63,6 +68,21 @@ class Common(Abstract):
                 # TODO: i18n
                 utils.err("Invalid API token")
                 self.config.delete("api_token")
+
+    def choose_language(self):
+        choose_dict = {"1": "English", "2": "中文"}
+        for i in choose_dict:
+            print i + ". " + choose_dict[i]
+        lang_num = utils.prompt("CHOOSE_LANG")
+        if lang_num == "1":
+            lang_str = "en_US.UTF-8"
+        elif lang_num == "2":
+            lang_str = "zh_CN.UTF-8"
+        else:
+            utils.err("LANG_NUM_ERR")
+            exit(1)
+        os.environ['LANG'] = lang_str
+        locale.setlocale(locale.LC_ALL, "")
 
     def verify_permissions(self):
         utils.out_progress_wait("CHECK_PREM")

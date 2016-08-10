@@ -4,6 +4,12 @@
 # 201607.
 #
 
+msgid "CHOOSE_LANG"
+msgstr "请选择运行脚本的语言序号: "
+
+msgid "LANG_NUM_ERR"
+msgstr "请选择有效的语言列表序号"
+
 msgid "CHECK_PREM"
 msgstr "正在检查权限..."
 

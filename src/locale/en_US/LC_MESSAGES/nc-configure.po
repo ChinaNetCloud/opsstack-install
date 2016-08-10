@@ -4,6 +4,12 @@
 # 201607.
 #
 
+msgid "CHOOSE_LANG"
+msgstr "Please choose language number:"
+
+msgid "LANG_NUM_ERR"
+msgstr "Please choose valid language number"
+
 msgid "CHECK_PREM"
 msgstr "Checking permissions..."
 
