@@ -70,14 +70,15 @@ class Common(Abstract):
                 self.config.delete("api_token")
 
     def choose_language(self):
-        choose_dict = {"1": "English", "2": "中文"}
+        choose_dict = {
+            "1": {"name": "English", "value": "en_US.UTF-8"},
+            "2": {"name": "中文", "value": "zh_CN.UTF-8"}
+        }
         for i in choose_dict:
-            print i + ". " + choose_dict[i]
+            print i + ". " + choose_dict[i]["name"]
         lang_num = utils.prompt("CHOOSE_LANG")
-        if lang_num == "1":
-            lang_str = "en_US.UTF-8"
-        elif lang_num == "2":
-            lang_str = "zh_CN.UTF-8"
+        if lang_num in choose_dict.keys():
+            lang_str = choose_dict[lang_num]["value"]
         else:
             utils.err("LANG_NUM_ERR")
             exit(1)
