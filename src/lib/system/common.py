@@ -79,9 +79,6 @@ class Common(Abstract):
         lang_num = utils.prompt("CHOOSE_LANG")
         if lang_num in choose_dict.keys():
             lang_str = choose_dict[lang_num]["value"]
-        else:
-            lang_str = None
-        if lang_str is not None:
             os.environ['LANG'] = lang_str
         else:
             utils.out("LANG_USE_DEFAULT")
