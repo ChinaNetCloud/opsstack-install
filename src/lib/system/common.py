@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
 from lib import utils
 from lib import api
 from lib import services
 from lib import log
 from abstract import Abstract
 
+import os
+import locale
 import re
 import logging
 LOGGER = logging.getLogger()
@@ -11,6 +14,8 @@ LOGGER = logging.getLogger()
 
 class Common(Abstract):
     def before_configure(self):
+        log.get_logger().log("Choose running language")
+        self.choose_language()
         log.get_logger().log("Verifying permissions")
         self.verify_permissions()
         log.get_logger().log("Running init")
@@ -35,6 +40,8 @@ class Common(Abstract):
         self._install_monitoring()
         log.get_logger().log("Configuring syslog")
         self.configure_syslog()
+        log.get_logger().log("Installing nc_collector")
+        self._install_nc_collector()
         log.get_logger().log("Running configuration for each discovered service")
         self.service_configuration()
         log.get_logger().log("Sending confirmation API request")
@@ -63,6 +70,21 @@ class Common(Abstract):
                 # TODO: i18n
                 utils.err("Invalid API token")
                 self.config.delete("api_token")
+
+    def choose_language(self):
+        choose_dict = {
+            "1": {"name": "English", "value": "en_US.UTF-8"},
+            "2": {"name": "中文", "value": "zh_CN.UTF-8"}
+        }
+        for i in choose_dict:
+            print i + ". " + choose_dict[i]["name"]
+        lang_num = utils.prompt("CHOOSE_LANG")
+        if lang_num in choose_dict.keys():
+            lang_str = choose_dict[lang_num]["value"]
+            os.environ['LANG'] = lang_str
+        else:
+            utils.out("LANG_USE_DEFAULT")
+        locale.setlocale(locale.LC_ALL, "")
 
     def verify_permissions(self):
         utils.out_progress_wait("CHECK_PREM")

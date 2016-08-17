@@ -4,6 +4,12 @@
 # 201607.
 #
 
+msgid "CHOOSE_LANG"
+msgstr "Please choose language number:"
+
+msgid "LANG_USE_DEFAULT"
+msgstr "The wrong language order number, will use system language settings."
+
 msgid "CHECK_PREM"
 msgstr "Checking permissions..."
 
@@ -158,4 +164,14 @@ msgstr "Mongo [port %s] Admin User: "
 
 msgid "MONGO_ADMIN_PASS"
 msgstr "Mongo [port %s] Admin Password: "
+
+#nc_collector
+msgid "INSTALL_NC_COLLECTOR"
+msgstr "Installing nc_collector package..."
+
+msgid "CNC_REPO_NOT_ENABLED"
+msgstr "CNC repo is not enabled, can not install nc_collector package"
+
+msgid "FAILED_INSTALL_NC_COLLECTOR"
+msgstr "Failed to install nc_collector package"
 

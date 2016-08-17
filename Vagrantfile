@@ -14,4 +14,11 @@ Vagrant.configure(2) do |config|
     centos6.vm.provision "shell",
       inline: "ln -s /home/vagrant/sync/src/nc-configure.py /usr/bin/nc-configure"
   end
+  config.vm.define "debian8" do |debian8|
+    debian8.vm.box = "colynn/debian8"
+    debian8.vm.hostname = "debian8.example.com"
+    debian8.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+    debian8.vm.provision "shell",
+      inline: "ln -s /home/vagrant/sync/src/nc-configure.py /usr/bin/nc-configure"
+  end
 end

@@ -4,6 +4,12 @@
 # 201607.
 #
 
+msgid "CHOOSE_LANG"
+msgstr "请选择运行脚本的语言序号: "
+
+msgid "LANG_USE_DEFAULT"
+msgstr "错误的语言列表序号, 将会使用系统默认的语言环境设置."
+
 msgid "CHECK_PREM"
 msgstr "正在检查权限..."
 
@@ -157,3 +163,13 @@ msgstr "Mongo [端口 %s] 数据库管理员用户名: "
 
 msgid "MONGO_ADMIN_PASS"
 msgstr "Mongo [端口 %s] 数控库管理员密码: "
+
+#nc_collector
+msgid "INSTALL_NC_COLLECTOR"
+msgstr "正在安装nc_collector工具包..."
+
+msgid "CNC_REPO_NOT_ENABLED"
+msgstr "CNC 安装包仓库没有被启用, 无法安装nc_collector工具包"
+
+msgid "FAILED_INSTALL_NC_COLLECTOR"
+msgstr "nc_collector工具包安装失败"
