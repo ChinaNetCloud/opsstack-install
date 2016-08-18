@@ -10,13 +10,13 @@ Install the following (someone please fill in the details):
 
 ### Clone the repository
 
-Open a terminal window and execute the following to clone the repository into a new `nc-configure` directory:
+Open a terminal window and execute the following to clone the repository into a new `opsstack-configure` directory:
 
 
 ```Bash
 cd ~/Projects/
-git clone https://gitlab.service.chinanetcloud.com/nc-scripts/nc-configure.git
-cd nc-configure/
+git clone https://gitlab.service.chinanetcloud.com/opsstack-tools/opsstack-configure.git
+cd opsstack-configure/
 ```
 
 ### Start the Vagrant box
@@ -43,7 +43,7 @@ You are now connected to the virtual machine
 ### Run the configure script
 
 ```Bash
-sudo nc-configure
+sudo opsstack-configure
 ```
 
 

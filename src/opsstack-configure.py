@@ -12,13 +12,13 @@ from lib import log
 
 
 def main():
-    log.get_logger().log("Starting nc-configure process")
+    log.get_logger().log("Starting configuration process")
     system.load().before_configure()
     system.load().configure()
-    log.get_logger().log("Finished nc-configure process")
+    log.get_logger().log("Finished configuration process")
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='CNC configuration tool')
+    parser = argparse.ArgumentParser(description='OpsStack configuration tool')
     parser.add_argument('-d', '--dry-run', action='store_true', dest='DRY_RUN')
     args.set_args(parser.parse_args())
     main()

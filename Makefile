@@ -1,17 +1,17 @@
-NAME=nc-configure
+NAME=opsstack-configure
 VERSION=$(BUILD_DISPLAY_NAME)
 SRC_DIR=$(shell pwd)
-PREFIX=/var/lib/netcloud/nc-configure
+PREFIX=/var/lib/opsstack/configure
 ARCHITECTURE=all
-BEFORE_INSTALL=--before-install $(SRC_DIR)/before_install.sh
 AFTER_INSTALL=--after-install $(SRC_DIR)/after_install.sh
 AFTER_REMOVE=--after-remove $(SRC_DIR)/after_remove.sh
+REQUIRES=-d opsstack-common
 AGGREGATE_PATH=/repo-aggregate
 
 .PHONY: package
 package:
-	msgfmt -o src/locale/en_US/LC_MESSAGES/nc-configure.mo src/locale/en_US/LC_MESSAGES/nc-configure.po
-	msgfmt -o src/locale/zh_CN/LC_MESSAGES/nc-configure.mo src/locale/zh_CN/LC_MESSAGES/nc-configure.po
+	msgfmt -o src/locale/en_US/LC_MESSAGES/nc-configure.mo src/locale/en_US/LC_MESSAGES/translations.po
+	msgfmt -o src/locale/zh_CN/LC_MESSAGES/nc-configure.mo src/locale/zh_CN/LC_MESSAGES/translations.po
 	fpm -C $(SRC_DIR)/src/ \
 		-s dir -t rpm \
 		-n $(NAME) \
@@ -21,7 +21,7 @@ package:
 		$(AFTER_INSTALL) \
 		$(AFTER_REMOVE) \
 		--template-scripts \
-		--deb-no-default-config-files \
+		$(REQUIRES) \
 		--force
 
 deploy:
