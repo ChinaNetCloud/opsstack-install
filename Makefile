@@ -10,8 +10,8 @@ AGGREGATE_PATH=/repo-aggregate
 
 .PHONY: package
 package:
-	msgfmt -o src/locale/en_US/LC_MESSAGES/nc-configure.mo src/locale/en_US/LC_MESSAGES/translations.po
-	msgfmt -o src/locale/zh_CN/LC_MESSAGES/nc-configure.mo src/locale/zh_CN/LC_MESSAGES/translations.po
+	msgfmt -o src/locale/en_US/LC_MESSAGES/translations.mo src/locale/en_US/LC_MESSAGES/translations.po
+	msgfmt -o src/locale/zh_CN/LC_MESSAGES/translations.mo src/locale/zh_CN/LC_MESSAGES/translations.po
 	fpm -C $(SRC_DIR)/src/ \
 		-s dir -t rpm \
 		-n $(NAME) \
