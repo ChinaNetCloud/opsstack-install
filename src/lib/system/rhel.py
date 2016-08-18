@@ -19,8 +19,8 @@ class System(Common):
         self.OS = "linux"
         self.OS_NAME = name
         self.OS_VERSION = version
-        self.CONFIG_FILE = "/etc/.nc-config"
-        self.LOG_FILE = "/var/log/nc-configure.log"
+        self.CONFIG_FILE = "/etc/opsstack/opsstack.conf"
+        self.LOG_FILE = "/var/log/opsstack/configure.log"
 
         self.is_ansible_present = None
         self.is_pip_present = None

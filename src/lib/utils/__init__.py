@@ -21,7 +21,7 @@ bin_path = sys.path[0]
 
 def language_translation(msg):
     try:
-        t = gettext.translation('nc-configure', bin_path + '/locale', fallback=True)
+        t = gettext.translation('translations', bin_path + '/locale', fallback=True)
         _ = t.ugettext
         message = _(msg)
     except UnicodeDecodeError:

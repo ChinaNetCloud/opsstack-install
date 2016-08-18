@@ -1,4 +1,4 @@
 #!/bin/bash
 
 echo "Symlinking executable to /usr/bin"
-ln -s <%= prefix %>/nc-configure.py /usr/bin/nc-configure
+ln -s <%= prefix %>/opsstack-configure.sh /usr/bin/opsstack-configure
