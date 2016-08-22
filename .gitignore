@@ -1,4 +1,4 @@
 .vagrant
 *.pyc
 .idea
-src/locale/*/*.mo
+*.mo

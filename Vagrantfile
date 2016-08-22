@@ -6,13 +6,13 @@ Vagrant.configure(2) do |config|
     centos7.vm.box = "protodype/centos7"
     centos7.vm.hostname = "centos7"
     centos7.vm.provision "shell",
-      inline: "ln -s /home/vagrant/sync/src/opsstack-configure.py /usr/bin/opsstack-configure"
+      inline: "ln -s /vagrant/src/opsstack-configure.py /usr/bin/opsstack-configure"
   end
   config.vm.define "centos6" do |centos6|
     centos6.vm.box = "protodype/centos6"
     centos6.vm.hostname = "centos6"
     centos6.vm.provision "shell",
-      inline: "ln -s /home/vagrant/sync/src/opsstack-configure.py /usr/bin/opsstack-configure"
+      inline: "ln -s /vagrant/src/opsstack-configure.py /usr/bin/opsstack-configure"
   end
   config.vm.define "debian8" do |debian8|
     debian8.vm.box = "colynn/debian8"
