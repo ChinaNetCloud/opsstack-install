@@ -1,37 +1,36 @@
 import logging
-from logging.handlers import MemoryHandler
 
 
 class Logger:
-    def __init__(self):
+    def __init__(self, file_path, level):
         self.logger = logging.getLogger()
-        self.buffer = MemoryHandler(1000)
-        self.handler = None
         self.formatter = logging.Formatter('[%(asctime)s]: %(message)s')
-        self.buffer.setFormatter(self.formatter)
-        self.logger.addHandler(self.buffer)
-        self.logger.setLevel(logging.DEBUG)
+        self.handler = logging.FileHandler(file_path)
+        self.handler.setFormatter(self.formatter)
+        self.logger.addHandler(self.handler)
+        if level == "debug":
+            self.logger.setLevel(logging.DEBUG)
+        else:
+            self.logger.setLevel(logging.INFO)
 
     def log(self, msg):
         try:
             self.logger.info(unicode(msg))
         except NameError:
             self.logger.info(msg)
-        if self.handler is not None:
-            self.buffer.flush()
 
-    def set_log_file(self, path):
-        self.handler = logging.FileHandler(path)
-        self.handler.setFormatter(self.formatter)
-        self.buffer.setTarget(self.handler)
-        self.buffer.flush()
+    def debug(self, msg):
+        try:
+            self.logger.debug(unicode(msg))
+        except NameError:
+            self.logger.debug(msg)
 
 
 __logger = None
 
 
-def get_logger():
+def get_logger(file_path=None, level=None):
     global __logger
     if __logger is None:
-        __logger = Logger()
+        __logger = Logger(file_path, level)
     return __logger

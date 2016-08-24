@@ -87,7 +87,7 @@ class Common(Abstract):
         locale.setlocale(locale.LC_ALL, "")
 
     def verify_permissions(self):
-        utils.out_progress_wait("CHECK_PREM")
+        utils.out_progress_wait("CHECK_PERMISSIONS")
         if not self._verify_permissions():
             log.get_logger().log("Not running with enough permissions")
             utils.out_progress_fail()
@@ -96,8 +96,6 @@ class Common(Abstract):
             exit(1)
         else:
             utils.out_progress_done()
-        # Set the log file
-        log.get_logger().set_log_file(self.LOG_FILE)
 
     def collect_facts(self):
         # TODO: i18n

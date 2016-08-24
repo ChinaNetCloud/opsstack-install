@@ -1,10 +1,11 @@
 import subprocess
 import sys
-import os
-import socket
-
 import gettext
 import getpass
+import hashlib
+import socket
+import uuid
+import os
 
 from lib import log
 
@@ -68,13 +69,13 @@ def out_progress_info(message):
 
 def out(message):
     message = language_translation(message)
-    sys.stderr.write('\n' + message + '\n')
-    sys.stderr.flush()
+    sys.stdout.write('  => ' + message + '\n')
+    sys.stdout.flush()
 
 
 def err(message):
     message = language_translation(message)
-    sys.stderr.write('\n  ' + RED + '!! ' + message + NOCOLOR + '\n\n')
+    sys.stderr.write('  ' + RED + '!! ' + message + NOCOLOR + '\n\n')
     sys.stderr.flush()
 
 
@@ -86,10 +87,9 @@ def execute(cmd):
 
 
 def prompt(prompt_string):
-    # print("")
     prompt_string = language_translation(prompt_string)
-    result = input(prompt_string)
-    # print("")
+    sys.stdout.write('  => ' + prompt_string + ': ')
+    result = raw_input("")
     return result
 
 
@@ -114,7 +114,7 @@ def confirm(prompt_string, *args):
     prompt_string = language_translation(prompt_string)
     while True:
         print("")
-        result = prompt(prompt_string + " [Y/n]:")
+        result = prompt(prompt_string + " [Y/n]")
         if result in ["", "y", "Y", "Yes", "YES"]:
             return True
         elif result in ["n", "N", "No", "NO"]:
@@ -150,11 +150,30 @@ def test_connection(host, port):
     return result
 
 
-# Define input for 2.x
-try:
-    input = raw_input
-except NameError:
-    pass
+def get_machine_id():
+    result = ""
+    # Get ssh_host_key md5
+    key_md5 = ""
+    key_path = "/etc/ssh/ssh_host_key"
+    if os.path.isfile(key_path):
+        with open(key_path, "rb") as f:
+            c = f.read()
+            key_md5 = hashlib.md5(c).hexdigest()
+    # Get OpsStack visible IP address
+    ip_address = ""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("opsstack.chinanetcloud.com", 80))
+        ip_address = s.getsockname()[0]
+        s.close()
+    except socket.error:
+        # FIXME: Couldn't connect to OpsStack. Need better handling?
+        pass
+    # Get UUID which is actuall MAC of first HW interface
+    mac = str(uuid.getnode())
+    # Glue them altogether and get final ID
+    result = hashlib.md5(key_md5 + ip_address + mac).hexdigest()
+    return result
 
 if __name__ == '__main__':
     exit(1)
