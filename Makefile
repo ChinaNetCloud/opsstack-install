@@ -1,11 +1,11 @@
-NAME=opsstack-configure
+NAME=opsstack-install
 VERSION=$(BUILD_DISPLAY_NAME)
 SRC_DIR=$(shell pwd)
-PREFIX=/var/lib/opsstack/configure
+PREFIX=/var/lib/opsstack/install
 ARCHITECTURE=all
 AFTER_INSTALL=--after-install $(SRC_DIR)/after_install.sh
-AFTER_REMOVE=--after-remove $(SRC_DIR)/after_remove.sh
-REQUIRES=-d opsstack-common
+BEFORE_REMOVE=--before-remove $(SRC_DIR)/before_remove.sh
+REQUIRES=-d opsstack-common -d opsstack-configure
 AGGREGATE_PATH=/repo-aggregate
 
 .PHONY: package
@@ -19,7 +19,7 @@ package:
 		--prefix $(PREFIX) \
 		-a $(ARCHITECTURE) \
 		$(AFTER_INSTALL) \
-		$(AFTER_REMOVE) \
+		$(BEFORE_REMOVE) \
 		--template-scripts \
 		$(REQUIRES) \
 		--force

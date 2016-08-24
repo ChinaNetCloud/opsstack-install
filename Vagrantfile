@@ -6,13 +6,13 @@ Vagrant.configure(2) do |config|
     centos7.vm.box = "protodype/centos7"
     centos7.vm.hostname = "centos7"
     centos7.vm.provision "shell",
-      inline: "ln -s /vagrant/src/opsstack-configure.py /usr/bin/opsstack-configure"
+      inline: "rpm -ivh http://repo.service.chinanetcloud.com/yum/el7/base/x86_64/nc-repo-1.0.0-1.el7.noarch.rpm; yum install opsstack-common -y;ln -s /vagrant/src/opsstack-install.py /var/lib/opsstack/common/env/bin/opsstack-install; ln -s /vagrant/src/opsstack-install.sh /usr/bin/opsstack-install"
   end
   config.vm.define "centos6" do |centos6|
     centos6.vm.box = "protodype/centos6"
     centos6.vm.hostname = "centos6"
     centos6.vm.provision "shell",
-      inline: "ln -s /vagrant/src/opsstack-configure.py /usr/bin/opsstack-configure"
+      inline: "rpm -ivh http://repo.service.chinanetcloud.com/yum/el6/base/x86_64/nc-repo-1.0.0-1.el6.noarch.rpm; yum install opsstack-common -y;ln -s /vagrant/src/opsstack-install.py /var/lib/opsstack/common/env/bin/opsstack-install; ln -s /vagrant/src/opsstack-install.sh /usr/bin/opsstack-install"
   end
   config.vm.define "debian8" do |debian8|
     debian8.vm.box = "colynn/debian8"
