@@ -32,7 +32,8 @@ def language_translation(msg):
 
 def out_progress_wait(message):
     global OUT_MESSAGE
-    OUT_MESSAGE = language_translation(message)
+    message = language_translation(message)
+    OUT_MESSAGE = message
     sys.stdout.write('  => [ .... ] ' + OUT_MESSAGE)
     sys.stdout.flush()
 
@@ -69,33 +70,35 @@ def out_progress_info(message):
 
 def out(message):
     message = language_translation(message)
-    sys.stdout.write('  => ' + message + '\n')
+    message = "\n".join(["  => " + s for s in message.split("\n")])
+    sys.stdout.write(message + '\n')
     sys.stdout.flush()
 
 
 def err(message):
     message = language_translation(message)
-    sys.stderr.write('  ' + RED + '!! ' + message + NOCOLOR + '\n\n')
+    sys.stderr.write('  ' + RED + '!! ' + message + NOCOLOR + '\n')
     sys.stderr.flush()
 
 
 def execute(cmd):
-    child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    stdout, stderr = child.communicate()
+    child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+    output, _ = child.communicate()
     rc = child.returncode
-    return rc, stdout, stderr
+    return rc, output
 
 
 def prompt(prompt_string):
     prompt_string = language_translation(prompt_string)
-    sys.stdout.write('  => ' + prompt_string + ': ')
+    prompt_string = "\n".join(["  => " + s for s in prompt_string.split("\n")])
+    sys.stdout.write(prompt_string + ': ')
     result = raw_input("")
     return result
 
 
 def prompt_pass(pass_string):
-    print("")
     pass_string = language_translation(pass_string)
+    pass_string = "\n".join(["  => " + s for s in pass_string.split("\n")])
     result = getpass.getpass(pass_string)
     return result
 
@@ -113,13 +116,13 @@ def print_str(s, *args):
 def confirm(prompt_string, *args):
     prompt_string = language_translation(prompt_string)
     while True:
-        print("")
         result = prompt(prompt_string + " [Y/n]")
         if result in ["", "y", "Y", "Yes", "YES"]:
             return True
         elif result in ["n", "N", "No", "NO"]:
             return False
         else:
+            print ""
             continue
 
 

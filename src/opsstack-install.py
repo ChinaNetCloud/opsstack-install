@@ -26,9 +26,10 @@ def main():
         exit(1)
     log.get_logger(config.get("log_dir") + "/install.log", config.get("log_level"))
     log.get_logger().log("Starting installation process")
+    utils.confirm("INSTALL_CONFIRM")
     system.load().before_configure()
     system.load().configure()
-    log.get_logger().log("Finished configuration process")
+    log.get_logger().log("Finished installation process")
 
 
 def choose_language():
