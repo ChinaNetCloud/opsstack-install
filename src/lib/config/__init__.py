@@ -19,10 +19,12 @@ class _Configuration:
         self.config = _confparser()
         self.config.read(self.config_file)
 
-    def get(self, key):
+    def get(self, key, section=None):
         result = None
+        if section is None:
+            section = _SECTNAME
         try:
-            result = self.config.get(_SECTNAME, key)
+            result = self.config.get(section, key)
         except:
             pass
         return result

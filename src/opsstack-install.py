@@ -15,7 +15,6 @@ import os
 
 def main():
     choose_language()
-    exit(1)
     if args.get_args().conf_file is not None:
         conf = config.load(args.get_args().conf_file)
         if conf.validate() is False:
@@ -24,12 +23,40 @@ def main():
     else:
         utils.err("CONFIG_FILE_INVALID")
         exit(1)
-    log.get_logger(config.get("log_dir") + "/install.log", config.get("log_level"))
-    log.get_logger().log("Starting installation process")
-    utils.confirm("INSTALL_CONFIRM")
-    system.load().before_configure()
-    system.load().configure()
-    log.get_logger().log("Finished installation process")
+    try:
+        log.get_logger(config.get("log_dir") + "/install.log", config.get("log_level"))
+        log.get_logger().log("Starting installation process")
+        verify_permissions()
+        utils.confirm("INSTALL_CONFIRM")
+        sys = system.load()
+        utils.out_progress_wait("COLLECT_SYS_INFO")
+        sys.collect_system_info()
+        sys.service_discovery()
+        # FIXME: Verify API token here
+        sys.get_info()
+        # FIXME: Update OpsStack with system info here
+        sys.install_base_monitoring()
+        sys.install_services_monitoring()
+        # FIXME: Enable monitoring API call
+        sys.install_syslog()
+        sys.install_collector()
+        utils.out("FINISHED_INSTALLATION")
+        log.get_logger().log("Finished installation process")
+    except Exception as e:
+        log.get_logger().log(e.message)
+        utils.err("GENERIC_ERROR_MSG")
+        exit(1)
+
+
+def verify_permissions():
+    utils.out_progress_wait("CHECK_PERMISSIONS")
+    if not utils.verify_root_permissions():
+        log.get_logger().log("Running with non-root privileges")
+        utils.out_progress_fail()
+        utils.err("INCORRECT_PERMISSIONS")
+        exit(1)
+    else:
+        utils.out_progress_done()
 
 
 def choose_language():

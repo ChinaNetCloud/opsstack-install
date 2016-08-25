@@ -6,6 +6,8 @@ import hashlib
 import socket
 import uuid
 import os
+import fcntl
+import struct
 
 from lib import log
 
@@ -132,13 +134,12 @@ def ansible_play(name, extra_vars=None):
         playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml"
     else:
         playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\""
-    rc, stdout, stderr = execute(playbook_cmd)
+    rc, output = execute(playbook_cmd)
     if rc != 0:
         log.get_logger().log("Running playbook %s failed. Please see output below" % name)
         log.get_logger().log(playbook_cmd)
-        log.get_logger().log(stdout)
-        log.get_logger().log(stderr)
-    return rc, stdout, stderr
+        log.get_logger().log(output)
+    return rc, output
 
 
 def test_connection(host, port):
@@ -177,6 +178,45 @@ def get_machine_id():
     # Glue them altogether and get final ID
     result = hashlib.md5(key_md5 + ip_address + mac).hexdigest()
     return result
+
+
+def verify_root_permissions():
+    if not os.geteuid() == 0:
+        return False
+    else:
+        return True
+
+
+def get_iface_list():
+    return os.listdir("/sys/class/net/")
+
+
+def iface_get_mac_address(ifname):
+    result = ""
+    if os.path.isfile("/sys/class/net/" + ifname + "/address"):
+        with open("/sys/class/net/" + ifname + "/address") as f:
+            result = f.read().strip()
+    return result
+
+
+def iface_get_ip4_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+
+def iface_get_ip6_address(ifname):
+    # FIXME: Detect real IPv6 address
+    return ""
+
+
+def iface_get_type(ifname):
+    # FIXME: Detect real type
+    return "physical"
+
 
 if __name__ == '__main__':
     exit(1)
