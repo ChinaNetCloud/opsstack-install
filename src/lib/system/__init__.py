@@ -29,7 +29,7 @@ class System:
         os = platform.system()
         if os == "Linux":
             self.os = "linux"
-            info = platform.linux_distribution(full_distribution_name=0, supported_dists=['amzn', 'centos', 'system', 'debian'])[0]
+            info = platform.linux_distribution(full_distribution_name=0, supported_dists=['amzn', 'centos', 'system', 'debian'])
             distribution = info[0]
             version = info[1]
             log.get_logger().log("Detected OS: %s, distribution: %s, version: %s" % (os, distribution, version))
@@ -39,6 +39,7 @@ class System:
                 self.version = version
             # FIXME: Add other supported system below as elif statement
             else:
+                log.get_logger().log("Detected OS: %s, distribution: %s, version: %s" % (os, distribution, version))
                 raise Exception("Unsupported Linux distribution")
         # Right now only support linux and nothing else
         else:
