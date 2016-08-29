@@ -13,7 +13,7 @@ class Java(abstract.Abstract):
     @staticmethod
     def discover(system):
         result = False
-        if system.OS == 'linux':
+        if system.os == 'linux':
             if system.is_proc_running("java.*Xms.*Xmx"):
                 result = True
         return result

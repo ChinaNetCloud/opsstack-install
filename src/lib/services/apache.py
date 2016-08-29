@@ -15,7 +15,7 @@ class Apache(abstract.Abstract):
     @staticmethod
     def discover(system):
         result = False
-        if system.OS == 'linux':
+        if system.os == 'linux':
             if system.is_proc_running("httpd") or system.is_app_installed("httpd"):
                 result = True
         return result

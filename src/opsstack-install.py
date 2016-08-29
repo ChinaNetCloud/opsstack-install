@@ -8,6 +8,7 @@ from lib import config
 from lib import utils
 import locale
 import os
+import sys
 
 
 # TODO: Instead of failing on finding Zabbix installed, verify if it is installed by us, if not exit, else reconfigure
@@ -28,22 +29,26 @@ def main():
         log.get_logger(config.get("log_dir") + "/install.log", config.get("log_level"))
         log.get_logger().log("Starting installation process")
         utils.confirm("INSTALL_CONFIRM")
-        sys = system.load()
+        system.load()
         utils.out_progress_wait("COLLECT_SYS_INFO")
-        sys.collect_system_info()
-        sys.service_discovery()
+        system.load().collect_system_info()
+        system.load().service_discovery()
         # FIXME: Verify API token here
-        sys.get_info()
+        system.load().get_info()
         # FIXME: Update OpsStack with system info here
-        sys.install_base_monitoring()
-        sys.install_services_monitoring()
+        system.load().install_base_monitoring()
+        system.load().install_services_monitoring()
         # FIXME: Enable monitoring API call
-        sys.install_syslog()
-        sys.install_collector()
+        system.load().install_syslog()
+        system.load().install_collector()
         utils.out("FINISHED_INSTALLATION")
         log.get_logger().log("Finished installation process")
     except Exception as e:
-        log.get_logger().log(e.message)
+        exc_type, exc_obj, tb = sys.exc_info()
+        f = tb.tb_frame
+        lineno = tb.tb_lineno
+        filename = f.f_code.co_filename
+        log.get_logger().log("Exception %s, in %s at %s" % (e.message, filename, lineno))
         utils.err("GENERIC_ERROR_MSG")
         exit(1)
 

@@ -15,7 +15,7 @@ class Nginx(abstract.Abstract):
     @staticmethod
     def discover(system):
         result = False
-        if system.OS == 'linux':
+        if system.os == 'linux':
             if system.is_proc_running("nginx") or system.is_app_installed("nginx"):
                 result = True
         return result

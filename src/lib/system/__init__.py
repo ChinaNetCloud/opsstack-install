@@ -87,6 +87,36 @@ class System:
     def install_collector(self):
         pass
 
+    @staticmethod
+    def is_proc_running(proc_name):
+        result = True
+        rc, output = utils.execute("ps faux | grep -v grep | grep " + proc_name)
+        if output == "" and rc == 1:
+            # proc_name not found
+            result = False
+        return result
+
+    @staticmethod
+    def is_app_installed(app_name):
+        result = True
+        rc, output = utils.execute("rpm -qa | grep " + app_name)
+        if output == "" and rc == 1:
+            # app_name is not installed as rpm package
+            result = False
+        return result
+
+    @staticmethod
+    def is_port_free(port_number):
+        result = True
+        try:
+            sock = socket.socket(socket.SO_REUSEADDR)
+            sock.bind(('', port_number))
+            sock.listen(5)
+            sock.close()
+        except socket.error:
+            result = False
+        return result
+
 
 def load():
     log.get_logger().log("Loading system file")

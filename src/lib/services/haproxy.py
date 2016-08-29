@@ -14,7 +14,7 @@ class Haproxy(abstract.Abstract):
     @staticmethod
     def discover(system):
         result = False
-        if system.OS == 'linux':
+        if system.os == 'linux':
             if system.is_proc_running("haproxy") or system.is_app_installed("haproxy"):
                 result = True
         return result

@@ -14,7 +14,7 @@ class Phpfpm(abstract.Abstract):
     @staticmethod
     def discover(system):
         result = False
-        if system.OS == 'linux':
+        if system.os == 'linux':
             if system.is_proc_running("php-fpm") or system.is_app_installed("php-fpm"):
                 result = True
         return result
