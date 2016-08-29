@@ -30,14 +30,50 @@ def main():
         log.get_logger().log("Starting installation process")
         utils.confirm("INSTALL_CONFIRM")
         system.load()
+
+        # Collect system information
         utils.out_progress_wait("COLLECT_SYS_INFO")
-        system.load().collect_system_info()
-        system.load().service_discovery()
+        try:
+            system.load().collect_system_info()
+        except Exception as e:
+            utils.out_progress_fail()
+            raise Exception(e)
+        utils.out_progress_done()
+
+        # Perform service discovery
+        utils.out_progress_wait("RUN_SERVICE_DISCOVERY")
+        try:
+            system.load().service_discovery()
+        except Exception as e:
+            utils.out_progress_fail()
+            raise Exception(e)
+        utils.out_progress_done()
+
         # FIXME: Verify API token here
+
         system.load().get_info()
+
         # FIXME: Update OpsStack with system info here
-        system.load().install_base_monitoring()
-        system.load().install_services_monitoring()
+
+        # Install base monitoring
+        utils.out_progress_wait("INSTALL_BASIC_MON")
+        try:
+            system.load().install_base_monitoring()
+        except Exception as e:
+            utils.out_progress_fail()
+            utils.err("FAILED_INSTALL_BASIC_MON")
+            raise Exception(e)
+        utils.out_progress_done()
+
+        # Configure services monitoring
+        utils.out_progress_wait("RUN_MONITOR_CONFIG")
+        try:
+            system.load().install_services_monitoring()
+        except Exception as e:
+            utils.out_progress_fail()
+            raise Exception(e)
+        utils.out_progress_done()
+
         # FIXME: Enable monitoring API call
         system.load().install_syslog()
         system.load().install_collector()
