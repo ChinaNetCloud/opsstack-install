@@ -145,12 +145,19 @@ def ansible_play(name, extra_vars=None):
     return rc, stdout, stderr
 
 
-def ansible_lock_exists(name):
+def lock_file_exists(name):
     result = False
     lock_folder = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/locks/"
     if os.path.isfile(lock_folder + name + ".lock"):
         result = True
     return result
+
+
+def lock_file_create(name):
+    lock_folder = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/locks/"
+    if not os.path.isfile(lock_folder + name + ".lock"):
+        open(lock_folder + name + ".lock", "w").close()
+        os.chmod(lock_folder + name + ".lock", 000)
 
 
 def test_connection(host, port):

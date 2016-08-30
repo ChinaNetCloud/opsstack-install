@@ -60,19 +60,19 @@ def main():
         utils.out_progress_wait("COLLECT_SYS_INFO")
         try:
             system.load().collect_system_info()
+            utils.out_progress_done()
         except Exception as e:
             utils.out_progress_fail()
             raise e
-        utils.out_progress_done()
 
         # Perform service discovery
         utils.out_progress_wait("RUN_SERVICE_DISCOVERY")
         try:
             system.load().service_discovery()
+            utils.out_progress_done()
         except Exception as e:
             utils.out_progress_fail()
             raise e
-        utils.out_progress_done()
 
         if utils.confirm("INSTALL_CONFIRM"):
             log.get_logger().log("User confirmed installation")
@@ -90,20 +90,18 @@ def main():
         utils.out_progress_wait("INSTALL_BASIC_MON")
         try:
             system.load().install_base_monitoring()
+            utils.out_progress_done()
         except Exception as e:
             utils.out_progress_fail()
             utils.err("FAILED_INSTALL_BASIC_MON")
             raise e
-        utils.out_progress_done()
 
         # Configure services monitoring
-        utils.out_progress_wait("RUN_MONITOR_CONFIG")
+        utils.out("RUN_MONITOR_CONFIG")
         try:
             system.load().install_services_monitoring()
         except Exception as e:
-            utils.out_progress_fail()
-            raise Exception(e)
-        utils.out_progress_done()
+            raise e
 
         # FIXME: Enable monitoring API call
 
@@ -111,19 +109,24 @@ def main():
         utils.out_progress_wait("RUN_SYSLOG_CONFIGURATION")
         try:
             system.load().install_syslog()
+            utils.out_progress_done()
         except Exception as e:
             utils.out_progress_fail()
             raise Exception(e)
-        utils.out_progress_done()
 
         # Install nc-collector
         utils.out_progress_wait("INSTALL_NC_COLLECTOR")
         try:
-            system.load().install_collector()
+            if utils.lock_file_exists("nc-collector"):
+                utils.out_progress_skip()
+            else:
+                system.load().install_collector()
+                utils.lock_file_create("nc-collector")
+                utils.out_progress_done()
         except Exception as e:
             utils.out_progress_fail()
+            utils.err("FAILED_INSTALL_NC_COLLECTOR")
             raise Exception(e)
-        utils.out_progress_done()
 
         utils.out("FINISHED_INSTALLATION")
 
@@ -156,7 +159,7 @@ def choose_language():
 
 def check_compatibility():
     result = True
-    if not utils.ansible_lock_exists("zabbix"):
+    if not utils.lock_file_exists("zabbix"):
         if system.System.is_app_installed("\"zabbix-agent\""):
             result = False
             log.get_logger().log("Zabbix already installed. Not by us. Aborting.")

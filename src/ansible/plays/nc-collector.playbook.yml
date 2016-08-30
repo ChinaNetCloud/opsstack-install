@@ -1,0 +1,30 @@
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Verify extra-vars
+      fail: msg="Hostname for Opsstack config is not defined"
+      when: opsstack_hostname is not defined
+
+    - name: Save SELinux settings
+      set_fact: selinux="{{ ansible_selinux }}"
+      when: ansible_selinux and ansible_selinux.config_mode != "disabled"
+
+    - name: Disable SElinux
+      selinux: state=disabled
+      when: selinux is defined
+
+    - include: ./nc-collector/rhel6.yml
+      when: (ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 6) or ansible_distribution == 'Amazon'
+
+    - include: ./nc-collector/rhel7.yml
+      when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 7
+
+    - include: ./nc-collector/debian8.yml
+      when: ansible_distribution == "Debian" and ansible_distribution_major_version|int == 8
+
+    - include: ./nc-collector/debian7.yml
+      when: ansible_distribution == "RedHat" and ansible_distribution_major_version|int == 7
+
+    - name: Enable SElinux
+      selinux: state="{{ selinux.config_mode }}" policy="{{ selinux.type }}"
+      when: selinux is defined

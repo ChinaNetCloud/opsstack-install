@@ -80,18 +80,44 @@ class System:
         hn = config.get("opsstack_host_name")
         if hn is None or hn == "":
             raise Exception("Cannot get hostname from config")
-        rc, out, err = utils.ansible_play("base_monitoring", "opsstack_hostname=%s" % config.get("opsstack_host_name"))
+        rc, out, err = utils.ansible_play("base_monitoring", "opsstack_hostname=%s" % hn)
         if not rc == 0:
             raise Exception("Installing basic monitoring failed")
 
     def install_services_monitoring(self):
-        pass
+        for service in self.services:
+            if utils.lock_file_exists('service_%s' % service.getname()):
+                log.get_logger().log("Service %s has already been configured before. Asking for reconfiguration." % service.getname())
+                configure_mon_str = "RECONFIGURE_SERVICE_CONFIRMATION"
+            else:
+                configure_mon_str = "CONFIGURE_MONITOR_SERVER"
+            prompt_string = utils.print_str(configure_mon_str, service.getname())
+            if utils.confirm(prompt_string):
+                log.get_logger().log("Configuring %s" % service.getname())
+                try:
+                    service.configure(self)
+                    utils.lock_file_create('service_%s' % service.getname())
+                except Exception as e:
+                    log.get_logger().log("Configuration of %s failed. See below message" % service.getname())
+                    log.get_logger().log(e.message)
+                    msg = "GENERIC_SERVICE_CONFIG_ERROR"
+                    utils.err(utils.print_str(msg, service.getname()))
 
     def install_syslog(self):
-        pass
+        hn = config.get("opsstack_host_name")
+        if hn is None or hn == "":
+            raise Exception("Cannot get hostname from config")
+        rc, out, err = utils.ansible_play("syslog", "opsstack_hostname=%s" % hn)
+        if not rc == 0:
+            raise Exception("Configuring syslog failed")
 
     def install_collector(self):
-        pass
+        hn = config.get("opsstack_host_name")
+        if hn is None or hn == "":
+            raise Exception("Cannot get hostname from config")
+        rc, out, err = utils.ansible_play("nc-collector", "opsstack_hostname=%s" % hn)
+        if not rc == 0:
+            raise Exception("nc-collector installation failed")
 
     @staticmethod
     def is_proc_running(proc_name):
