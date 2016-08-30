@@ -10,6 +10,7 @@ AGGREGATE_PATH=/repo-aggregate
 
 .PHONY: package
 package:
+	find . -type f -name ".gitkeep" -exec rm -rf {} +
 	msgfmt -o src/locale/en_US/LC_MESSAGES/translations.mo src/locale/en_US/LC_MESSAGES/translations.po
 	msgfmt -o src/locale/zh_CN/LC_MESSAGES/translations.mo src/locale/zh_CN/LC_MESSAGES/translations.po
 	fpm -C $(SRC_DIR)/src/ \
