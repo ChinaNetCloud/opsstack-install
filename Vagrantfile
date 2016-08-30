@@ -21,4 +21,5 @@ Vagrant.configure(2) do |config|
     debian8.vm.provision "shell",
       inline: "ln -s /home/vagrant/sync/src/opsstack-configure.py /usr/bin/opsstack-configure"
   end
+  config.trigger.reject [:destroy]
 end
