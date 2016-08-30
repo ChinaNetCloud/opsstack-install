@@ -1,35 +1,53 @@
 - hosts: localhost
   connection: local
   tasks:
-    - name: Fail on Debian systems yet!
-      fail: msg="Not implemented for Debian yet"
-      when: ansible_os_family == "Debian"
+    - name: Verify extra-vars
+      fail: msg="Hostname for Opsstack config is not defined"
+      when: opsstack_hostname is not defined
+    - name: Create lock file
+      file: path=../locks/zabbix.lock state=touch mode=0000
     - name: Save SELinux settings
       set_fact: selinux="{{ ansible_selinux }}"
-      when: ansible_selinux.config_mode != "disabled"
+      when: ansible_selinux and ansible_selinux.config_mode != "disabled"
     - name: Disable SElinux
       selinux: state=disabled
       when: selinux is defined
+
     - name: Install Zabbix repository RHEL6
       yum: state=present name=http://repo.zabbix.com/zabbix/2.4/rhel/6/x86_64/zabbix-release-2.4-1.el6.noarch.rpm
       when: (ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 6) or ansible_distribution == 'Amazon'
+
     - name: Install Zabbix repository RHEL7
       yum: state=present name=http://repo.zabbix.com/zabbix/2.4/rhel/7/x86_64/zabbix-release-2.4-1.el7.noarch.rpm
       when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 7
+
+    - name: Install Zabbix repository Debian8
+      apt: state=present deb=http://repo.zabbix.com/zabbix/2.4/debian/pool/main/z/zabbix-release/zabbix-release_2.4-1+jessie_all.deb
+      when: ansible_distribution == "Debian" and ansible_distribution_major_version|int == 8
+
+    - name: Install Zabbix repository Debian7
+      apt: state=present deb=http://repo.zabbix.com/zabbix/2.4/debian/pool/main/z/zabbix-release/zabbix-release_2.4-1+wheezy_all.deb
+      when: ansible_distribution == "RedHat" and ansible_distribution_major_version|int == 7
+
     - name: Ensure zabbix-agent is installed
-      yum: name=zabbix-agent state=latest disablerepo=epel disable_gpg_check=yes
+      package: name=zabbix-agent state=latest
     - name: Install CNC Zabbix custom scripts
-      yum: name=nc-zabbix-custom-scripts state=latest disable_gpg_check=yes
+      package: name=nc-zabbix-custom-scripts state=latest
+      ignore_errors: true
     - name: Fix Zabbix config file
-      lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^Hostname=(.*)$' line='Hostname=whatever' backrefs=yes
+      lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^Hostname=(.*)$' line='Hostname={{ opsstack_hostname }}' backrefs=yes
     - name: Change Zabbix to active agent
-      lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^Server\=127\.0\.0\.1\,(.*)$' line='Server=127.0.0.1,\1\nServerActive=127.0.0.1,\1' backrefs=yes
+      lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^ServerActive\=(.*)$' line='ServerActive=proxy1.zabbix.service.chinanetcloud.com,proxy2.zabbix.service.chinanetcloud.com,proxy3.zabbix.service.chinanetcloud.com,proxy4.zabbix.service.chinanetcloud.com,proxy5.zabbix.service.chinanetcloud.com,proxy6.zabbix.service.chinanetcloud.com,proxy7.zabbix.service.chinanetcloud.com,proxy8.zabbix.service.chinanetcloud.com,proxy9.zabbix.service.chinanetcloud.com,proxy10.zabbix.service.chinanetcloud.com,proxy11.zabbix.service.chinanetcloud.com,proxy12.zabbix.service.chinanetcloud.com,proxy13.zabbix.service.chinanetcloud.com,proxy14.zabbix.service.chinanetcloud.com,proxy15.zabbix.service.chinanetcloud.com,proxy16.zabbix.service.chinanetcloud.com,proxy17.zabbix.service.chinanetcloud.com,proxy18.zabbix.service.chinanetcloud.com,proxy19.zabbix.service.chinanetcloud.com,proxy20.zabbix.service.chinanetcloud.com' backrefs=yes
     - name: Fix Zabbix config file permissions
       file: path=/etc/zabbix/zabbix_agentd.conf owner=root group=root mode="u=rw,g=r,o=r"
     - name: Fix Zabbix HOME
       lineinfile: dest=/etc/passwd state=present regexp='^(.*)\/var\/lib\/zabbix(.*)$' line='\1/home/zabbix\2' backrefs=yes
-    - name: Restart crond to use new locations
+    - name: Restart crond to use new locations (RHEL)
       service: name=crond state=restarted
+      when: ansible_os_family == "RedHat"
+    - name: Restart crond to use new locations (Debian)
+      service: name=cron state=restarted
+      when: ansible_os_family == "Debian"
     - name: Enable Zabbix agent
       service: name=zabbix-agent state=restarted enabled=yes
     - name: Enable SElinux
