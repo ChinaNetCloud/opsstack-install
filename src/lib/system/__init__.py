@@ -1,6 +1,7 @@
 from lib import log
 from lib import utils
 from lib import services
+from lib import config
 import platform
 import socket
 
@@ -76,7 +77,10 @@ class System:
         pass
 
     def install_base_monitoring(self):
-        rc, out, err = utils.ansible_play("rhel_base_monitoring")
+        hn = config.get("opsstack_host_name")
+        if hn is None or hn == "":
+            raise Exception("Cannot get hostname from config")
+        rc, out, err = utils.ansible_play("base_monitoring", "opsstack_hostname=%s" % config.get("opsstack_host_name"))
         if not rc == 0:
             raise Exception("Installing basic monitoring failed")
 
