@@ -166,6 +166,7 @@ def check_compatibility():
         if not system.System.is_port_free(10050):
             result = False
             log.get_logger().log("Zabbix port is already taken. And it is not us. Aborting.")
+    # FIXME: Add more checks?
     return result
 
 
