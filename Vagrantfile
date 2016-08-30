@@ -21,5 +21,12 @@ Vagrant.configure(2) do |config|
     debian8.vm.provision "shell",
       inline: "ln -s /home/vagrant/sync/src/opsstack-configure.py /usr/bin/opsstack-configure"
   end
+  config.vm.define "ubuntu1604" do |ubuntu1604|
+    ubuntu1604.vm.box = "ubuntu/xenial64"
+    ubuntu1604.vm.hostname = "ubuntu1604.example.com"
+    ubuntu1604.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+    ubuntu1604.vm.provision "shell",
+      inline: "ln -s /home/vagrant/sync/src/opsstack-configure.py /usr/bin/opsstack-configure"
+  end
   config.trigger.reject [:destroy]
 end
