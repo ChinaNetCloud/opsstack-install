@@ -62,7 +62,7 @@ def main():
             system.load().collect_system_info()
         except Exception as e:
             utils.out_progress_fail()
-            raise Exception(e)
+            raise e
         utils.out_progress_done()
 
         # Perform service discovery
@@ -71,7 +71,7 @@ def main():
             system.load().service_discovery()
         except Exception as e:
             utils.out_progress_fail()
-            raise Exception(e)
+            raise e
         utils.out_progress_done()
 
         if utils.confirm("INSTALL_CONFIRM"):
@@ -93,7 +93,7 @@ def main():
         except Exception as e:
             utils.out_progress_fail()
             utils.err("FAILED_INSTALL_BASIC_MON")
-            raise Exception(e)
+            raise e
         utils.out_progress_done()
 
         # Configure services monitoring
