@@ -21,6 +21,8 @@ OUT_MESSAGE = None
 
 bin_path = sys.path[0]
 
+PLAYS_PATH = os.path.abspath(os.path.dirname(__file__) + "/../../ansible/plays/")
+
 
 def language_translation(msg):
     try:
@@ -84,8 +86,8 @@ def err(message):
 
 
 def execute(cmd):
-    child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
     output, _ = child.communicate()
+    child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=PLAYS_PATH)
     rc = child.returncode
     return rc, output
 
@@ -129,7 +131,7 @@ def confirm(prompt_string, *args):
 
 
 def ansible_play(name, extra_vars=None):
-    plays_folder = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/plays/"
+    plays_folder = PLAYS_PATH + "/"
     if extra_vars is None:
         playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml"
     else:
