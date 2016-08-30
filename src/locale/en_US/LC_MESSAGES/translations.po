@@ -10,10 +10,10 @@ msgstr "Please choose language number:"
 msgid "LANG_USE_DEFAULT"
 msgstr "The wrong language order number, will use system language settings."
 
-msgid "CHECK_PREM"
+msgid "CHECK_PERMISSIONS"
 msgstr "Checking permissions..."
 
-msgid "CHECK_SYS_COMP"
+msgid "CHECK_SYS_COMPATIBILITY"
 msgstr "Checking system compatibility..."
 
 msgid "CANNOT_CONNECT_INTERNET"
@@ -22,10 +22,10 @@ msgstr "Cannot connect to Internet"
 msgid "CANNOT_CONNECT_ZABBIX"
 msgstr "Cannot connect to Zabbix"
 
-msgid "NOT_COMP_EXIT"
+msgid "NOT_COMPATIBLE_ERR"
 msgstr "Current system is not compatible. Please check documentation. Exiting..."
 
-msgid "NOT_COMP_PERM"
+msgid "INCORRECT_PERMISSIONS_ERR"
 msgstr "Not sufficient permissions, please run with sudo. Exiting..."
 
 msgid "COLLECT_SYS_INFO"

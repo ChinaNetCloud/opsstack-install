@@ -86,10 +86,10 @@ def err(message):
 
 
 def execute(cmd):
-    output, _ = child.communicate()
     child = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=PLAYS_PATH)
+    output, stderr = child.communicate()
     rc = child.returncode
-    return rc, output
+    return rc, output, stderr
 
 
 def prompt(prompt_string):
@@ -136,12 +136,21 @@ def ansible_play(name, extra_vars=None):
         playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml"
     else:
         playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\""
-    rc, output = execute(playbook_cmd)
+    rc, stdout, stderr = execute(playbook_cmd)
     if rc != 0:
         log.get_logger().log("Running playbook %s failed. Please see output below" % name)
         log.get_logger().log(playbook_cmd)
-        log.get_logger().log(output)
-    return rc, output
+        log.get_logger().log(stdout)
+        log.get_logger().log(stderr)
+    return rc, stdout, stderr
+
+
+def ansible_lock_exists(name):
+    result = False
+    lock_folder = os.path.abspath(os.path.dirname(__file__) + "/../../") + "/ansible/locks/"
+    if os.path.isfile(lock_folder + name + ".lock"):
+        result = True
+    return result
 
 
 def test_connection(host, port):

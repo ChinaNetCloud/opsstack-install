@@ -76,7 +76,9 @@ class System:
         pass
 
     def install_base_monitoring(self):
-        pass
+        rc, out, err = utils.ansible_play("rhel_base_monitoring")
+        if not rc == 0:
+            raise Exception("Installing basic monitoring failed")
 
     def install_services_monitoring(self):
         pass
@@ -90,8 +92,8 @@ class System:
     @staticmethod
     def is_proc_running(proc_name):
         result = True
-        rc, output = utils.execute("ps faux | grep -v grep | grep " + proc_name)
-        if output == "" and rc == 1:
+        rc, stdout, stderr = utils.execute("ps faux | grep -v grep | grep " + proc_name)
+        if stdout == "" and rc == 1:
             # proc_name not found
             result = False
         return result
@@ -99,9 +101,9 @@ class System:
     @staticmethod
     def is_app_installed(app_name):
         result = True
-        rc, output = utils.execute("rpm -qa | grep " + app_name)
-        if output == "" and rc == 1:
-            # app_name is not installed as rpm package
+        rc, stdout, stderr = utils.ansible_play("is_app_installed", "package_name=%s" % app_name)
+        if rc == 1:
+            # app_name is not installed
             result = False
         return result
 
