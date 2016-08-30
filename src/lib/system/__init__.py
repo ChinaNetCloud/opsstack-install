@@ -121,9 +121,9 @@ class System:
 
 
 def load():
-    log.get_logger().log("Loading system file")
     global _singleton
     if _singleton is None:
+        log.get_logger().log("Loading system class")
         _singleton = System()
     return _singleton
 

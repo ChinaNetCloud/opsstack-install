@@ -1,6 +1,9 @@
 - hosts: localhost
   connection: local
   tasks:
+    - name: Fail on Debian systems yet!
+      fail: msg="Not implemented for Debian yet"
+      when: ansible_os_family == "Debian"
     - name: Save SELinux settings
       set_fact: selinux="{{ ansible_selinux }}"
       when: ansible_selinux.config_mode != "disabled"
