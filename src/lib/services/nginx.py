@@ -30,7 +30,7 @@ class Nginx(abstract.Abstract):
         # The nginx configure parameters will be wrote to stderr
         if rc == 0 and err != "":
             for i in err.split(' '):
-                if re.match(r"\-\-conf\-path\=.*nginx\.conf", i):
+                if re.match(r"\-\-conf\-path\=.*\.conf", i):
                     conf_file = i.split('=')[1]
                     conf_dir = os.path.dirname(conf_file)
                     if os.path.exists(conf_file):
