@@ -113,7 +113,11 @@ def main():
         try:
             system.load().install_services_monitoring()
         except Exception as e:
-            raise e
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            filename = f.f_code.co_filename
+            log.get_logger().log("Exception %s, in %s at %s" % (e.message, filename, lineno))
 
         # Confimation enable.monitoring call
         utils.out_progress_wait("CONFIRM_API_CALL")
