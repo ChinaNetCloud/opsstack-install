@@ -4,6 +4,7 @@ import re
 
 from lib import utils
 
+
 class Nginx(abstract.Abstract):
     def __init__(self):
         abstract.Abstract.__init__(self)
@@ -28,12 +29,12 @@ class Nginx(abstract.Abstract):
         rc, out, err = utils.execute("nginx -V")
         # The nginx configure parameters will be wrote to stderr
         if rc == 0 and err != "":
-            if re.match(r".*(\-\-conf\-path\=.*nginx\.conf).*", err.split('\n')[-2]):
-                info = re.match(r".*(\-\-conf\-path\=.*nginx\.conf).*", err.split('\n')[-2]).group(1)
-                conf_file = info.split('=')[1]
-                conf_dir = os.path.dirname(conf_file)
-                if os.path.exists(conf_file):
-                    result = True
+            for i in err.split(' '):
+                if re.match(r"\-\-conf\-path\=.*nginx\.conf", i):
+                    conf_file = i.split('=')[1]
+                    conf_dir = os.path.dirname(conf_file)
+                    if os.path.exists(conf_file):
+                        result = True
         return result, conf_file, conf_dir
 
     @staticmethod
@@ -47,14 +48,10 @@ class Nginx(abstract.Abstract):
         if utils.confirm(utils.print_str("RESTART_SERVICE", Nginx.getname())):
             nginx_restart = "true"
         utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Nginx.getname()))
-        if not system.config.get("nginx_monitoring_configured") == "yes":
-            rc, out, err = utils.ansible_play("rhel_nginx_monitoring", "nginx_conf_dir=%s nginx_conf_file=%s nginx_restart=%s" % (nginx_dir, nginx_file, nginx_restart))
-            if rc == 0:
-                system.config.set("nginx_monitoring_configured", "yes")
-                utils.out_progress_done()
-            else:
-                utils.out_progress_fail()
-                utils.err(utils.print_str("FAILED_CONFIGURE_MONITOR", Nginx.getname()))
-                exit(1)
+        rc, out, err = utils.ansible_play("nginx_monitoring", "nginx_conf_dir=%s nginx_conf_file=%s nginx_restart=%s" % (nginx_dir, nginx_file, nginx_restart))
+        if rc == 0:
+            utils.out_progress_done()
         else:
-            utils.out_progress_skip()
+            utils.out_progress_fail()
+            utils.err(utils.print_str("FAILED_CONFIGURE_MONITOR", Nginx.getname()))
+            exit(1)
