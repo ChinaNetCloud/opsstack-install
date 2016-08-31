@@ -5,7 +5,7 @@
 #
 
 msgid "CHOOSE_LANG"
-msgstr "请选择运行脚本的语言序号: "
+msgstr "请选择运行脚本的语言序号"
 
 msgid "LANG_USE_DEFAULT"
 msgstr "错误的语言列表序号, 将会使用系统默认的语言环境设置."

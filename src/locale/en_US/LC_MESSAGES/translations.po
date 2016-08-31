@@ -5,7 +5,7 @@
 #
 
 msgid "CHOOSE_LANG"
-msgstr "Please choose language number:"
+msgstr "Please choose language number"
 
 msgid "LANG_USE_DEFAULT"
 msgstr "The wrong language order number, will use system language settings."
