@@ -74,7 +74,24 @@ class System:
                 self.services.append(services.servicelist[service])
 
     def get_info(self):
-        pass
+        result = {
+            "hostname": self.local_fqdn,
+            "os": [{
+                "name": self.os,
+                "distribution": self.distribution,
+                "version": self.version
+            }],
+            "interfaces": self.interfaces,
+            "services": []
+        }
+        for service in self.services:
+            item = {
+                "name": service.getname(),
+                "version": "1.0.0",
+                "listen": []
+            }
+            result["services"].append(item)
+        return result
 
     def install_base_monitoring(self):
         hn = config.get("opsstack_host_name")

@@ -6,6 +6,7 @@ from lib.utils import args
 from lib import log
 from lib import config
 from lib import utils
+from lib import api
 import locale
 import os
 import sys
@@ -43,6 +44,14 @@ def main():
         log.get_logger(config.get("log_dir") + "/install.log", config.get("log_level"))
         log.get_logger().log("Starting installation process")
 
+        # Verify token
+        utils.out_progress_wait("CONNECT_OPSSTACK")
+        if api.load().verify_token():
+            utils.out_progress_done()
+        else:
+            utils.out_progress_fail()
+            raise Exception("API token verification failed")
+
         # Load system class
         system.load()
 
@@ -74,17 +83,20 @@ def main():
             utils.out_progress_fail()
             raise e
 
+        # Confirm installation
         if utils.confirm("INSTALL_CONFIRM"):
             log.get_logger().log("User confirmed installation")
         else:
             log.get_logger().log("User rejected installation")
             exit(0)
 
-        # FIXME: Verify API token here
-
-        system.load().get_info()
-
-        # FIXME: Update OpsStack with system info here
+        # Update server information on OpsStack
+        utils.out_progress_wait("OPSSTACK_SERVER_INFO_UPDATE")
+        info = system.load().get_info()
+        if api.load().update_configuration(info):
+            utils.out_progress_done()
+        else:
+            utils.out_progress_fail()
 
         # Install base monitoring
         utils.out_progress_wait("INSTALL_BASIC_MON")
@@ -101,9 +113,18 @@ def main():
         try:
             system.load().install_services_monitoring()
         except Exception as e:
-            raise e
+            exc_type, exc_obj, tb = sys.exc_info()
+            f = tb.tb_frame
+            lineno = tb.tb_lineno
+            filename = f.f_code.co_filename
+            log.get_logger().log("Exception %s, in %s at %s" % (e.message, filename, lineno))
 
-        # FIXME: Enable monitoring API call
+        # Confimation enable.monitoring call
+        utils.out_progress_wait("CONFIRM_API_CALL")
+        if api.load().confirm_configuration():
+            utils.out_progress_done()
+        else:
+            utils.out_progress_fail()
 
         # Configure syslog
         utils.out_progress_wait("RUN_SYSLOG_CONFIGURATION")
