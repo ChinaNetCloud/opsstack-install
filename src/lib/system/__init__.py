@@ -119,6 +119,9 @@ class System:
                     log.get_logger().log(e.message)
                     msg = "GENERIC_SERVICE_CONFIG_ERROR"
                     utils.err(utils.print_str(msg, service.getname()))
+            else:
+                utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", service.getname()))
+                utils.out_progress_skip()
 
     def install_syslog(self):
         hn = config.get("opsstack_host_name")
