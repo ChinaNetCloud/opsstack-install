@@ -10,4 +10,3 @@
 
     - include: ./phpfpm_monitoring/debian.yml
       when: ansible_distribution == "Debian"
-
