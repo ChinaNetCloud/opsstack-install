@@ -175,3 +175,5 @@ msgstr "CNC repo is not enabled, can not install nc_collector package"
 msgid "FAILED_INSTALL_NC_COLLECTOR"
 msgstr "Failed to install nc_collector package"
 
+msgid "CHECK_CONFIG_FILE"
+msgstr "Checking config file..."
