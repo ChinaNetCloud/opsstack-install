@@ -1,54 +1,12 @@
 - hosts: localhost
   connection: local
   tasks:
-  - name: ensure apache monitoring folder exist
-    file:
-      path={{ httpd_dir }}/cnc-conf.d
-      state=directory
+    - name: Verify extra-vars
+      fail: msg="{httpd_dir, httpd_conf, httpd_restart} Some of them are not defined"
+      when: (httpd_dir is not defined) or (httpd_conf is not defined) or (httpd_restart is not defined)
 
-  - name: register nginx_include_zabbix info
-    command: grep -q "IncludeOptional cnc-conf.d/zabbix.conf" {{ httpd_conf }}
-    register: apache_include_zabbix
-    ignore_errors: yes
+    - include: ./apache_monitoring/rhel.yml
+      when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
-  - name: ensure apache monitoring folder is included by httpd.conf
-    lineinfile:
-      dest={{ httpd_conf }}
-      backup=yes
-      state=present
-      insertafter='^#?IncludeOptional.*'
-      regexp='IncludeOptional.*'
-      line='#cnc monitoring configuration\nIncludeOptional cnc-conf.d/zabbix.conf'
-    when:
-      apache_include_zabbix.rc|int != 0
-
-  - name: ensure httpd monitoring configuration
-    template:
-      src=../templates/httpd_zabbix.conf.j2
-      dest={{ httpd_dir }}/cnc-conf.d/zabbix.conf
-      owner=root
-      group=root
-      mode=0644
-
-  - name: ensure zabbix vhost log folder and create zabbix log folder
-    file:
-      dest=/var/log/httpd/zabbix
-      owner=root
-      group=root
-      state=directory
-
-  - name: ensure http configuration is valid 
-    command: /sbin/httpd -t
-    register: httpd_test
-
-  - name: restart httpd
-    service:
-      name=httpd
-      state=restarted
-    when:
-      "{{ httpd_restart }} == true and httpd_test.rc|int == 0"
-
-  - name: notify customer if httpd test failed
-    command: echo "apache configuration syntax is incorrect, please fix it and then restart httpd"
-    when:
-      httpd_test.rc|int != 0
+    - include: ./apache_monitoring/debian.yml
+      when: ansible_distribution == "Debian"
