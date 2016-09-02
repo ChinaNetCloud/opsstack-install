@@ -10,7 +10,7 @@
 
     - name: Save SELinux settings
       set_fact: selinux="{{ ansible_selinux }}"
-      when: ansible_selinux and ansible_selinux.config_mode != "disabled"
+      when: ansible_selinux and ansible_selinux.status != "disabled"
 
     - name: Disable SElinux
       selinux: state=disabled

@@ -130,7 +130,7 @@ msgid "FAILED_CONF_HAPROXY"
 msgstr "Failed to configure nc-haproxy"
 
 # service mysql
-msgid "MYSQL_ROOT_PASSWD"
+msgid "MYSQL_ROOT_PASSWD: "
 msgstr "mysql(port %s) root password:"
 
 # mysql & mongo
@@ -177,3 +177,13 @@ msgstr "Failed to install nc_collector package"
 
 msgid "CHECK_CONFIG_FILE"
 msgstr "Checking config file..."
+
+msgid "INSTALL_CONFIRM"
+msgstr "Do you want to install services monitoring?"
+
+msgid "OPSSTACK_SERVER_INFO_UPDATE"
+msgstr "Updating server information in OpsStack..."
+
+
+msgid "FINISHED_INSTALLATION"
+msgstr "Installation finished!"
