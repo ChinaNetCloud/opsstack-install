@@ -56,7 +56,7 @@ class MySQL(abstract.Abstract):
             return pars
         else:
             pars['slave'] = False
-        passwd = utils.prompt_pass(utils.print_str("MYSQL_ROOT_PASSWD: ", port))
+        passwd = utils.prompt_pass(utils.print_str("MYSQL_ROOT_PASSWD", port))
         if passwd != '':
             mysql_root_pass = passwd
         pars['user'] = 'root'

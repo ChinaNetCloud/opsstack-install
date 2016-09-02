@@ -129,8 +129,8 @@ msgid "FAILED_CONF_HAPROXY"
 msgstr "配置 nc-haproxy 失败"
 
 # service mysql
-msgid "MYSQL_ROOT_PASSWD: "
-msgstr "mysql(端口 %s)的 root 密码:"
+msgid "MYSQL_ROOT_PASSWD"
+msgstr "mysql(端口 %s)的 root 密码"
 
 # mysql & mongo
 msgid "CREATE_MONITOR_USER"
@@ -159,10 +159,10 @@ msgstr "配置 %s (端口 %s) 的监控"
 
 # mongo
 msgid "MONGO_ADMIN_USER"
-msgstr "Mongo [端口 %s] 数据库管理员用户名: "
+msgstr "Mongo [端口 %s] 数据库管理员用户名"
 
 msgid "MONGO_ADMIN_PASS"
-msgstr "Mongo [端口 %s] 数控库管理员密码: "
+msgstr "Mongo [端口 %s] 数控库管理员密码"
 
 #nc_collector
 msgid "INSTALL_NC_COLLECTOR"
