@@ -177,3 +177,15 @@ msgstr "nc_collector工具包安装失败"
 msgid "CHECK_CONFIG_FILE"
 msgstr "正在检查配置文件..."
 
+msgid "INSTALL_CONFIRM"
+msgstr "是否安装系统服务监控?"
+
+msgid "OPSSTACK_SERVER_INFO_UPDATE"
+msgstr "正在更新OpsStack服务器信息..."
+
+msgid "MYSQL_ROOT_PASSWD"
+msgstr "请输入MySQL root 密码:"
+
+msgid "FINISHED_INSTALLATION"
+msgstr "安装完成!"
+

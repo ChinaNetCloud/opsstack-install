@@ -2,37 +2,25 @@
   connection: local
   gather_facts: yes
   tasks:
-  - name: Ensure mysql python installed (non-amzn)
-    yum:
-      name=MySQL-python.x86_64
-      state=present
-    when:
-      ansible_distribution != "Amazon"
+    - name: Verify extra-vars
+      fail: msg="mysql_nccheckdb_pass variable for mysql configure is not defined"
+      when: mysql_nccheckdb_pass is not defined
 
-  - name: Ensure mysql python installed (amzn)
-    yum:
-      name=MySQL-python27.x86_64
-      state=present
-    when:
-      ansible_distribution == "Amazon"
+    - name: Verify extra-vars
+      fail: msg="mysql_root_pass variable for mysql configure is not defined"
+      when: mysql_root_pass is not defined
 
-  - name: Create nccheckdb user for mysql
-    mysql_user:
-      name=nccheckdb
-      password={{ mysql_nccheckdb_pass }}
-      priv="*.*:PROCESS,REPLICATION CLIENT,SELECT"
-      state=present
-      login_user=root
-      login_password={{ mysql_root_pass }}
-      login_port={{ mysql_port }}
+    - name: Verify extra-vars
+      fail: msg="mysql_port variable for mysql configure is not defined"
+      when: mysql_port is not defined
 
-  - name: Prepare zabbix mysql_credentials
-    template:
-      src=../templates/client.my.cnf.j2
-      dest=/home/zabbix/conf/mysql_credentials
-      owner=zabbix
-      group=zabbix
-      mode=0600
-    with_items:
-      - user: nccheckdb
-        pass: '{{ mysql_nccheckdb_pass }}'
+#    Can not use pip to install mysql module in venv as may need to install Development Tools packages in the system first,
+#      can maybe add python module to our venv and rebuild the venv package
+#    - name: Ensure mysql python installed
+#      pip: name=MySQL state=present
+
+    - include: ./mysql_monitoring/rhel.yml
+      when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
+
+    - include: ./mysql_monitoring/debian.yml
+      when: ansible_distribution == "Debian"
