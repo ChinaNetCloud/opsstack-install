@@ -184,8 +184,6 @@ msgstr "Do you want to install services monitoring?"
 msgid "OPSSTACK_SERVER_INFO_UPDATE"
 msgstr "Updating server information in OpsStack..."
 
-msgid "MYSQL_ROOT_PASSWD"
-msgstr "Please input MySQL root Password:"
 
 msgid "FINISHED_INSTALLATION"
 msgstr "Installation finished!"

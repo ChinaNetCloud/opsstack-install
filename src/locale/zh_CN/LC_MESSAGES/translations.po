@@ -183,9 +183,6 @@ msgstr "是否安装系统服务监控?"
 msgid "OPSSTACK_SERVER_INFO_UPDATE"
 msgstr "正在更新OpsStack服务器信息..."
 
-msgid "MYSQL_ROOT_PASSWD"
-msgstr "请输入MySQL root 密码:"
-
 msgid "FINISHED_INSTALLATION"
 msgstr "安装完成!"
 
