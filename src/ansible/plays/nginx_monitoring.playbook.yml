@@ -2,16 +2,8 @@
   connection: local
   tasks:
     - name: Verify extra-vars
-      fail: msg="Nginx_conf_dir for nginx service config is not defined"
-      when: nginx_conf_dir is not defined
-
-    - name: Verify extra-vars
-      fail: msg="nginx_conf_file for nginx service config is not defined"
-      when: nginx_conf_file is not defined
-
-    - name: Verify extra-vars
-      fail: msg="nginx_restart for nginx service config is not defined"
-      when: nginx_restart is not defined
+      fail: msg="{nginx_conf_dir, nginx_conf_file, nginx_restart} Some of them are not defined"
+      when: (nginx_conf_dir is not defined) or (nginx_conf_file is not defined) or (nginx_restart is not defined)
 
     - include: ./nginx_monitoring/rhel.yml
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
