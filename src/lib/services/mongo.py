@@ -16,7 +16,7 @@ class MongoDB(abstract.Abstract):
     @staticmethod
     def discover(system):
         result = False
-        if system.OS == 'linux':
+        if system.os == 'linux':
             if system.is_proc_running("mongod"):
                 result = True
         return result

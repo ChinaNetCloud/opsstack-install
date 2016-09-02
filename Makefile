@@ -1,15 +1,16 @@
-NAME=opsstack-configure
+NAME=opsstack-install
 VERSION=$(BUILD_DISPLAY_NAME)
 SRC_DIR=$(shell pwd)
-PREFIX=/var/lib/opsstack/configure
+PREFIX=/var/lib/opsstack/install
 ARCHITECTURE=all
 AFTER_INSTALL=--after-install $(SRC_DIR)/after_install.sh
-AFTER_REMOVE=--after-remove $(SRC_DIR)/after_remove.sh
-REQUIRES=-d opsstack-common
+BEFORE_REMOVE=--before-remove $(SRC_DIR)/before_remove.sh
+REQUIRES=-d opsstack-common -d opsstack-configure
 AGGREGATE_PATH=/repo-aggregate
 
 .PHONY: package
 package:
+	find . -type f -name ".gitkeep" -exec rm -rf {} +
 	msgfmt -o src/locale/en_US/LC_MESSAGES/translations.mo src/locale/en_US/LC_MESSAGES/translations.po
 	msgfmt -o src/locale/zh_CN/LC_MESSAGES/translations.mo src/locale/zh_CN/LC_MESSAGES/translations.po
 	fpm -C $(SRC_DIR)/src/ \
@@ -19,7 +20,7 @@ package:
 		--prefix $(PREFIX) \
 		-a $(ARCHITECTURE) \
 		$(AFTER_INSTALL) \
-		$(AFTER_REMOVE) \
+		$(BEFORE_REMOVE) \
 		--template-scripts \
 		$(REQUIRES) \
 		--force

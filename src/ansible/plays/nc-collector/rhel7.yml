@@ -1,0 +1,10 @@
+---
+
+- name: Install nc-collector package
+  package: name=nc-collector state=latest
+
+- name: Modify nc-collector file to place correct hostname
+  lineinfile: dest=/opt/netcloud/nc_collector/collector.py state=present regexp='^hostname = (.*)$' line='hostname = \"{{ opsstack_hostname }}\"' backrefs=yes
+
+- name: Reload cron daemon
+  service: name=crond state=restarted

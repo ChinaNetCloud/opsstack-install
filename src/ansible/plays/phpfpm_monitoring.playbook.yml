@@ -1,0 +1,12 @@
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Verify extra-vars
+      fail: msg="phpfpm_restart for php-fpm service config is not defined"
+      when: phpfpm_restart is not defined
+
+    - include: ./phpfpm_monitoring/rhel.yml
+      when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
+
+    - include: ./phpfpm_monitoring/debian.yml
+      when: ansible_distribution == "Debian"

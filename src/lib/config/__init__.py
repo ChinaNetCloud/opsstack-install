@@ -1,9 +1,6 @@
 import os
-try:
-    from ConfigParser import SafeConfigParser as _confparser
-except ImportError:
-    # Perhaps running in Python3
-    from configparser import ConfigParser as _confparser
+from ConfigParser import SafeConfigParser as _confparser
+from lib import utils
 
 _singleton = None
 
@@ -17,40 +14,45 @@ class _Configuration:
         self.config_file = config_file
         if os.path.isfile(self.config_file):
             self.load()
-        else:
-            self.create()
-
-        self.set("install_path", os.path.abspath(os.path.dirname(__file__) + "../../"))
 
     def load(self):
         self.config = _confparser()
         self.config.read(self.config_file)
 
-    def create(self):
-        self.config = _confparser()
-        self.config.read(self.config_file)
-        self.config.add_section(_SECTNAME)
-        self.save()
-
-    def save(self):
-        with open(self.config_file, 'w') as f:
-            self.config.write(f)
-
-    def get(self, key):
+    def get(self, key, section=None):
         result = None
+        if section is None:
+            section = _SECTNAME
         try:
-            result = self.config.get(_SECTNAME, key)
+            result = self.config.get(section, key)
         except:
             pass
         return result
 
-    def set(self, key, value):
-        self.config.set(_SECTNAME, key, value)
-        self.save()
-
-    def delete(self, key):
-        self.config.remove_option(_SECTNAME, key)
-        self.save()
+    def validate(self):
+        # FIXME: Add validation of token, host_id and log_dir?
+        result = True
+        # Machine ID must be matching
+        machine_id = utils.get_machine_id()
+        conf_machine_id = self.get("machine_id")
+        if not machine_id == conf_machine_id:
+            result = False
+        # OpsStack URL must be set and be either production or DEV
+        if self.get("opsstack_api_url") not in ["https://opsstack.chinanetcloud.com", "https://opsstack-dev.service.chinanetcloud.com"]:
+            result = False
+        # OpsStack API token must be set
+        if self.get("opsstack_api_token") is None:
+            result = False
+        # OpsStack Host ID must be set
+        if self.get("opsstack_host_id") is None:
+            result = False
+        # OpsStack Host Name must be set
+        if self.get("opsstack_host_name") is None:
+            result = False
+        # Logs directory must be set
+        if self.get("log_dir") is None:
+            result = False
+        return result
 
 
 def load(config_file=None):
@@ -61,6 +63,14 @@ def load(config_file=None):
         else:
             raise Exception("Bad call")
     return _singleton
+
+
+def get(key, section=None):
+    global _singleton
+    if _singleton is None:
+        raise Exception("Configuration is not initialized")
+    else:
+        return _singleton.get(key, section)
 
 
 if __name__ == '__main__':

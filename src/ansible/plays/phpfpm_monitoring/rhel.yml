@@ -1,6 +1,4 @@
-- hosts: localhost
-  connection: local
-  tasks:
+---
   - name: register pm_status_path variable
     command: grep -q "^pm.status_path = /nc_fpm_status" /etc/php-fpm.d/www.conf
     register: pm_status_path
@@ -42,6 +40,6 @@
       "{{ phpfpm_restart }} == true and php_fpm_service_status.rc|int == 0"
 
   - name: notify customer if php-fpm configure file test failed
-    command: echo "php-fpm configuration syntax is incorrect, please fix it and then restart nginx"
+    command: echo "php-fpm configuration syntax is incorrect, please fix it and then restart php-fpm"
     when:
       php_fpm_service_status.rc|int != 0
