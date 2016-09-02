@@ -129,7 +129,7 @@ msgid "FAILED_CONF_HAPROXY"
 msgstr "配置 nc-haproxy 失败"
 
 # service mysql
-msgid "MYSQL_ROOT_PASSWD"
+msgid "MYSQL_ROOT_PASSWD: "
 msgstr "mysql(端口 %s)的 root 密码:"
 
 # mysql & mongo

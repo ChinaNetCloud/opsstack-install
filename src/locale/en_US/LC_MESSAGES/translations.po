@@ -130,7 +130,7 @@ msgid "FAILED_CONF_HAPROXY"
 msgstr "Failed to configure nc-haproxy"
 
 # service mysql
-msgid "MYSQL_ROOT_PASSWD"
+msgid "MYSQL_ROOT_PASSWD: "
 msgstr "mysql(port %s) root password:"
 
 # mysql & mongo
