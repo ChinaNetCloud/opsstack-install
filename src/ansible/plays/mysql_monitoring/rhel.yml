@@ -1,4 +1,18 @@
 ---
+- name: Ensure mysql python installed (non-amzn)
+  yum:
+    name=MySQL-python.x86_64
+    state=present
+  when:
+    ansible_distribution != "Amazon"
+
+- name: Ensure mysql python installed (amzn)
+  yum:
+    name=MySQL-python27.x86_64
+    state=present
+  when:
+    ansible_distribution == "Amazon"
+
 - name: Create nccheckdb user for mysql
   mysql_user:
     name=nccheckdb
