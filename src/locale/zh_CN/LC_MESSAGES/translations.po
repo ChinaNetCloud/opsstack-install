@@ -189,6 +189,3 @@ msgstr "安装完成!"
 msgid "GENERIC_ERROR_MSG"
 msgstr "安装出错,退出!"
 
-
-
-
