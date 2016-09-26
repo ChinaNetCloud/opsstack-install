@@ -16,8 +16,14 @@
 - name: Change Zabbix Server to default
   lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^Server\=(.*)$' line='Server=127.0.0.1' backrefs=yes
 
+- name: zabbix serveractive entry check
+  command: grep -q "^ServerActive=" /etc/zabbix/zabbix_agentd.conf
+  register: zabbix_active
+  ignore_errors: yes
+
 - name: Change Zabbix to active agent
   lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^Server\=(.*)$' line='Server=\1\nServerActive=proxy1.zabbix.service.chinanetcloud.com,proxy2.zabbix.service.chinanetcloud.com,proxy3.zabbix.service.chinanetcloud.com,proxy4.zabbix.service.chinanetcloud.com,proxy5.zabbix.service.chinanetcloud.com,proxy6.zabbix.service.chinanetcloud.com,proxy7.zabbix.service.chinanetcloud.com,proxy8.zabbix.service.chinanetcloud.com,proxy9.zabbix.service.chinanetcloud.com,proxy10.zabbix.service.chinanetcloud.com,proxy11.zabbix.service.chinanetcloud.com,proxy12.zabbix.service.chinanetcloud.com,proxy13.zabbix.service.chinanetcloud.com,proxy14.zabbix.service.chinanetcloud.com,proxy15.zabbix.service.chinanetcloud.com,proxy16.zabbix.service.chinanetcloud.com,proxy17.zabbix.service.chinanetcloud.com,proxy18.zabbix.service.chinanetcloud.com,proxy19.zabbix.service.chinanetcloud.com,proxy20.zabbix.service.chinanetcloud.com' backrefs=yes
+  when: zabbix_active.rc|int != 0
 
 - name: Fix Zabbix config file permissions
   file: path=/etc/zabbix/zabbix_agentd.conf owner=root group=root mode="u=rw,g=r,o=r"
