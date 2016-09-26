@@ -186,3 +186,6 @@ msgstr "正在更新OpsStack服务器信息..."
 msgid "FINISHED_INSTALLATION"
 msgstr "安装完成!"
 
+msgid "GENERIC_ERROR_MSG"
+msgstr "安装出错,退出!"
+
