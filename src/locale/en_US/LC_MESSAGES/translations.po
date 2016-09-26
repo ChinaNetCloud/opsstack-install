@@ -187,3 +187,7 @@ msgstr "Updating server information in OpsStack..."
 
 msgid "FINISHED_INSTALLATION"
 msgstr "Installation finished!"
+
+msgid "GENERIC_ERROR_MSG"
+msgstr "Error, aborting!"
+
