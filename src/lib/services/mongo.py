@@ -64,18 +64,12 @@ class MongoDB(abstract.Abstract):
         pars = MongoDB.get_pars()
         pars_json = json.dumps(pars)
         utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MongoDB.getname(), pars['port']))
-        if not system.config.get("mongo_monitoring_configured") == "yes":
-            rc, out, err = utils.ansible_play("rhel_mongo_monitoring", pars_json)
+        rc, out, err = utils.ansible_play("mongo_monitoring", pars_json)
         if rc != 0:
             utils.out_progress_fail()
             utils.err(utils.print_str("FAILED_CREATE_USER", MongoDB.getname()))
             exit(1)
         else:
-            with open('/home/zabbix/conf/nc_mongo_check.conf', 'w') as mongo_conf:
-                mongo_conf.write('MONGO_USER="nccheckdb"\n')
-                mongo_conf.write('MONGO_PWD="%s"\n' % pars['nccheckdb_pwd'])
-                mongo_conf.write('MONGO_HOST="localhost"\n')
-                mongo_conf.write('MONGO_PORT="%s"' % pars['port'])
             utils.out_progress_done()
 
 

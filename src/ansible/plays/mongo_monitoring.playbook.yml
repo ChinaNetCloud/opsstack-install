@@ -1,33 +1,12 @@
 - hosts: localhost
   connection: local
   tasks:
-    - name: ensure pymongo installed
-      pip:
-        name=pymongo
-        state=present
+    - name: Verify extra-vars
+      fail: msg="{ mongo_port, nccheckdb_pwd } Some of them are not defined"
+      when: (port is not defined) or (nccheckdb_pwd is not defined)
 
-    - name: Create Mongo monitor user with-admin-passwd
-      mongodb_user:
-        login_user: "{{ user }}"
-        login_password: "{{ passwd }}"
-        login_port: "{{ port }}"
-        database: admin
-        user: nccheckdb
-        password: "{{ nccheckdb_pwd }}"
-        state: present
-        roles:
-        - { db: "admin", role: "read"}
-      when: user != None
+    - include: ./mongo_monitoring/rhel.yml
+      when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
-    - name: Create Mongo monitor user no-admin-passwd
-      mongodb_user:
-        login_port: "{{ port }}"
-        database: admin
-        user: nccheckdb
-        password: "{{ nccheckdb_pwd }}"
-        state: present
-        roles:
-        - { db: "admin", role: "read"}
-      when: user == None
-
-
+    - include: ./mongo_monitoring/debian.yml
+      when: ansible_distribution == "Debian"

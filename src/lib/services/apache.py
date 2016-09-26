@@ -4,6 +4,7 @@ import re
 
 from lib import utils
 
+
 class Apache(abstract.Abstract):
     def __init__(self):
         abstract.Abstract.__init__(self)
@@ -50,14 +51,10 @@ class Apache(abstract.Abstract):
         if utils.confirm(utils.print_str("RESTART_SERVICE", Apache.getname())):
             httpd_restart = "true"
         utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Apache.getname()))
-        if not system.config.get("apache_monitoring_configured") == "yes": 
-            rc, out, err = utils.ansible_play("rhel_apache_monitoring", "httpd_dir=%s httpd_conf=%s httpd_restart=%s" % (httpd_dir, httpd_conf, httpd_restart))
-            if rc == 0:
-                system.config.set("apache_monitoring_configured", "yes")
-                utils.out_progress_done()
-            else:
-                utils.out_progress_fail()
-                utils.err(utils.print_str("FAILED_CONFIGURE_MONITOR", Apache.getname()))
-                exit(1)
+        rc, out, err = utils.ansible_play("apache_monitoring", "httpd_dir=%s httpd_conf=%s httpd_restart=%s" % (httpd_dir, httpd_conf, httpd_restart))
+        if rc == 0:
+            utils.out_progress_done()
         else:
-            utils.out_progress_skip()
+            utils.out_progress_fail()
+            utils.err(utils.print_str("FAILED_CONFIGURE_MONITOR", Apache.getname()))
+            exit(1)

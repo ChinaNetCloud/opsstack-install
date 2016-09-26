@@ -36,7 +36,7 @@ class MySQL(abstract.Abstract):
         mysql_root_pass = None
         port = None
         rc, out, err = utils.execute(
-            "ss -ntlp -A inet | awk -F: '/mysqld/&&/LISTEN/{print $2}' | awk '{print $1}'| sort | head -1")
+            "ss -ntlp -A inet | grep mysqld |awk '{print $5}'|awk -F: '{print $NF}'|head -1")
         if rc != 0 or out.strip() == '':
             out_info = utils.print_str("FAILED_GET_LISTEN_PORT", MySQL.getname())
             utils.out(out_info)
@@ -52,13 +52,11 @@ class MySQL(abstract.Abstract):
         confirm_slave_str = utils.print_str("SLAVE_CHECK", MySQL.getname(), port)
         slave_confirmation = utils.confirm(confirm_slave_str)
         if slave_confirmation is True:
-            utils.out(utils.print_str("SLAVE_SKIP", MySQL.getname()))
-            utils.out(utils.print_str("CREATE_USER_DOC", MySQL.getname()))
             pars['slave'] = True
             return pars
         else:
             pars['slave'] = False
-        passwd = utils.prompt_pass(utils.print_str("MYSQL_ROOT_PASSWD: ", port))
+        passwd = utils.prompt_pass(utils.print_str("MYSQL_ROOT_PASSWD", port))
         if passwd != '':
             mysql_root_pass = passwd
         pars['user'] = 'root'
@@ -69,23 +67,21 @@ class MySQL(abstract.Abstract):
 
     @staticmethod
     def configure(system):
-        if not system.config.get("mysql_monitoring_configured") == "yes":
-            pars = MySQL.get_pars()
-            if pars['slave'] is True:
-                system.config.set("mysql_monitoring_configured", "yes")
-                return True
-            pars_json = json.dumps(pars)
-            utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), pars['mysql_port']))
-            rc, out, err = utils.ansible_play("rhel_mysql_monitoring", pars_json)
-            if rc != 0:
-                utils.out_progress_fail()
-                utils.err(utils.print_str("FAILED_CREATE_USER", MySQL.getname()))
-                exit(1)
-            else:
-                system.config.set("mysql_monitoring_configured", "yes")
-                utils.out_progress_done()
+        pars = MySQL.get_pars()
+        if pars['slave'] is True:
+            utils.out(utils.print_str("SLAVE_SKIP", MySQL.getname()))
+            utils.out(utils.print_str("CREATE_USER_DOC", MySQL.getname()))
+            return True
+        pars_json = json.dumps(pars)
+        utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), pars['mysql_port']))
+        rc, out, err = utils.ansible_play("mysql_monitoring", pars_json)
+        if rc != 0:
+            utils.out_progress_fail()
+            utils.err(utils.print_str("FAILED_CREATE_USER", MySQL.getname()))
+            exit(1)
         else:
-            utils.out_progress_skip()
+            utils.out_progress_done()
+
 
 
 

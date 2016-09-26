@@ -103,7 +103,7 @@ def prompt(prompt_string):
 def prompt_pass(pass_string):
     pass_string = language_translation(pass_string)
     pass_string = "\n".join(["  => " + s for s in pass_string.split("\n")])
-    result = getpass.getpass(pass_string)
+    result = getpass.getpass(pass_string + ': ')
     return result
 
 

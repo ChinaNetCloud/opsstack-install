@@ -131,7 +131,7 @@ msgstr "Failed to configure nc-haproxy"
 
 # service mysql
 msgid "MYSQL_ROOT_PASSWD"
-msgstr "mysql(port %s) root password:"
+msgstr "mysql(port %s) root password"
 
 # mysql & mongo
 msgid "CREATE_MONITOR_USER"
@@ -160,10 +160,10 @@ msgstr "Configuring %s (port %s) monitoring"
 
 # mongo
 msgid "MONGO_ADMIN_USER"
-msgstr "Mongo [port %s] Admin User: "
+msgstr "Mongo [port %s] Admin User"
 
 msgid "MONGO_ADMIN_PASS"
-msgstr "Mongo [port %s] Admin Password: "
+msgstr "Mongo [port %s] Admin Password"
 
 #nc_collector
 msgid "INSTALL_NC_COLLECTOR"
@@ -177,3 +177,13 @@ msgstr "Failed to install nc_collector package"
 
 msgid "CHECK_CONFIG_FILE"
 msgstr "Checking config file..."
+
+msgid "INSTALL_CONFIRM"
+msgstr "Do you want to install services monitoring?"
+
+msgid "OPSSTACK_SERVER_INFO_UPDATE"
+msgstr "Updating server information in OpsStack..."
+
+
+msgid "FINISHED_INSTALLATION"
+msgstr "Installation finished!"
