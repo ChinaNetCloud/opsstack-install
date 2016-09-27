@@ -9,7 +9,7 @@ class Phpfpm(abstract.Abstract):
 
     @staticmethod
     def getname():
-        return 'phpfpm'
+        return 'php-fpm'
 
     @staticmethod
     def discover(system):
