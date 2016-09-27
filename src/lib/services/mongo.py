@@ -11,7 +11,7 @@ class MongoDB(abstract.Abstract):
 
     @staticmethod
     def getname():
-        return 'MongoDB'
+        return 'mongo'
 
     @staticmethod
     def discover(system):
