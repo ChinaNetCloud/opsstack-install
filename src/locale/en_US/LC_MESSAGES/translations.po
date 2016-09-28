@@ -191,3 +191,19 @@ msgstr "Installation finished!"
 msgid "GENERIC_ERROR_MSG"
 msgstr "Error, aborting!"
 
+#java
+msgid "INPUT_JAVA_BIN_PATH:"
+msgstr "Please input java binary file path:"
+
+msgid "CONFIGURE_JAVA_MONITOR"
+msgstr "Checking java monitoring..."
+
+msgid "JMX_PORT_NOT_OPEN"
+msgstr "Java is running, but jmx port is not enabled!"
+
+msgid "CONFIGURE_JAVA_MANUALLY"
+msgstr "Please configure java jmx port manually refer to cnc docs"
+
+msgid "ZABBIX_NO_ACCESS"
+msgstr "Zabbix couldn't access jmx port %s"
+
