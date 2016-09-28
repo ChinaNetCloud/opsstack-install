@@ -30,12 +30,16 @@ class System:
         os = platform.system()
         if os == "Linux":
             self.os = "linux"
-            info = platform.linux_distribution(full_distribution_name=0, supported_dists=['amzn', 'centos', 'system', 'debian'])
+            info = platform.linux_distribution(full_distribution_name=0, supported_dists=['amzn', 'centos', 'system', 'debian', 'redhat'])
             distribution = info[0]
             version = info[1]
             log.get_logger().log("Detected OS: %s, distribution: %s, version: %s" % (os, distribution, version))
             # Support centos version 6 and 7
             if distribution == "centos" and (version.startswith("6.") or version.startswith("7.")):
+                self.distribution = distribution
+                self.version = version
+            # Support redhat version 6 and 7
+            elif distribution == "redhat" and (version.startswith("6.") or version.startswith("7.")):
                 self.distribution = distribution
                 self.version = version
             # Amazon Linux 2015 and 2016 is based off the centos 6

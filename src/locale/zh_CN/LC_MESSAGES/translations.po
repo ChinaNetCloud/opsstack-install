@@ -189,3 +189,19 @@ msgstr "安装完成!"
 msgid "GENERIC_ERROR_MSG"
 msgstr "安装出错,退出!"
 
+#java
+msgid "INPUT_JAVA_BIN_PATH:"
+msgstr "请输入java的二进制文件路径:"
+
+msgid "CONFIGURE_JAVA_MONITOR"
+msgstr "正在检查java监控配置..."
+
+msgid "JMX_PORT_NOT_OPEN"
+msgstr "您的java实例没有启用jmx端口,无法配置监控"
+
+msgid "CONFIGURE_JAVA_MANUALLY"
+msgstr "请参考cnc文档手动配置java jmx端口"
+
+msgid "ZABBIX_NO_ACCESS"
+msgstr "Zabbix无法访问jmx端口 %s"
+

@@ -29,7 +29,7 @@
       pm_ping.rc|int != 0
 
   - name: test php-fpm configuration file
-    command: /sbin/php-fpm -t
+    command: php-fpm -t
     register: php_fpm_service_status
 
   - name: restart php-fpm
