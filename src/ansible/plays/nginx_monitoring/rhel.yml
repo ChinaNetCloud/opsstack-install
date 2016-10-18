@@ -37,6 +37,11 @@
   when:
     "{{ nginx_restart }} == true and nginx_test.rc|int == 0"
 
+- name: start nginx if nginx was stopped
+  service: name=nginx state=started
+  when:
+    "{{ nginx_start }} == true and nginx_test.rc|int == 0"
+
 - name: notify customer if nginx test failed
   command: echo "nginx configuration syntax is incorrect, please fix it and then restart nginx"
   when:

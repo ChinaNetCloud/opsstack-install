@@ -37,6 +37,11 @@
   when:
     "{{ httpd_restart }} == true and httpd_test.rc|int == 0"
 
+- name: start httpd if httpd was stopped
+  service: name=httpd state=started
+  when:
+    "{{ httpd_start }} == true and httpd_test.rc|int == 0"
+
 - name: notify customer if httpd test failed
   fail: msg="apache configuration syntax is incorrect, please fix it and then restart httpd"
   when:

@@ -43,15 +43,20 @@ class Apache(abstract.Abstract):
     @staticmethod
     def configure(system):
         httpd_restart = "false"
+        httpd_start = "false"
         result, httpd_conf, httpd_dir = Apache.getconf(system)
         if not result:
             utils.out(utils.print_str("NOT_DETECT_CONF_PATH", Apache.getname()))
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
             return
-        if utils.confirm(utils.print_str("RESTART_SERVICE", Apache.getname())):
-            httpd_restart = "true"
+        if system.is_proc_running("httpd"):
+            if utils.confirm(utils.print_str("RESTART_SERVICE", Apache.getname())):
+                httpd_restart = "true"
+        else:
+            if utils.confirm(utils.print_str("START_SERVICE", Apache.getname())):
+                httpd_start = "true"
         utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Apache.getname()))
-        rc, out, err = utils.ansible_play("apache_monitoring", "httpd_dir=%s httpd_conf=%s httpd_restart=%s" % (httpd_dir, httpd_conf, httpd_restart))
+        rc, out, err = utils.ansible_play("apache_monitoring", "httpd_dir=%s httpd_conf=%s httpd_restart=%s httpd_start=%s" % (httpd_dir, httpd_conf, httpd_restart, httpd_start))
         if rc == 0:
             utils.out_progress_done()
         else:

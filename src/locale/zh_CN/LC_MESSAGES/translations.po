@@ -112,6 +112,9 @@ msgstr "%s 服务配置的错误信息"
 msgid "RESTART_SERVICE"
 msgstr "配置完成后, 重启 %s 服务?"
 
+msgid "START_SERVICE"
+msgstr "配置完成后, 启动 %s 服务?"
+
 msgid "CONFIGURE_MONITOR"
 msgstr "正在配置 %s 的监控..."
 

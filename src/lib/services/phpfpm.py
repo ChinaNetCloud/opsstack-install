@@ -29,15 +29,20 @@ class Phpfpm(abstract.Abstract):
     @staticmethod
     def configure(system):
         phpfpm_restart = "false"
+        phpfpm_start = "false"
         result = Phpfpm.getconf(system)
         if not result:
             utils.out(utils.print_str("NOT_DETECT_CONF_PATH", Phpfpm.getname()))
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/phpfpm-monitoring\n")
             return
-        if utils.confirm(utils.print_str("RESTART_SERVICE", Phpfpm.getname())):
-            phpfpm_restart = "true"
+        if system.is_proc_running("php-fpm"):
+            if utils.confirm(utils.print_str("RESTART_SERVICE", Phpfpm.getname())):
+                phpfpm_restart = "true"
+        else:
+            if utils.confirm(utils.print_str("START_SERVICE", Phpfpm.getname())):
+                phpfpm_start = "true"
         utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Phpfpm.getname()))
-        rc, out, err = utils.ansible_play("phpfpm_monitoring", "phpfpm_restart=%s" % (phpfpm_restart))
+        rc, out, err = utils.ansible_play("phpfpm_monitoring", "phpfpm_restart=%s phpfpm_start=%s" % (phpfpm_restart, phpfpm_start))
         if rc == 0:
             utils.out_progress_done()
         else:
