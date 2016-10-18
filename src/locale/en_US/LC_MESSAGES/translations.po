@@ -113,6 +113,9 @@ msgstr "%s service config error info"
 msgid "RESTART_SERVICE"
 msgstr "Do you want to restart %s service after monitoring configured?"
 
+msgid "START_SERVICE"
+msgstr "Do you want to start %s service after monitoring configured?"
+
 msgid "CONFIGURE_MONITOR"
 msgstr "Running %s monitor configuration..."
 

@@ -40,15 +40,20 @@ class Nginx(abstract.Abstract):
     @staticmethod
     def configure(system):
         nginx_restart = "false"
+        nginx_start = "false"
         result, nginx_file, nginx_dir = Nginx.getconf(system)
         if not result:
             utils.out(utils.print_str("NOT_DETECT_CONF_PATH", Nginx.getname()))
             utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
             return
-        if utils.confirm(utils.print_str("RESTART_SERVICE", Nginx.getname())):
-            nginx_restart = "true"
+        if system.is_proc_running("nginx"):
+            if utils.confirm(utils.print_str("RESTART_SERVICE", Nginx.getname())):
+                nginx_restart = "true"
+        else:
+            if utils.confirm(utils.print_str("START_SERVICE", Nginx.getname())):
+                nginx_start = "true"
         utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Nginx.getname()))
-        rc, out, err = utils.ansible_play("nginx_monitoring", "nginx_conf_dir=%s nginx_conf_file=%s nginx_restart=%s" % (nginx_dir, nginx_file, nginx_restart))
+        rc, out, err = utils.ansible_play("nginx_monitoring", "nginx_conf_dir=%s nginx_conf_file=%s nginx_restart=%s nginx_start=%s" % (nginx_dir, nginx_file, nginx_restart, nginx_start))
         if rc == 0:
             utils.out_progress_done()
         else:

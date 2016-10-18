@@ -11,6 +11,6 @@ servicelist = {
     'apache': apache.Apache,
     'phpfpm': phpfpm.Phpfpm,
     'java': java.Java,
-    'mongodb': mongo.MongoDB,
+#    'mongodb': mongo.MongoDB,
     'mysql': mysql.MySQL
 }
