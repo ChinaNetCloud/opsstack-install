@@ -8,6 +8,7 @@ import uuid
 import os
 import fcntl
 import struct
+import psutil
 
 from lib import log
 
@@ -206,7 +207,37 @@ def verify_root_permissions():
 
 
 def get_iface_list():
-    return os.listdir("/sys/class/net/")
+    #return os.listdir("/sys/class/net/")
+    return psutil.net_if_addrs().keys()
+
+
+def iface_get_info(ifname):
+    iface_info = {}
+    try:
+        if_info = psutil.net_if_addrs()[ifname]
+        # Interface is not started up
+        if len(if_info) == 1:
+            iface_info['ipv4'] = None
+            iface_info['ipv6'] = None
+            iface_info['mac'] = if_info[0].address
+        # ipv6 is disabled
+        elif len(if_info) == 2:
+            iface_info['ipv4'] = if_info[0].address
+            iface_info['ipv6'] = None
+            iface_info['mac'] = if_info[1].address
+        else:
+            iface_info['ipv4'] = if_info[0].address
+            iface_info['ipv6'] = if_info[1].address.split('%')[0]
+            iface_info['mac'] = if_info[2].address
+    except (KeyError, IndexError):
+        iface_info['ipv4'] = None
+        iface_info['ipv6'] = None
+        iface_info['mac'] = None
+    iface_info['type'] = 'physical'
+    # lo interface doesn't have mac address
+    if ifname == 'lo':
+        iface_info['mac'] = None
+    return iface_info
 
 
 def iface_get_mac_address(ifname):

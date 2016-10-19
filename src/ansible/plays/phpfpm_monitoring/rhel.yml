@@ -39,6 +39,13 @@
     when:
       "{{ phpfpm_restart }} == true and php_fpm_service_status.rc|int == 0"
 
+  - name: start php-fpm if php-fpm was stopped
+    service:
+      name=php-fpm
+      state=started
+    when:
+      "{{ phpfpm_start }} == true and php_fpm_service_status.rc|int == 0"
+
   - name: notify customer if php-fpm configure file test failed
     command: echo "php-fpm configuration syntax is incorrect, please fix it and then restart php-fpm"
     when:
