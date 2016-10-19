@@ -229,10 +229,12 @@ def iface_get_info(ifname):
             iface_info['ipv4'] = if_info[0].address
             iface_info['ipv6'] = if_info[1].address.split('%')[0]
             iface_info['mac'] = if_info[2].address
-    except (KeyError, IndexError):
+    except (KeyError, IndexError) as e:
         iface_info['ipv4'] = None
         iface_info['ipv6'] = None
         iface_info['mac'] = None
+        log.get_logger().log("Failed to get ip address info for interface %s. Please see output below" % ifname)
+        log.get_logger().log(e)
     iface_info['type'] = 'physical'
     # lo interface doesn't have mac address
     if ifname == 'lo':
