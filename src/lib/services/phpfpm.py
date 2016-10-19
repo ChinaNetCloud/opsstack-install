@@ -38,9 +38,13 @@ class Phpfpm(abstract.Abstract):
         if system.is_proc_running("php-fpm"):
             if utils.confirm(utils.print_str("RESTART_SERVICE", Phpfpm.getname())):
                 phpfpm_restart = "true"
+            else:
+                utils.out_progress_info(utils.print_str("RESTART_SERVICE_LATER", Phpfpm.getname()))
         else:
             if utils.confirm(utils.print_str("START_SERVICE", Phpfpm.getname())):
                 phpfpm_start = "true"
+            else:
+                utils.out_progress_info(utils.print_str("START_SERVICE_LATER", Phpfpm.getname()))
         utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Phpfpm.getname()))
         rc, out, err = utils.ansible_play("phpfpm_monitoring", "phpfpm_restart=%s phpfpm_start=%s" % (phpfpm_restart, phpfpm_start))
         if rc == 0:
