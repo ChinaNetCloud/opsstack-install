@@ -66,12 +66,13 @@ class System:
         # Get list of interfaces on the system
         iface_list = utils.get_iface_list()
         for iface in iface_list:
+            iface_info = utils.iface_get_info(iface)
             result = {
                 'name': iface,
-                'type': utils.iface_get_type(iface),
-                'ip4': utils.iface_get_ip4_address(iface),
-                'ip6': utils.iface_get_ip6_address(iface),
-                'mac': utils.iface_get_mac_address(iface)
+                'type': iface_info['type'],
+                'ip4': iface_info['ipv4'],
+                'ip6': iface_info['ipv6'],
+                'mac': iface_info['mac']
             }
             self.interfaces.append(result)
 
