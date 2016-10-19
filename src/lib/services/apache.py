@@ -52,9 +52,13 @@ class Apache(abstract.Abstract):
         if system.is_proc_running("httpd"):
             if utils.confirm(utils.print_str("RESTART_SERVICE", Apache.getname())):
                 httpd_restart = "true"
+            else:
+                utils.out_progress_info(utils.print_str("RESTART_SERVICE_LATER", Apache.getname()))
         else:
             if utils.confirm(utils.print_str("START_SERVICE", Apache.getname())):
                 httpd_start = "true"
+            else:
+                utils.out_progress_info(utils.print_str("START_SERVICE_LATER", Apache.getname()))
         utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Apache.getname()))
         rc, out, err = utils.ansible_play("apache_monitoring", "httpd_dir=%s httpd_conf=%s httpd_restart=%s httpd_start=%s" % (httpd_dir, httpd_conf, httpd_restart, httpd_start))
         if rc == 0:

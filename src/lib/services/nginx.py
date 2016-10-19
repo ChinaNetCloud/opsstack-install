@@ -49,9 +49,13 @@ class Nginx(abstract.Abstract):
         if system.is_proc_running("nginx"):
             if utils.confirm(utils.print_str("RESTART_SERVICE", Nginx.getname())):
                 nginx_restart = "true"
+            else:
+                utils.out_progress_info(utils.print_str("RESTART_SERVICE_LATER", Nginx.getname()))
         else:
             if utils.confirm(utils.print_str("START_SERVICE", Nginx.getname())):
                 nginx_start = "true"
+            else:
+                utils.out_progress_info(utils.print_str("START_SERVICE_LATER", Nginx.getname()))
         utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Nginx.getname()))
         rc, out, err = utils.ansible_play("nginx_monitoring", "nginx_conf_dir=%s nginx_conf_file=%s nginx_restart=%s nginx_start=%s" % (nginx_dir, nginx_file, nginx_restart, nginx_start))
         if rc == 0:
