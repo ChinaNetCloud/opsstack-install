@@ -217,28 +217,28 @@ def iface_get_info(ifname):
         if_info = psutil.net_if_addrs()[ifname]
         # Interface is not started up
         if len(if_info) == 1:
-            iface_info['ipv4'] = None
-            iface_info['ipv6'] = None
+            iface_info['ipv4'] = ""
+            iface_info['ipv6'] = ""
             iface_info['mac'] = if_info[0].address
         # ipv6 is disabled
         elif len(if_info) == 2:
             iface_info['ipv4'] = if_info[0].address
-            iface_info['ipv6'] = None
+            iface_info['ipv6'] = ""
             iface_info['mac'] = if_info[1].address
         else:
             iface_info['ipv4'] = if_info[0].address
             iface_info['ipv6'] = if_info[1].address.split('%')[0]
             iface_info['mac'] = if_info[2].address
     except (KeyError, IndexError) as e:
-        iface_info['ipv4'] = None
-        iface_info['ipv6'] = None
-        iface_info['mac'] = None
+        iface_info['ipv4'] = ""
+        iface_info['ipv6'] = ""
+        iface_info['mac'] = ""
         log.get_logger().log("Failed to get ip address info for interface %s. Please see output below" % ifname)
         log.get_logger().log(e)
     iface_info['type'] = 'physical'
     # lo interface doesn't have mac address
     if ifname == 'lo':
-        iface_info['mac'] = None
+        iface_info['mac'] = ""
     return iface_info
 
 
