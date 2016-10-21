@@ -149,6 +149,20 @@ def main():
             utils.err("FAILED_INSTALL_NC_COLLECTOR")
             raise Exception(e)
 
+        # Run nc-collector cron
+        utils.out_progress_wait("RUN_NC_COLLECTOR")
+        try:
+            if utils.lock_file_exists("nc-collector-cron"):
+                utils.out_progress_skip()
+            else:
+                system.load().run_collector()
+                utils.lock_file_create("nc-collector-cron")
+                utils.out_progress_done()
+        except Exception as e:
+            utils.out_progress_fail()
+            utils.err("FAILED_RUN_NC_COLLECTOR")
+            raise Exception(e)
+
         utils.out("FINISHED_INSTALLATION")
 
         log.get_logger().log("Finished installation process")
