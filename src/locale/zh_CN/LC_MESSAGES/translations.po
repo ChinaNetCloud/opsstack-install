@@ -186,6 +186,12 @@ msgstr "CNC 安装包仓库没有被启用, 无法安装nc_collector工具包"
 msgid "FAILED_INSTALL_NC_COLLECTOR"
 msgstr "nc_collector工具包安装失败"
 
+msgid "RUN_NC_COLLECTOR"
+msgstr "正在运行nc_collector计划任务..."
+
+msgid "FAILED_RUN_NC_COLLECTOR"
+msgstr "运行nc_collector计划任务失败"
+
 msgid "CHECK_CONFIG_FILE"
 msgstr "正在检查配置文件..."
 

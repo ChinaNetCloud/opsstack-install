@@ -187,6 +187,12 @@ msgstr "CNC repo is not enabled, can not install nc_collector package"
 msgid "FAILED_INSTALL_NC_COLLECTOR"
 msgstr "Failed to install nc_collector package"
 
+msgid "RUN_NC_COLLECTOR"
+msgstr "Running nc_collector cron..."
+
+msgid "FAILED_RUN_NC_COLLECTOR"
+msgstr "Failed to run nc_collector cron"
+
 msgid "CHECK_CONFIG_FILE"
 msgstr "Checking config file..."
 
