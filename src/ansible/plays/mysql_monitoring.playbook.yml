@@ -7,12 +7,8 @@
       when: mysql_nccheckdb_pass is not defined
 
     - name: Verify extra-vars
-      fail: msg="mysql_root_pass variable for mysql configure is not defined"
-      when: mysql_root_pass is not defined
-
-    - name: Verify extra-vars
-      fail: msg="mysql_port variable for mysql configure is not defined"
-      when: mysql_port is not defined
+      fail: msg="mycnf_file variable for mysql configure is not defined"
+      when: mycnf_file is not defined
 
 #    Can not use pip to install mysql module in venv as may need to install Development Tools packages in the system first,
 #      can maybe add python module to our venv and rebuild the venv package

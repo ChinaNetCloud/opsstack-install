@@ -138,8 +138,11 @@ msgid "FAILED_CONF_HAPROXY"
 msgstr "配置 nc-haproxy 失败"
 
 # service mysql
-msgid "MYSQL_ROOT_PASSWD"
-msgstr "mysql(端口 %s)的 root 密码"
+msgid "MYSQL_USER_PASSWD"
+msgstr "mysql(端口 %s)的 %s 密码"
+
+msgid "MYSQL_USER"
+msgstr "请输入具有root权限的MySQL 登录用户[root]"
 
 # mysql & mongo
 msgid "CREATE_MONITOR_USER"
