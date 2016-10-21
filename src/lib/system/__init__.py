@@ -148,6 +148,11 @@ class System:
         if not rc == 0:
             raise Exception("nc-collector installation failed")
 
+    def run_collector(self):
+        rc, out, err = utils.ansible_play("nc-collector-cron")
+        if not rc == 0:
+            raise Exception("run nc-collector cron failed")
+
     @staticmethod
     def is_proc_running(proc_name):
         result = True
