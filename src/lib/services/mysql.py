@@ -33,7 +33,7 @@ class MySQL(abstract.Abstract):
     @staticmethod
     def get_pars():
         pars = {}
-        mysql_root_pass = None
+        mysql_root_pass = ''
         port = None
         rc, out, err = utils.execute(
             "ss -ntlp -A inet | grep mysqld |awk '{print $5}'|awk -F: '{print $NF}'|head -1")
@@ -43,12 +43,6 @@ class MySQL(abstract.Abstract):
             port = 3306
         else:
             port = out.strip()
-        confirm_str = utils.print_str("CREATE_MONITOR_USER", MySQL.getname())
-        confirmation = utils.confirm(confirm_str)
-        if confirmation is False:
-            utils.out(utils.print_str("Zabbix_Monitoring_User_Required", MySQL.getname()))
-            utils.out(utils.print_str("CREATE_USER_DOC", MySQL.getname()))
-            exit(1)
         confirm_slave_str = utils.print_str("SLAVE_CHECK", MySQL.getname(), port)
         slave_confirmation = utils.confirm(confirm_slave_str)
         if slave_confirmation is True:
@@ -56,10 +50,13 @@ class MySQL(abstract.Abstract):
             return pars
         else:
             pars['slave'] = False
-        passwd = utils.prompt_pass(utils.print_str("MYSQL_ROOT_PASSWD", port))
+        user = utils.prompt(utils.print_str("MYSQL_USER"))
+        if user == '':
+            user = 'root'
+        passwd = utils.prompt_pass(utils.print_str("MYSQL_USER_PASSWD", port, user))
         if passwd != '':
             mysql_root_pass = passwd
-        pars['user'] = 'root'
+        pars['user'] = user
         pars['mysql_root_pass'] = mysql_root_pass
         pars['mysql_port'] = port
         pars['mysql_nccheckdb_pass'] = MySQL.generate_passwd()
@@ -67,13 +64,27 @@ class MySQL(abstract.Abstract):
 
     @staticmethod
     def configure(system):
+        confirm_str = utils.print_str("CREATE_MONITOR_USER", MySQL.getname())
+        confirmation = utils.confirm(confirm_str)
+        if confirmation is False:
+            utils.out(utils.print_str("Zabbix_Monitoring_User_Required", MySQL.getname()))
+            utils.out(utils.print_str("CREATE_USER_DOC", MySQL.getname()))
+            return True
         pars = MySQL.get_pars()
         if pars['slave'] is True:
             utils.out(utils.print_str("SLAVE_SKIP", MySQL.getname()))
             utils.out(utils.print_str("CREATE_USER_DOC", MySQL.getname()))
             return True
-        pars_json = json.dumps(pars)
+        # Create .my.cnf file to connect mysql
+        pars['mycnf_file'] = "/tmp/.ansible_my_cnf"
+        with open(pars['mycnf_file'], 'w') as mycnf:
+            mycnf.write("[client]\n")
+            mycnf.write("user=%s\n" % pars['user'])
+            mycnf.write("password=%s\n" % pars['mysql_root_pass'])
+            mycnf.write("port=%s" % pars['mysql_port'])
         utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), pars['mysql_port']))
+        del pars['mysql_root_pass'], pars['user'], pars['mysql_port']
+        pars_json = json.dumps(pars)
         rc, out, err = utils.ansible_play("mysql_monitoring", pars_json)
         if rc != 0:
             utils.out_progress_fail()

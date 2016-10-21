@@ -139,8 +139,11 @@ msgid "FAILED_CONF_HAPROXY"
 msgstr "Failed to configure nc-haproxy"
 
 # service mysql
-msgid "MYSQL_ROOT_PASSWD"
-msgstr "mysql(port %s) root password"
+msgid "MYSQL_USER_PASSWD"
+msgstr "mysql(port %s) %s password"
+
+msgid "MYSQL_USER"
+msgstr "Please input a MySQL user with root privilege[root]"
 
 # mysql & mongo
 msgid "CREATE_MONITOR_USER"
