@@ -223,3 +223,6 @@ msgstr "请参考cnc文档手动配置java jmx端口"
 msgid "ZABBIX_NO_ACCESS"
 msgstr "Zabbix无法访问jmx端口 %s"
 
+msgid "LANG_SUPPORT_ONLY"
+msgstr "当前仅支持以上列表中的语言, 请选择正确的语言序列号"
+
