@@ -143,7 +143,7 @@ msgid "MYSQL_USER_PASSWD"
 msgstr "mysql(port %s) %s password"
 
 msgid "MYSQL_USER"
-msgstr "Please input a MySQL user with root privilege[root]"
+msgstr "Please input a MySQL user(with root privilege) to login database[root]"
 
 # mysql & mongo
 msgid "CREATE_MONITOR_USER"
@@ -224,4 +224,8 @@ msgstr "Please configure java jmx port manually refer to cnc docs"
 
 msgid "ZABBIX_NO_ACCESS"
 msgstr "Zabbix couldn't access jmx port %s"
+
+msgid "LANG_SUPPORT_ONLY"
+msgstr "Only listed languages are supported, please choose the correct number"
+
 

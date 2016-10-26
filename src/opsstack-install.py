@@ -183,13 +183,15 @@ def choose_language():
     }
     for i in lang_dict:
         utils.out(i + ". " + lang_dict[i]["name"])
-    lang_num = utils.prompt("CHOOSE_LANG")
-    if lang_num in lang_dict.keys():
-        lang_str = lang_dict[lang_num]["value"]
-        os.environ['LANG'] = lang_str
-    else:
-        utils.out("LANG_USE_DEFAULT")
-    locale.setlocale(locale.LC_ALL, "")
+    while True:
+        lang_num = utils.prompt("CHOOSE_LANG")
+        if lang_num not in lang_dict.keys():
+            utils.out("LANG_SUPPORT_ONLY")
+            continue
+        else:
+            lang_str = lang_dict[lang_num]["value"]
+            os.environ['LANG'] = lang_str
+            break
 
 
 def check_compatibility():
