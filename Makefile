@@ -38,7 +38,8 @@ package:
 		--force
 
 deploy:
-	mv $(SRC_DIR)/*.rpm $(AGGREGATE_PATH)/
+	mv $(SRC_DIR)/*.rpm $(AGGREGATE_PATH)/ || true
+	mv $(SRC_DIR)/*.deb $(AGGREGATE_PATH)/ || true
 
 clean:
-	rm -rf $(SRC_DIR)/*.rpm $(SRC_DIR)/*.deb
+	rm -rf $(SRC_DIR)/*.rpm $(SRC_DIR)/*.deb || true
