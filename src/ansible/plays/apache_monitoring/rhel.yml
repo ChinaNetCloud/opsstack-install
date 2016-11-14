@@ -1,9 +1,10 @@
 ---
-- name: ensure apache monitoring folder exist
-  file: path={{ httpd_dir }}/cnc-conf.d state=directory
+
+- name: ensure root directory exist
+  file: path=/var/www/html state=directory
 
 - name: register apache_include_zabbix info
-  command: grep -q "Include cnc-conf.d/zabbix.conf" {{ httpd_conf }}
+  command: grep -q "Include zabbix.conf" {{ httpd_conf }}
   register: apache_include_zabbix
   ignore_errors: yes
 
@@ -13,14 +14,14 @@
     backup=yes
     state=present
     insertafter='EOF'
-    line='#cnc monitoring configuration\nInclude cnc-conf.d/zabbix.conf'
+    line='#cnc monitoring configuration\nInclude zabbix.conf'
   when:
     apache_include_zabbix.rc|int != 0
 
 - name: ensure httpd monitoring configuration
   template:
     src=../templates/httpd_zabbix.conf.j2
-    dest={{ httpd_dir }}/cnc-conf.d/zabbix.conf
+    dest={{ httpd_dir }}/zabbix.conf
     owner=root
     group=root
     mode=0644
@@ -29,20 +30,17 @@
   file: dest=/var/log/httpd/zabbix owner=root group=root state=directory
 
 - name: ensure http configuration is valid
-  command: httpd -t
+  command: "{{ httpd_bin }} -t"
   register: httpd_test
+  when:
+    "{{ httpd_restart }} == true or {{ httpd_start }} == true"
 
 - name: restart httpd
-  service: name=httpd state=restarted
+  service: name={{ service_name }} state=restarted
   when:
     "{{ httpd_restart }} == true and httpd_test.rc|int == 0"
 
 - name: start httpd if httpd was stopped
-  service: name=httpd state=started
+  service: name={{ service_name }} state=started
   when:
     "{{ httpd_start }} == true and httpd_test.rc|int == 0"
-
-- name: notify customer if httpd test failed
-  fail: msg="apache configuration syntax is incorrect, please fix it and then restart httpd"
-  when:
-    httpd_test.rc|int != 0

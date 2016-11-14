@@ -1,22 +1,10 @@
+---
 - hosts: localhost
   connection: local
   tasks:
-    - name: Register nc_collector binary file status
-      stat: path=/opt/netcloud/nc_collector/collector.py
-      register: collector_st
-
-    - name: Register nc_collector log path status
-      stat: path=/var/log/nc_collector
-      register: directory_st
-
-    - name: Verify nc_collector binary file and log path
-      fail: msg="nc_collector binary file or log path is not exist"
-      when: (collector_st.stat.islnk is not defined ) or (directory_st.stat.isdir is undefined)
-
-    - name: run nc-collector cron
-      raw: python /opt/netcloud/nc_collector/collector.py > /var/log/nc_collector/collector_$(date "+%Y%m%d-%H%M%S").log 2>&1
+    - include: ./nc-collector-cron/rhel.yml
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
-    - name: run nc-collector cron
-      fail: msg="Not implemented yet"
-      when: ansible_distribution == "Debian"
+#    - include: ./nc-collector-cron/debian.yml
+#      when: ansible_os_family == "Debian"
+

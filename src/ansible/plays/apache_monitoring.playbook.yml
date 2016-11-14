@@ -3,10 +3,10 @@
   tasks:
     - name: Verify extra-vars
       fail: msg="{httpd_dir, httpd_conf, httpd_restart} Some of them are not defined"
-      when: (httpd_dir is not defined) or (httpd_conf is not defined) or (httpd_restart is not defined)
+      when: (httpd_dir is not defined) or (httpd_conf is not defined) or (httpd_bin is not defined) or (httpd_restart is not defined) or (httpd_start is not defined) or (service_name is not defined)
 
     - include: ./apache_monitoring/rhel.yml
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
     - include: ./apache_monitoring/debian.yml
-      when: ansible_distribution == "Debian"
+      when: ansible_os_family == "Debian"

@@ -12,8 +12,8 @@
     dest={{ nginx_conf_file }}
     backup=yes
     state=present
-    insertbefore='\}'
-    line='\n    include {{ nginx_conf_dir }}/cnc-conf.d/zabbix.conf;'
+    insertbefore='^\s*\t*\}'
+    line='\n        include {{ nginx_conf_dir }}/cnc-conf.d/zabbix.conf;'
   when:
     nginx_include_zabbix.rc|int != 0
 
@@ -29,8 +29,10 @@
   file: dest=/var/log/nginx/zabbix owner=root group=root state=directory
 
 - name: test nginx configuration file
-  command: nginx -t
+  command: "{{ nginx_bin_path }} -t"
   register: nginx_test
+  when:
+    "{{ nginx_restart }} == true or {{ nginx_start }} == true"
 
 - name: restart nginx
   service: name=nginx state=restarted
@@ -41,8 +43,3 @@
   service: name=nginx state=started
   when:
     "{{ nginx_start }} == true and nginx_test.rc|int == 0"
-
-- name: notify customer if nginx test failed
-  command: echo "nginx configuration syntax is incorrect, please fix it and then restart nginx"
-  when:
-    nginx_test.rc|int != 0

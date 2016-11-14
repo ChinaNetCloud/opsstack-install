@@ -228,4 +228,17 @@ msgstr "Zabbix couldn't access jmx port %s"
 msgid "LANG_SUPPORT_ONLY"
 msgstr "Only listed languages are supported, please choose the correct number"
 
+#Service discovery
+msgid "SERVICE_CONFIG_PATH"
+msgstr "Please input your %s service's main configuration file path"
+
+msgid "SERVICE_BIN_PATH"
+msgstr "Please input your %s service's binary file path"
+
+msgid "SERVICE_NAME"
+msgstr "Please input the name of your %s service to start this service"
+
+msgid "MANUALLY_CONFIGURE"
+msgstr "Please configure %s service monitoring manually according to CNC KB documentations"
+
 
