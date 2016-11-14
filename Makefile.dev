@@ -6,7 +6,7 @@ ARCHITECTURE=all
 AFTER_INSTALL=--after-install $(SRC_DIR)/after_install.sh
 BEFORE_REMOVE=--before-remove $(SRC_DIR)/before_remove.sh
 REQUIRES=-d opsstack-common -d opsstack-configure
-AGGREGATE_PATH=/repo-aggregate
+AGGREGATE_PATH=/repo-aggregate-dev
 
 .PHONY: package
 package:
