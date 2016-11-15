@@ -5,6 +5,5 @@
     - include: ./nc-collector-cron/rhel.yml
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
-#    - include: ./nc-collector-cron/debian.yml
-#      when: ansible_os_family == "Debian"
-
+    - include: ./nc-collector-cron/debian.yml
+      when: ansible_os_family == "Debian"

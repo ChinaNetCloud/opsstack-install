@@ -240,4 +240,9 @@ msgstr "请输入%s 的服务名以用来启动该服务"
 msgid "MANUALLY_CONFIGURE"
 msgstr "请参考CNC的KB相关文档来手动配置%s 服务的监控"
 
+msgid "WRONG_SERVICE_CONF_PATH"
+msgstr "无法找到%s 服务的配置文件"
+
+
+
 

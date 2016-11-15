@@ -1,4 +1,8 @@
 ---
+ - name: Register nc_collector binary file status
+   stat: path=/opt/netcloud/nc_collector/collector.py
+   register: collector_st
+
  - name: Register nc_collector log path status
    stat: path=/var/log/nc_collector
    register: directory_st
@@ -9,3 +13,4 @@
 
  - name: run nc-collector cron
    raw: python /opt/netcloud/nc_collector/collector.py > /var/log/nc_collector/collector_$(date "+%Y%m%d-%H%M%S").log 2>&1
+

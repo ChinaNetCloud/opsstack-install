@@ -241,4 +241,7 @@ msgstr "Please input the name of your %s service to start this service"
 msgid "MANUALLY_CONFIGURE"
 msgstr "Please configure %s service monitoring manually according to CNC KB documentations"
 
+msgid "WRONG_SERVICE_CONF_PATH"
+msgstr "Couldn't detect %s service configuration file"
+
 
