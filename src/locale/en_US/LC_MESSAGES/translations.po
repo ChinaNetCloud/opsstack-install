@@ -230,10 +230,10 @@ msgstr "Only listed languages are supported, please choose the correct number"
 
 #Service discovery
 msgid "SERVICE_CONFIG_PATH"
-msgstr "Please input your %s service's main configuration file path"
+msgstr "Please input the full path of your %s service's main configuration file %s"
 
 msgid "SERVICE_BIN_PATH"
-msgstr "Please input your %s service's binary file path"
+msgstr "Please input the full path of your %s service's binary file"
 
 msgid "SERVICE_NAME"
 msgstr "Please input the name of your %s service to start this service"

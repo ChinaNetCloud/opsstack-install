@@ -50,9 +50,9 @@ class Phpfpm(abstract.Abstract):
                 if os.path.exists(conf):
                     phpfpm_config_path = conf
                     break
-            for bin in phpfpm_bin_list:
-                if os.path.exists(bin):
-                    phpfpm_bin = bin
+            for phpbin in phpfpm_bin_list:
+                if os.path.exists(phpbin):
+                    phpfpm_bin = phpbin
                     break
         else:
             p = psutil.Process(int(out.strip()))
@@ -62,7 +62,8 @@ class Phpfpm(abstract.Abstract):
             except IndexError:
                 pass
         # convert php-fpm.conf to www.conf
-        if os.path.isfile(phpfpm_config_path) and not phpfpm_config_path.endswith('www.conf'):
+        if phpfpm_config_path is not None and phpfpm_config_path != '' and os.path.isfile(phpfpm_config_path) and \
+                not phpfpm_config_path.endswith('www.conf'):
             phpfpm_dir = os.path.dirname(phpfpm_config_path)
             if os.path.isfile(os.path.join(phpfpm_dir, 'php-fpm.d/www.conf')):
                 phpfpm_config_path = os.path.join(phpfpm_dir, 'php-fpm.d/www.conf')
@@ -70,7 +71,10 @@ class Phpfpm(abstract.Abstract):
                 phpfpm_config_path = os.path.join(phpfpm_dir, 'pool.d/www.conf')
             else:
                 phpfpm_config_path = None
-        # If couldn't get config and binary file above, then ask customer input manually
+        # If couldn't get config and binary file above, first try "php-fpm",
+        #   If still failed, then ask customer input manually
+        if phpfpm_bin == '' or phpfpm_bin is None:
+            phpfpm_bin = 'php-fpm'
         while True:
             command_rc, command_out, command_err = utils.execute('command -V ' + phpfpm_bin)
             if command_rc == 0:
@@ -83,7 +87,7 @@ class Phpfpm(abstract.Abstract):
             if phpfpm_config_path is None or phpfpm_config_path == '' or not os.path.isfile(phpfpm_config_path) \
                     or not phpfpm_config_path.endswith('.conf'):
                 utils.out(utils.print_str("WRONG_SERVICE_CONFIG_PATH", Phpfpm.getname()))
-                phpfpm_config_path = utils.prompt(utils.print_str("SERVICE_CONFIG_PATH", Phpfpm.getname()))
+                phpfpm_config_path = utils.prompt(utils.print_str("SERVICE_CONFIG_PATH", Phpfpm.getname(), '[www.conf]'))
                 continue
             else:
                 break

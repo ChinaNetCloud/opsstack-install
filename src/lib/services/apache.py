@@ -70,7 +70,7 @@ class Apache(abstract.Abstract):
         while True:
             if httpd_conf is None or httpd_conf == '' or not os.path.isfile(httpd_conf) or not httpd_conf.endswith('.conf'):
                 utils.out(utils.print_str("WRONG_SERVICE_CONFIG_PATH", Apache.getname()))
-                httpd_conf = utils.prompt(utils.print_str("SERVICE_CONFIG_PATH", Apache.getname()))
+                httpd_conf = utils.prompt(utils.print_str("SERVICE_CONFIG_PATH", Apache.getname(), '[apache2.conf/httpd.conf]'))
                 continue
             else:
                 httpd_dir = os.path.dirname(httpd_conf)
