@@ -58,7 +58,8 @@ class Phpfpm(abstract.Abstract):
             p = psutil.Process(int(out.strip()))
             phpfpm_bin = p.exe()
             try:
-                phpfpm_config_path = p.cmdline()[0].split('(')[1].strip(')')
+                if p.cmdline()[0].find('php-fpm.conf') >= 0:
+                    phpfpm_config_path = p.cmdline()[0].split('(')[1].strip(')')
             except IndexError:
                 pass
         # convert php-fpm.conf to www.conf
