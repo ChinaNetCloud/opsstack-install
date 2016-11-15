@@ -112,6 +112,8 @@ class System:
 
     def install_services_monitoring(self):
         for service in self.services:
+            if service.getname() == "memcached":
+                continue
             if utils.lock_file_exists('service_%s' % service.getname()):
                 log.get_logger().log("Service %s has already been configured before. Asking for reconfiguration." % service.getname())
                 configure_mon_str = "RECONFIGURE_SERVICE_CONFIRMATION"
