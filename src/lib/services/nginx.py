@@ -54,7 +54,7 @@ class Nginx(abstract.Abstract):
         # If we couldn't parse the config path, ask customer to input the config path
         while True:
             if conf_file is None or conf_file == '' or not os.path.isfile(conf_file) or not conf_file.endswith('.conf'):
-                utils.out(utils.print_str("WRONG_SERVICE_CONF_PATH", Nginx.getname()))
+                utils.out(utils.print_str("WRONG_SERVICE_CONFIG_PATH", Nginx.getname()))
                 conf_file = utils.prompt(utils.print_str("SERVICE_CONFIG_PATH", Nginx.getname(), '[nginx.conf]'))
                 continue
             else:
