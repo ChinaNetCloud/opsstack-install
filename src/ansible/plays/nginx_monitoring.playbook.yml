@@ -3,10 +3,10 @@
   tasks:
     - name: Verify extra-vars
       fail: msg="{nginx_conf_dir, nginx_conf_file, nginx_restart} Some of them are not defined"
-      when: (nginx_conf_dir is not defined) or (nginx_conf_file is not defined) or (nginx_restart is not defined)
+      when: (nginx_conf_dir is not defined) or (nginx_conf_file is not defined) or (nginx_restart is not defined) or (nginx_start is not defined) or (nginx_bin_path is not defined)
 
     - include: ./nginx_monitoring/rhel.yml
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
     - include: ./nginx_monitoring/debian.yml
-      when: ansible_distribution == "Debian"
+      when: ansible_os_family == "Debian"

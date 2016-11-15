@@ -3,10 +3,10 @@
   tasks:
     - name: Verify extra-vars
       fail: msg="phpfpm_restart for php-fpm service config is not defined"
-      when: phpfpm_restart is not defined
+      when: (phpfpm_restart is not defined) or (phpfpm_start is not defined) or (phpfpm_bin_path is not defined) or (phpfpm_conf_path is not defined) or (phpfpm_service_name is not defined)
 
     - include: ./phpfpm_monitoring/rhel.yml
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
     - include: ./phpfpm_monitoring/debian.yml
-      when: ansible_distribution == "Debian"
+      when: ansible_os_family == "Debian"

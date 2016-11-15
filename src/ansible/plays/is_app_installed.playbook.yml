@@ -5,8 +5,8 @@
     fail: msg="package_name is not defined"
     when: package_name is not defined
   - name: Check if RPM is installed
-    shell: rpm -qa | grep {{ package_name }} warn=False
+    shell: rpm -qa | egrep {{ package_name }} warn=False
     when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int <= 7
   - name: Check if DEB is installed
-    shell: dpkg-query -l '{{ package_name }}' warn=False
+    shell: dpkg -l | egrep '{{ package_name }}' warn=False
     when: ansible_os_family == "Debian"

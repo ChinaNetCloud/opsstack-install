@@ -25,6 +25,15 @@
     - include: ./nc-collector/debian7.yml
       when: ansible_distribution == "Debian" and ansible_distribution_major_version|int == 7
 
+    - include: ./nc-collector/ubuntu1204.yml
+      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 12
+
+    - include: ./nc-collector/ubuntu1404.yml
+      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 14
+
+    - include: ./nc-collector/ubuntu1604.yml
+      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 16
+
     - name: Enable SElinux
       selinux: state="{{ selinux.config_mode }}" policy="{{ selinux.type }}"
       when: selinux is defined

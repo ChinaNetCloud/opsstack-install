@@ -2,6 +2,7 @@ import abstract
 
 from lib import utils
 
+
 class Java(abstract.Abstract):
     def __init__(self):
         abstract.Abstract.__init__(self)
@@ -20,12 +21,12 @@ class Java(abstract.Abstract):
 
     @staticmethod
     def configure(system):
-        cmd_bin = "ps aux|grep 'java.*Xms.*Xmx' |grep -v grep |head -1 |awk '{print $11}'"
+        cmd_bin = "ps -e -o command | grep -v 'grep' | grep 'java.*Xms.*Xmx' | awk '{ print $1 }' | head -n1"
         jrc, jout, jerr = utils.execute(cmd_bin)
         if jrc == 0 and jout != "":
             java_bin = jout.strip()
         else:
-            java_bin = utils.prompt(utils.print_str("INPUT_JAVA_BIN_PATH:"))
+            java_bin = utils.prompt(utils.print_str("SERVICE_BIN_PATH", Java.getname()))
         utils.out_progress_wait(utils.print_str("CONFIGURE_JAVA_MONITOR"))
         cmd_jmxports = "ps -e -o command | grep %s | grep 'jmxremote.port' | grep -v grep | " \
               "awk -F'jmxremote.port=' '{ print $2 }' | awk '{ print $1 }'" % Java.getname()
@@ -44,6 +45,5 @@ class Java(abstract.Abstract):
                     utils.out_progress_fail()
                     utils.out(utils.print_str("ZABBIX_NO_ACCESS", port))
                     utils.out(utils.print_str("CONFIGURE_JAVA_MANUALLY"))
-                    exit(1)
             utils.out_progress_done()
 
