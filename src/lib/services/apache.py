@@ -46,6 +46,16 @@ class Apache(abstract.Abstract):
             p = psutil.Process(int(out.strip()))
             bin_path = p.exe()
             httpd_running = "true"
+            try:
+                if p.cmdline()[0].find('httpd.conf') >= 0 or p.cmdline()[0].find('apache2.conf') >= 0:
+                    if re.search(r'(/[^\s\t\n\r]*/httpd\.conf)', p.cmdline()[0]):
+                        conf_file = re.search(r'(/[^\s\t\n\r]*/httpd\.conf)', p.cmdline()[0]).group(1)
+                    elif re.search(r'(/[^\s\t\n\r]*/apache2\.conf)', p.cmdline()[0]):
+                        conf_file = re.search(r'(/[^\s\t\n\r]*/apache2\.conf)', p.cmdline()[0]).group(1)
+                    if os.path.isfile(conf_file):
+                        httpd_conf = conf_file
+            except Exception as e:
+                pass
         # Make sure binary file is executable
         while True:
             command_rc, command_out, command_err = utils.execute('command -V ' + bin_path)
@@ -56,16 +66,17 @@ class Apache(abstract.Abstract):
                 bin_path = utils.prompt(utils.print_str("SERVICE_BIN_PATH", Apache.getname()))
                 continue
         # Get build parameters of apache
-        parse_rc, parse_out, parse_err = utils.execute(bin_path + ' -V')
-        if parse_rc == 0 and parse_out != "":
-            for line in parse_out.splitlines():
-                if re.search(r'(HTTPD_ROOT=\".*\")', line):
-                    conf_dir = re.search(r'(HTTPD_ROOT=\".*\")', line).group(1).split("=")[1].strip('\"\'')
-                elif re.search(r'(SERVER_CONFIG_FILE=\".*\")', line):
-                    conf_file = re.search(r'(SERVER_CONFIG_FILE=\".*\")', line).group(1).split("=")[1].strip('\"\'')
-            if conf_dir != "" and conf_file != "" and conf_dir.startswith('/') and conf_file.endswith('.conf') \
-                    and os.path.isfile(os.path.join(conf_dir, conf_file)):
-                httpd_conf = os.path.join(conf_dir, conf_file)
+        if conf_file is None or conf_file == '' or not os.path.isfile(conf_file) or not conf_file.endswith('.conf'):
+            parse_rc, parse_out, parse_err = utils.execute(bin_path + ' -V')
+            if parse_rc == 0 and parse_out != "":
+                for line in parse_out.splitlines():
+                    if re.search(r'(HTTPD_ROOT=\".*\")', line):
+                        conf_dir = re.search(r'(HTTPD_ROOT=\".*\")', line).group(1).split("=")[1].strip('\"\'')
+                    elif re.search(r'(SERVER_CONFIG_FILE=\".*\")', line):
+                        conf_file = re.search(r'(SERVER_CONFIG_FILE=\".*\")', line).group(1).split("=")[1].strip('\"\'')
+                if conf_dir != "" and conf_file != "" and conf_dir.startswith('/') and conf_file.endswith('.conf') \
+                        and os.path.isfile(os.path.join(conf_dir, conf_file)):
+                    httpd_conf = os.path.join(conf_dir, conf_file)
         # If we couldn't get apache config file above then ask customer to input it manually
         while True:
             if httpd_conf is None or httpd_conf == '' or not os.path.isfile(httpd_conf) or not httpd_conf.endswith('.conf'):

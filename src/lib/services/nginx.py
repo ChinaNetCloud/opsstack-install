@@ -35,6 +35,12 @@ class Nginx(abstract.Abstract):
         else:
             p = psutil.Process(int(out.strip()))
             bin_path = p.exe()
+            try:
+                if p.cmdline()[0].find('nginx.conf') >= 0:
+                    if re.search(r'(/[^\s\t\n\r]*/nginx\.conf)', p.cmdline()[0]):
+                        conf_file = re.search(r'(/[^\s\t\n\r]*/nginx\.conf)', p.cmdline()[0]).group(1)
+            except Exception as e:
+                pass
         # Make sure binary file is executable
         while True:
             command_rc, command_out, command_err = utils.execute('command -V ' + bin_path)
@@ -44,17 +50,18 @@ class Nginx(abstract.Abstract):
                 utils.out(utils.print_str("WRONG_SERVICE_BIN_PATH", Nginx.getname()))
                 bin_path = utils.prompt(utils.print_str("SERVICE_BIN_PATH", Nginx.getname()))
                 continue
-        # Get build parameters of nginx
-        parse_rc, parse_out, parse_err = utils.execute(bin_path + ' -V')
-        if parse_rc == 0 and parse_err != "":
-            for i in parse_err.split(' '):
-                if re.match(r"\-\-conf\-path\=.*\.conf", i):
-                    conf_file = i.split('=')[1]
-                    break
+        # Get build parameters of nginx if couldn't detect conf file from process
+        if conf_file is None or conf_file == '' or not os.path.isfile(conf_file) or not conf_file.endswith('.conf'):
+            parse_rc, parse_out, parse_err = utils.execute(bin_path + ' -V')
+            if parse_rc == 0 and parse_err != "":
+                for i in parse_err.split(' '):
+                    if re.match(r"\-\-conf\-path\=.*\.conf", i):
+                        conf_file = i.split('=')[1]
+                        break
         # If we couldn't parse the config path, ask customer to input the config path
         while True:
             if conf_file is None or conf_file == '' or not os.path.isfile(conf_file) or not conf_file.endswith('.conf'):
-                utils.out(utils.print_str("WRONG_SERVICE_CONF_PATH", Nginx.getname()))
+                utils.out(utils.print_str("WRONG_SERVICE_CONFIG_PATH", Nginx.getname()))
                 conf_file = utils.prompt(utils.print_str("SERVICE_CONFIG_PATH", Nginx.getname(), '[nginx.conf]'))
                 continue
             else:
