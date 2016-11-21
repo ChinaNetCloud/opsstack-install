@@ -43,8 +43,7 @@ class Nginx(abstract.Abstract):
                 pass
         # Make sure binary file is executable
         while True:
-            command_rc, command_out, command_err = utils.execute('command -V ' + bin_path)
-            if command_rc == 0:
+            if utils.executable(bin_path):
                 break
             else:
                 utils.out(utils.print_str("WRONG_SERVICE_BIN_PATH", Nginx.getname()))
