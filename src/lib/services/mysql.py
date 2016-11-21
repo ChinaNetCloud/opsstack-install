@@ -19,7 +19,9 @@ class MySQL(abstract.Abstract):
         result = False
         if system.os == 'linux':
             if system.is_proc_running("mysqld"):
-                result = True
+                rc, out, err = utils.execute('''ss -ntpl -A inet|grep "mysqld"''')
+                if rc == 0:
+                    result = True
         return result
 
     @staticmethod

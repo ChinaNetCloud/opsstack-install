@@ -19,8 +19,12 @@ class Nginx(abstract.Abstract):
     def discover(system):
         result = False
         if system.os == 'linux':
-            if system.is_proc_running("nginx") or system.is_app_installed("nginx"):
+            if system.is_app_installed("nginx"):
                 result = True
+            elif system.is_proc_running("nginx"):
+                rc, out, err = utils.execute('''ss -ntpl -A inet|grep "nginx"''')
+                if rc == 0:
+                    result = True
         return result
 
     @staticmethod
@@ -43,8 +47,7 @@ class Nginx(abstract.Abstract):
                 pass
         # Make sure binary file is executable
         while True:
-            command_rc, command_out, command_err = utils.execute('command -V ' + bin_path)
-            if command_rc == 0:
+            if utils.executable(bin_path):
                 break
             else:
                 utils.out(utils.print_str("WRONG_SERVICE_BIN_PATH", Nginx.getname()))

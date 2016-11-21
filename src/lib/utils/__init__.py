@@ -93,6 +93,15 @@ def execute(cmd):
     return rc, output, stderr
 
 
+def executable(cmd):
+    result = False
+    child = subprocess.Popen('command -V ' + cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=PLAYS_PATH)
+    rc = child.wait()
+    if rc == 0:
+        result = True
+    return result
+
+
 def prompt(prompt_string):
     prompt_string = language_translation(prompt_string)
     prompt_string = "\n".join(["  => " + s for s in prompt_string.split("\n")])

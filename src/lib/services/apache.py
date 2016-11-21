@@ -18,11 +18,11 @@ class Apache(abstract.Abstract):
     @staticmethod
     def discover(system):
         result = False
-        if system.distribution == 'centos' or system.distribution == 'redhat' or system.distribution == 'amazon':
-            if system.is_proc_running("httpd") or system.is_app_installed("httpd"):
-                result = True
-        elif system.distribution == 'ubuntu' or system.distribution == 'debian':
-            if system.is_proc_running("apache2") or system.is_app_installed("apache2"):
+        if system.is_app_installed("httpd") or  system.is_app_installed("apache"):
+            result = True
+        elif system.is_proc_running("apache") or system.is_proc_running("httpd"):
+            rc, out, err = utils.execute('''ss -ntpl -A inet|egrep "apache|httpd"''')
+            if rc == 0:
                 result = True
         return result
 
@@ -58,8 +58,7 @@ class Apache(abstract.Abstract):
                 pass
         # Make sure binary file is executable
         while True:
-            command_rc, command_out, command_err = utils.execute('command -V ' + bin_path)
-            if command_rc == 0:
+            if utils.executable(bin_path):
                 break
             else:
                 utils.out(utils.print_str("WRONG_SERVICE_CONF_PATH", Apache.getname()))

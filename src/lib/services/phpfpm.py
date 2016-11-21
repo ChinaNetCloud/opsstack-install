@@ -77,8 +77,7 @@ class Phpfpm(abstract.Abstract):
         if phpfpm_bin == '' or phpfpm_bin is None:
             phpfpm_bin = 'php-fpm'
         while True:
-            command_rc, command_out, command_err = utils.execute('command -V ' + phpfpm_bin)
-            if command_rc == 0:
+            if utils.executable(phpfpm_bin):
                 break
             else:
                 utils.out(utils.print_str("WRONG_SERVICE_CONF_PATH", Phpfpm.getname()))
