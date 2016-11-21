@@ -19,8 +19,12 @@ class Nginx(abstract.Abstract):
     def discover(system):
         result = False
         if system.os == 'linux':
-            if system.is_proc_running("nginx") or system.is_app_installed("nginx"):
+            if system.is_app_installed("nginx"):
                 result = True
+            elif system.is_proc_running("nginx"):
+                rc, out, err = utils.execute('''ss -ntpl -A inet|grep "nginx"''')
+                if rc == 0:
+                    result = True
         return result
 
     @staticmethod

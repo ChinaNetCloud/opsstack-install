@@ -1,4 +1,5 @@
 import abstract
+from lib import utils
 
 
 class Memcached(abstract.Abstract):
@@ -14,7 +15,9 @@ class Memcached(abstract.Abstract):
         result = False
         if system.os == 'linux':
             if system.is_proc_running("memcached"):
-                result = True
+                rc, out, err = utils.execute('''ss -ntpl -A inet|grep "redis"''')
+                if rc == 0:
+                    result = True
         return result
 
     @staticmethod
