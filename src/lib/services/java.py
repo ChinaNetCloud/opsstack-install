@@ -22,12 +22,12 @@ class Java(abstract.Abstract):
     @staticmethod
     def get_binary():
         java_bin = None
-        java_bin_cmd = "ps -e -o command | grep -v 'grep' | grep 'java' | awk '{ print $1 }'"
+        java_bin_cmd = "ps -e -o command | grep -v 'grep' | awk '{ print $1 }' | grep 'java'"
         rc, out, err = utils.execute(java_bin_cmd)
         if rc == 0 and out != '':
             binarys = out.strip().splitlines()
             for binary in binarys:
-                if binary.find('java') >= 0 and utils.executable(binary):
+                if utils.executable(binary):
                     java_bin = binary
                     break
         return java_bin

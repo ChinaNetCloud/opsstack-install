@@ -96,7 +96,7 @@ def execute(cmd):
 def executable(cmd):
     result = False
     child = subprocess.Popen('command -V ' + cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=PLAYS_PATH)
-    rc = child.returncode
+    rc = child.wait()
     if rc == 0:
         result = True
     return result
