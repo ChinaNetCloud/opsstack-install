@@ -31,17 +31,12 @@ class Apache(abstract.Abstract):
         result = False
         httpd_conf = None
         httpd_dir = None
+        bin_path = None
         httpd_running = "false"
+        service_name = None
         pars = {}
-        if system.distribution == 'centos' or system.distribution == 'redhat' or system.distribution == 'amazon':
-            # Set default binary file in case service is not running
-            bin_path = "httpd"
-            service_name = "httpd"
-        else:
-            # Set default binary file in case service is not running
-            bin_path = "apache2"
-            service_name = "apache2"
-        rc, out, err = utils.execute("ps -U root|grep %s|grep -v 'grep'|awk '{print $1}'" % service_name)
+        # Try to get apache config file from apache process first
+        rc, out, err = utils.execute("ps -U root|egrep 'httpd|apache'|grep -v 'grep'|awk '{print $1}'| head -1")
         if rc == 0 and out != '':
             p = psutil.Process(int(out.strip()))
             bin_path = p.exe()
@@ -49,33 +44,38 @@ class Apache(abstract.Abstract):
             try:
                 if p.cmdline()[0].find('httpd.conf') >= 0 or p.cmdline()[0].find('apache2.conf') >= 0:
                     if re.search(r'(/[^\s\t\n\r]*/httpd\.conf)', p.cmdline()[0]):
-                        conf_file = re.search(r'(/[^\s\t\n\r]*/httpd\.conf)', p.cmdline()[0]).group(1)
+                        httpd_conf = re.search(r'(/[^\s\t\n\r]*/httpd\.conf)', p.cmdline()[0]).group(1)
                     elif re.search(r'(/[^\s\t\n\r]*/apache2\.conf)', p.cmdline()[0]):
-                        conf_file = re.search(r'(/[^\s\t\n\r]*/apache2\.conf)', p.cmdline()[0]).group(1)
-                    if os.path.isfile(conf_file):
-                        httpd_conf = conf_file
+                        httpd_conf = re.search(r'(/[^\s\t\n\r]*/apache2\.conf)', p.cmdline()[0]).group(1)
             except Exception as e:
                 pass
         # Make sure binary file is executable
         while True:
-            if utils.executable(bin_path):
+            if bin_path == '' or bin_path is None:
+                if utils.executable('apache2'):
+                    bin_path = 'apache2'
+                    break
+                elif utils.executable('httpd'):
+                    bin_path = 'httpd'
+                    break
+            elif bin_path and utils.executable(bin_path):
                 break
             else:
-                utils.out(utils.print_str("WRONG_SERVICE_CONF_PATH", Apache.getname()))
+                utils.out(utils.print_str("WRONG_SERVICE_BIN_PATH", Apache.getname()))
                 bin_path = utils.prompt(utils.print_str("SERVICE_BIN_PATH", Apache.getname()))
                 continue
-        # Get build parameters of apache
-        if conf_file is None or conf_file == '' or not os.path.isfile(conf_file) or not conf_file.endswith('.conf'):
+        # Get build parameters of apache if can not get config file from the process
+        if httpd_conf is None or httpd_conf == '' or not os.path.isfile(httpd_conf) or not httpd_conf.endswith('.conf'):
             parse_rc, parse_out, parse_err = utils.execute(bin_path + ' -V')
             if parse_rc == 0 and parse_out != "":
                 for line in parse_out.splitlines():
                     if re.search(r'(HTTPD_ROOT=\".*\")', line):
                         conf_dir = re.search(r'(HTTPD_ROOT=\".*\")', line).group(1).split("=")[1].strip('\"\'')
                     elif re.search(r'(SERVER_CONFIG_FILE=\".*\")', line):
-                        conf_file = re.search(r'(SERVER_CONFIG_FILE=\".*\")', line).group(1).split("=")[1].strip('\"\'')
-                if conf_dir != "" and conf_file != "" and conf_dir.startswith('/') and conf_file.endswith('.conf') \
-                        and os.path.isfile(os.path.join(conf_dir, conf_file)):
-                    httpd_conf = os.path.join(conf_dir, conf_file)
+                        httpd_conf = re.search(r'(SERVER_CONFIG_FILE=\".*\")', line).group(1).split("=")[1].strip('\"\'')
+                if conf_dir != "" and httpd_conf != "" and conf_dir.startswith('/') and httpd_conf.endswith('.conf') \
+                        and os.path.isfile(os.path.join(conf_dir, httpd_conf)):
+                    httpd_conf = os.path.join(conf_dir, httpd_conf)
         # If we couldn't get apache config file above then ask customer to input it manually
         while True:
             if httpd_conf is None or httpd_conf == '' or not os.path.isfile(httpd_conf) or not httpd_conf.endswith('.conf'):
@@ -86,6 +86,30 @@ class Apache(abstract.Abstract):
                 httpd_dir = os.path.dirname(httpd_conf)
                 result = True
                 break
+        # Fetch service name from systemd or init.d folder depends on OS
+        if (system.distribution == "centos" and system.version.startswith("7.")) \
+                or (system.distribution == "redhat" and system.version.startswith("7.")):
+            systemd = "/usr/lib/systemd/system/"
+            files = os.listdir(systemd)
+            for file in files:
+                if os.path.isfile(os.path.join(systemd, file)) and re.match('httpd', file):
+                    service_name = file.replace('.service', '').strip()
+                    break
+                elif os.path.isfile(os.path.join(systemd, file)) and re.match('apache2', file):
+                    service_name = file.replace('.service', '').strip()
+                    break
+        else:
+            init_folder = "/etc/init.d/"
+            files = os.listdir(init_folder)
+            for file in files:
+                if os.path.isfile(os.path.join(init_folder, file)) and re.match('httpd', file):
+                    service_name = file.strip()
+                    break
+                elif os.path.isfile(os.path.join(init_folder, file)) and re.match('apache2', file):
+                    service_name = file.strip()
+                    break
+        if service_name is None or service_name == '':
+            service_name = utils.prompt(utils.print_str("SERVICE_NAME", Apache.getname()))
         pars['httpd_bin'] = bin_path
         pars['httpd_conf'] = httpd_conf
         pars['httpd_dir'] = httpd_dir
