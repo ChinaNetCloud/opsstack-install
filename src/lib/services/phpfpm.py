@@ -44,7 +44,7 @@ class Phpfpm(abstract.Abstract):
                            ]
         # First check php-fpm config and binary file from process,
         #   if process is not running, then check from the list above
-        rc, out, err = utils.execute("ps -U root|egrep 'php5?\.?[3-6]?-fpm'|grep -v 'grep'|awk '{print $1}'")
+        rc, out, err = utils.execute("ps -U root -o pid,comm|grep -v 'grep'|egrep 'php5?\.?[3-6]?-fpm'|awk '{print $1}' | head -1")
         if rc != 0 or out.strip() == '':
             for conf in phpfpm_conf_list:
                 if os.path.exists(conf):

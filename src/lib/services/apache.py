@@ -36,7 +36,7 @@ class Apache(abstract.Abstract):
         service_name = None
         pars = {}
         # Try to get apache config file from apache process first
-        rc, out, err = utils.execute("ps -U root|egrep 'httpd|apache'|grep -v 'grep'|awk '{print $1}'| head -1")
+        rc, out, err = utils.execute("ps -U root -o pid,comm|grep -v 'grep'|egrep 'httpd|apache'|awk '{print $1}'| head -1")
         if rc == 0 and out != '':
             p = psutil.Process(int(out.strip()))
             bin_path = p.exe()

@@ -32,7 +32,7 @@ class Nginx(abstract.Abstract):
         result = False
         conf_file = None
         pars = {}
-        rc, out, err = utils.execute("ps -U root|grep nginx|grep -v 'grep'|awk '{print $1}'")
+        rc, out, err = utils.execute("ps -U root -o pid,comm|grep -v 'grep'|grep nginx|awk '{print $1}' | head -1")
         if rc != 0 or out == '':
             # If nginx is not running, use "nginx" as the binary path by default
             bin_path = "nginx"
