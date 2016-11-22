@@ -243,6 +243,9 @@ msgstr "请参考CNC的KB相关文档来手动配置%s 服务的监控"
 msgid "WRONG_SERVICE_CONFIG_PATH"
 msgstr "无法找到%s 服务的配置文件"
 
+msgid "WRONG_SERVICE_BIN_PATH"
+msgstr "无法找到%s 服务的二进制文件"
+
 
 
 
