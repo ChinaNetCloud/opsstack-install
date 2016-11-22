@@ -80,7 +80,7 @@ class Phpfpm(abstract.Abstract):
             if utils.executable(phpfpm_bin):
                 break
             else:
-                utils.out(utils.print_str("WRONG_SERVICE_CONF_PATH", Phpfpm.getname()))
+                utils.out(utils.print_str("WRONG_SERVICE_BIN_PATH", Phpfpm.getname()))
                 phpfpm_bin = utils.prompt(utils.print_str("SERVICE_BIN_PATH", Phpfpm.getname()))
                 continue
         while True:

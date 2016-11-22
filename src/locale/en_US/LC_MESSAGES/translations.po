@@ -244,4 +244,7 @@ msgstr "Please configure %s service monitoring manually according to CNC KB docu
 msgid "WRONG_SERVICE_CONFIG_PATH"
 msgstr "Couldn't detect %s service configuration file"
 
+msgid "WRONG_SERVICE_BIN_PATH"
+msgstr "Couldn't detect %s service binary file"
+
 
