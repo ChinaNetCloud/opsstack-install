@@ -46,6 +46,10 @@ class System:
             elif distribution == "system" and (version.startswith("2016.") or version.startswith("2015.")):
                 self.distribution = "amazon"
                 self.version = version
+            # Support Ubuntu 12.04, 14.04 and 16.04
+            elif distribution == "Ubuntu" and (version.startswith("12.") or version.startswith("14.") or version.startswith("16.")):
+                self.distribution = "ubuntu"
+                self.version = version
             # FIXME: Add other supported system below as elif statement
             else:
                 log.get_logger().log("Detected OS: %s, distribution: %s, version: %s" % (os, distribution, version))
@@ -112,6 +116,8 @@ class System:
 
     def install_services_monitoring(self):
         for service in self.services:
+            if service.getname() == "memcached":
+                continue
             if utils.lock_file_exists('service_%s' % service.getname()):
                 log.get_logger().log("Service %s has already been configured before. Asking for reconfiguration." % service.getname())
                 configure_mon_str = "RECONFIGURE_SERVICE_CONFIRMATION"
@@ -156,7 +162,7 @@ class System:
     @staticmethod
     def is_proc_running(proc_name):
         result = True
-        rc, stdout, stderr = utils.execute("ps faux | grep -v grep | grep " + proc_name)
+        rc, stdout, stderr = utils.execute("ps faux | grep -v grep | egrep " + proc_name)
         if stdout == "" and rc == 1:
             # proc_name not found
             result = False

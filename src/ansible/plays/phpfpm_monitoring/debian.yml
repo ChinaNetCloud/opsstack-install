@@ -1,3 +1,49 @@
 ---
-- name: Not implemented
-  fail: msg="Not implement yet"
+  - name: register pm_status_path variable
+    command: grep -q "^pm.status_path = /nc_fpm_status" {{ phpfpm_conf_path }}
+    register: pm_status_path
+    ignore_errors: yes
+
+  - name: register pm_ping variable
+    command: grep -q "^ping.path = /nc_fpm_ping" {{ phpfpm_conf_path }}
+    register: pm_ping
+    ignore_errors: yes
+
+  - name: ensure pm status path enabled
+    lineinfile:
+      dest={{ phpfpm_conf_path }}
+      backup=yes
+      state=present
+      line='pm.status_path = /nc_fpm_status'
+    when:
+      pm_status_path.rc|int != 0
+
+
+  - name: ensure pm_ping enabled
+    lineinfile:
+      dest={{ phpfpm_conf_path }}
+      backup=yes
+      state=present
+      line='ping.path = /nc_fpm_ping'
+    when:
+      pm_ping.rc|int != 0
+
+  - name: test php-fpm configuration file
+    command: "{{ phpfpm_bin_path }} -t"
+    register: php_fpm_service_status
+    when:
+      "{{ phpfpm_restart }} == true or {{ phpfpm_start }} == true"
+
+  - name: restart php-fpm
+    service:
+      name={{ phpfpm_service_name }}
+      state=restarted
+    when:
+      "{{ phpfpm_restart }} == true and php_fpm_service_status.rc|int == 0"
+
+  - name: start php-fpm if php-fpm was stopped
+    service:
+      name={{ phpfpm_service_name }}
+      state=started
+    when:
+      "{{ phpfpm_start }} == true and php_fpm_service_status.rc|int == 0"

@@ -28,5 +28,12 @@ Vagrant.configure(2) do |config|
     ubuntu1604.vm.provision "shell",
       inline: "ln -s /home/vagrant/sync/src/opsstack-configure.py /usr/bin/opsstack-configure"
   end
+  config.vm.define "ubuntu1204" do |ubuntu1204|
+    ubuntu1204.vm.box = "ubuntu/precise64"
+    ubuntu1204.vm.hostname = "ubuntu1204.example.com"
+    ubuntu1204.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+    ubuntu1204.vm.provision "shell",
+       inline: "wget http://repo.service.chinanetcloud.com/apt/ubuntu/pool/precise/main/nc-repo_1.0.0-1.ubuntu+precise_all.deb && dpkg -i nc-repo_1.0.0-1.ubuntu+precise_all.deb; apt-get install opsstack-common -y;ln -s /vagrant/src/opsstack-configure.py /var/lib/opsstack/common/env/bin/opsstack-configure; ln -s /vagrant/src/opsstack-configure.sh /usr/bin/opsstack-configure"
+  end
   config.trigger.reject [:destroy]
 end

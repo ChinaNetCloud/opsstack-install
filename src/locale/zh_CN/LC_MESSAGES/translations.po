@@ -226,3 +226,25 @@ msgstr "Zabbix无法访问jmx端口 %s"
 msgid "LANG_SUPPORT_ONLY"
 msgstr "当前仅支持以上列表中的语言, 请选择正确的语言序列号"
 
+#Service discovery
+#Service discovery
+msgid "SERVICE_CONFIG_PATH"
+msgstr "请输入%s 服务的主配置文件全路径%s"
+
+msgid "SERVICE_BIN_PATH"
+msgstr "请输入%s 服务的二进制文件全路径"
+
+msgid "SERVICE_NAME"
+msgstr "请输入%s 的服务名以用来启动该服务"
+
+msgid "MANUALLY_CONFIGURE"
+msgstr "请参考CNC的KB相关文档来手动配置%s 服务的监控"
+
+msgid "WRONG_SERVICE_CONFIG_PATH"
+msgstr "无法找到%s 服务的配置文件"
+
+msgid "WRONG_SERVICE_BIN_PATH"
+msgstr "无法找到%s 服务的二进制文件"
+
+msgid "REDIS_AUTH_PASSWD"
+msgstr "Redis [端口 %s] 验证密码"

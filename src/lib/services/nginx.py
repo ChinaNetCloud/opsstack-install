@@ -1,6 +1,8 @@
 import abstract
 import os
 import re
+import psutil
+import json
 
 from lib import utils
 
@@ -17,34 +19,71 @@ class Nginx(abstract.Abstract):
     def discover(system):
         result = False
         if system.os == 'linux':
-            if system.is_proc_running("nginx") or system.is_app_installed("nginx"):
+            if system.is_app_installed("nginx"):
                 result = True
+            elif system.is_proc_running("nginx"):
+                rc, out, err = utils.execute('''ss -ntpl -A inet|grep "nginx"''')
+                if rc == 0:
+                    result = True
         return result
 
     @staticmethod
     def getconf(system):
         result = False
-        conf_file = None 
-        conf_dir = None 
-        rc, out, err = utils.execute("nginx -V")
-        # The nginx configure parameters will be wrote to stderr
-        if rc == 0 and err != "":
-            for i in err.split(' '):
-                if re.match(r"\-\-conf\-path\=.*\.conf", i):
-                    conf_file = i.split('=')[1]
-                    conf_dir = os.path.dirname(conf_file)
-                    if os.path.exists(conf_file):
-                        result = True
-        return result, conf_file, conf_dir
+        conf_file = None
+        pars = {}
+        rc, out, err = utils.execute("ps -U root -o pid,comm|grep -v 'grep'|grep nginx|awk '{print $1}' | head -1")
+        if rc != 0 or out == '':
+            # If nginx is not running, use "nginx" as the binary path by default
+            bin_path = "nginx"
+        else:
+            p = psutil.Process(int(out.strip()))
+            bin_path = p.exe()
+            try:
+                if p.cmdline()[0].find('nginx.conf') >= 0:
+                    if re.search(r'(/[^\s\t\n\r]*/nginx\.conf)', p.cmdline()[0]):
+                        conf_file = re.search(r'(/[^\s\t\n\r]*/nginx\.conf)', p.cmdline()[0]).group(1)
+            except Exception as e:
+                pass
+        # Make sure binary file is executable
+        while True:
+            if utils.executable(bin_path):
+                break
+            else:
+                utils.out(utils.print_str("WRONG_SERVICE_BIN_PATH", Nginx.getname()))
+                bin_path = utils.prompt(utils.print_str("SERVICE_BIN_PATH", Nginx.getname()))
+                continue
+        # Get build parameters of nginx if couldn't detect conf file from process
+        if conf_file is None or conf_file == '' or not os.path.isfile(conf_file) or not conf_file.endswith('.conf'):
+            parse_rc, parse_out, parse_err = utils.execute(bin_path + ' -V')
+            if parse_rc == 0 and parse_err != "":
+                for i in parse_err.split(' '):
+                    if re.match(r"\-\-conf\-path\=.*\.conf", i):
+                        conf_file = i.split('=')[1]
+                        break
+        # If we couldn't parse the config path, ask customer to input the config path
+        while True:
+            if conf_file is None or conf_file == '' or not os.path.isfile(conf_file) or not conf_file.endswith('.conf'):
+                utils.out(utils.print_str("WRONG_SERVICE_CONFIG_PATH", Nginx.getname()))
+                conf_file = utils.prompt(utils.print_str("SERVICE_CONFIG_PATH", Nginx.getname(), '[nginx.conf]'))
+                continue
+            else:
+                conf_dir = os.path.dirname(conf_file)
+                result = True
+                break
+        pars['nginx_conf_file'] = conf_file
+        pars['nginx_conf_dir'] = conf_dir
+        pars['nginx_bin_path'] = bin_path
+        return result, pars
 
     @staticmethod
     def configure(system):
         nginx_restart = "false"
         nginx_start = "false"
-        result, nginx_file, nginx_dir = Nginx.getconf(system)
+        result, pars = Nginx.getconf(system)
         if not result:
             utils.out(utils.print_str("NOT_DETECT_CONF_PATH", Nginx.getname()))
-            utils.out("please configure manually refer to our docs: www.chinanetcloud.com/nginx-monitoring\n")
+            utils.out(utils.print_str("MANUALLY_CONFIGURE"), Nginx.getname())
             return
         if system.is_proc_running("nginx"):
             if utils.confirm(utils.print_str("RESTART_SERVICE", Nginx.getname())):
@@ -56,11 +95,13 @@ class Nginx(abstract.Abstract):
                 nginx_start = "true"
             else:
                 utils.out_progress_info(utils.print_str("START_SERVICE_LATER", Nginx.getname()))
+        pars['nginx_restart'] = nginx_restart
+        pars['nginx_start'] = nginx_start
+        pars_json = json.dumps(pars)
         utils.out_progress_wait(utils.print_str("CONFIGURE_MONITOR", Nginx.getname()))
-        rc, out, err = utils.ansible_play("nginx_monitoring", "nginx_conf_dir=%s nginx_conf_file=%s nginx_restart=%s nginx_start=%s" % (nginx_dir, nginx_file, nginx_restart, nginx_start))
+        rc, out, err = utils.ansible_play("nginx_monitoring", pars_json)
         if rc == 0:
             utils.out_progress_done()
         else:
             utils.out_progress_fail()
             utils.err(utils.print_str("FAILED_CONFIGURE_MONITOR", Nginx.getname()))
-            exit(1)

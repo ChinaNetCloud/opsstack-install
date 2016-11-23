@@ -5,6 +5,7 @@ import json
 
 from lib import utils
 
+
 class MySQL(abstract.Abstract):
     def __init__(self):
         abstract.Abstract.__init__(self)
@@ -18,7 +19,9 @@ class MySQL(abstract.Abstract):
         result = False
         if system.os == 'linux':
             if system.is_proc_running("mysqld"):
-                result = True
+                rc, out, err = utils.execute('''ss -ntpl -A inet|grep "mysqld"''')
+                if rc == 0:
+                    result = True
         return result
 
     @staticmethod
@@ -81,6 +84,7 @@ class MySQL(abstract.Abstract):
             mycnf.write("[client]\n")
             mycnf.write("user=%s\n" % pars['user'])
             mycnf.write("password=%s\n" % pars['mysql_root_pass'])
+            mycnf.write("host=127.0.0.1")
             mycnf.write("port=%s" % pars['mysql_port'])
         utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), pars['mysql_port']))
         del pars['mysql_root_pass'], pars['user'], pars['mysql_port']
@@ -89,7 +93,6 @@ class MySQL(abstract.Abstract):
         if rc != 0:
             utils.out_progress_fail()
             utils.err(utils.print_str("FAILED_CREATE_USER", MySQL.getname()))
-            exit(1)
         else:
             utils.out_progress_done()
 

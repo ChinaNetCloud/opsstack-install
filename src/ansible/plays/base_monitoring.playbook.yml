@@ -28,6 +28,15 @@
     - include: ./base_monitoring/debian7.yml
       when: ansible_distribution == "Debian" and ansible_distribution_major_version|int == 7
 
+    - include: ./base_monitoring/ubuntu1204.yml
+      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 12
+
+    - include: ./base_monitoring/ubuntu1404.yml
+      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 14
+
+    - include: ./base_monitoring/ubuntu1604.yml
+      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 16
+
     - name: Enable SElinux
       selinux: state="{{ selinux.config_mode }}" policy="{{ selinux.type }}"
       when: selinux is defined

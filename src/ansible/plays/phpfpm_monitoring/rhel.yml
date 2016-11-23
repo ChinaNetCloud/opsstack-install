@@ -1,17 +1,17 @@
 ---
   - name: register pm_status_path variable
-    command: grep -q "^pm.status_path = /nc_fpm_status" /etc/php-fpm.d/www.conf
+    command: grep -q "^pm.status_path = /nc_fpm_status" {{ phpfpm_conf_path }}
     register: pm_status_path
     ignore_errors: yes
 
   - name: register pm_ping variable
-    command: grep -q "^ping.path = /nc_fpm_ping" /etc/php-fpm.d/www.conf
+    command: grep -q "^ping.path = /nc_fpm_ping" {{ phpfpm_conf_path }}
     register: pm_ping
     ignore_errors: yes
 
   - name: ensure pm status path enabled
     lineinfile:
-      dest=/etc/php-fpm.d/www.conf
+      dest={{ phpfpm_conf_path }}
       backup=yes
       state=present
       line='pm.status_path = /nc_fpm_status'
@@ -21,7 +21,7 @@
 
   - name: ensure pm_ping enabled
     lineinfile:
-      dest=/etc/php-fpm.d/www.conf
+      dest={{ phpfpm_conf_path }}
       backup=yes
       state=present
       line='ping.path = /nc_fpm_ping'
@@ -29,24 +29,22 @@
       pm_ping.rc|int != 0
 
   - name: test php-fpm configuration file
-    command: php-fpm -t
+    command: "{{ phpfpm_bin_path }} -t"
     register: php_fpm_service_status
+    when:
+      "{{ phpfpm_restart }} == true or {{ phpfpm_start }} == true"
 
   - name: restart php-fpm
     service:
-      name=php-fpm
+      name={{ phpfpm_service_name }}
       state=restarted
     when:
       "{{ phpfpm_restart }} == true and php_fpm_service_status.rc|int == 0"
 
   - name: start php-fpm if php-fpm was stopped
     service:
-      name=php-fpm
+      name={{ phpfpm_service_name }}
       state=started
     when:
       "{{ phpfpm_start }} == true and php_fpm_service_status.rc|int == 0"
 
-  - name: notify customer if php-fpm configure file test failed
-    command: echo "php-fpm configuration syntax is incorrect, please fix it and then restart php-fpm"
-    when:
-      php_fpm_service_status.rc|int != 0
