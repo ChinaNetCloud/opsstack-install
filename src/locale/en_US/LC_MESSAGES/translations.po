@@ -247,4 +247,5 @@ msgstr "Couldn't detect %s service configuration file"
 msgid "WRONG_SERVICE_BIN_PATH"
 msgstr "Couldn't detect %s service binary file"
 
-
+msgid "REDIS_AUTH_PASSWD"
+msgstr "Redis [Port %s] auth password"
