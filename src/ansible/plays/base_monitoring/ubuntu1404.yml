@@ -19,11 +19,11 @@
   when: zabbix_agent.rc|int != 0
 
 - name: Install zabbix-agent
-  shell: apt-get install zabbix-agent
+  shell: apt-get install zabbix-agent -y
   when: zabbix_agent.rc|int != 0
 
 - name: Install CNC Zabbix custom scripts
-  shell: apt-get install nc-zabbix-custom-scripts
+  shell: apt-get install nc-zabbix-custom-scripts -y
   ignore_errors: true
 
 - name: Fix Zabbix config file
