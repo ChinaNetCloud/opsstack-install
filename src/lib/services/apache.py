@@ -40,6 +40,8 @@ class Apache(abstract.Abstract):
         if rc == 0 and out != '':
             p = psutil.Process(int(out.strip()))
             bin_path = p.exe()
+            if bin_path.endswith('apache') or bin_path.endswith('apache2'):
+                bin_path += 'ctl'
             httpd_running = "true"
             try:
                 if p.cmdline()[0].find('httpd.conf') >= 0 or p.cmdline()[0].find('apache2.conf') >= 0:
@@ -52,8 +54,11 @@ class Apache(abstract.Abstract):
         # Make sure binary file is executable
         while True:
             if bin_path == '' or bin_path is None:
-                if utils.executable('apache2'):
-                    bin_path = 'apache2'
+                if utils.executable('apache2ctl'):
+                    bin_path = 'apache2ctl'
+                    break
+                elif utils.executable('apachectl'):
+                    bin_path = 'apachectl'
                     break
                 elif utils.executable('httpd'):
                     bin_path = 'httpd'
