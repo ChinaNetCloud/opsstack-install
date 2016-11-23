@@ -90,7 +90,6 @@ class Phpfpm(abstract.Abstract):
                 phpfpm_config_path = utils.prompt(utils.print_str("SERVICE_CONFIG_PATH", Phpfpm.getname(), '[www.conf]'))
                 continue
             else:
-                result = True
                 break
         # Fetch service name from systemd or init.d folder depends on OS
         if (system.distribution == "centos" and system.version.startswith("7.")) \
@@ -110,6 +109,8 @@ class Phpfpm(abstract.Abstract):
                     break
         if phpfpm_service_name is None or phpfpm_service_name == '':
             phpfpm_service_name = utils.prompt(utils.print_str("SERVICE_NAME", Phpfpm.getname()))
+        if phpfpm_bin != '' and phpfpm_config_path != '' and phpfpm_service_name != '':
+            result = True
         pars['phpfpm_bin_path'] = phpfpm_bin
         pars['phpfpm_conf_path'] = phpfpm_config_path
         pars['phpfpm_service_name'] = phpfpm_service_name
@@ -121,7 +122,7 @@ class Phpfpm(abstract.Abstract):
         phpfpm_start = "false"
         result, pars = Phpfpm.getconf(system)
         if not result:
-            utils.out(utils.print_str("FAILED_CONFIGURE_MONITOR", Phpfpm.getname()))
+            utils.out(utils.print_str("NOT_DETECT_CONF_PATH", Phpfpm.getname()))
             utils.out(utils.print_str("MANUALLY_CONFIGURE"), Phpfpm.getname())
             return
         if system.is_proc_running("php5?\.?[3-6]?-fpm"):
