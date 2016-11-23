@@ -3,8 +3,10 @@ from lib import utils
 
 from tempfile import mkstemp
 from shutil import move
-from os import remove, close
+from os import remove, close, chmod, chown
 import re
+import stat
+import pwd
 
 
 class Redis(abstract.Abstract):
@@ -73,6 +75,9 @@ class Redis(abstract.Abstract):
 
             # Move new file
             move(abs_path, file_path)
+            # Change the  owner and permission of redis.conf file
+            chmod(file_path, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP)
+            chown(file_path, pwd.getpwnam('zabbix').pw_uid, pwd.getpwnam('zabbix').pw_gid)
             utils.out_progress_done()
         except Exception as e:
             utils.out_progress_fail()
