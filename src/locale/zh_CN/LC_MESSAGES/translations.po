@@ -246,6 +246,5 @@ msgstr "无法找到%s 服务的配置文件"
 msgid "WRONG_SERVICE_BIN_PATH"
 msgstr "无法找到%s 服务的二进制文件"
 
-
-
-
+msgid "REDIS_AUTH_PASSWD"
+msgstr "Redis [端口 %s] 验证密码"
