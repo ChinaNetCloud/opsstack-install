@@ -1,26 +1,17 @@
 ---
 
-- name: Check if zabbix-agent is already installed
-  shell: dpkg -l | grep 'zabbix-agent' warn=False
-  register: zabbix_agent
-  ignore_errors: yes
-
 - name: Download Zabbix repository Ubuntu1204
   shell: wget -q http://repo.zabbix.com/zabbix/3.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.0-1+xenial_all.deb -O /tmp/zabbix-release_3.0-1+xenial_all.deb
-  when: zabbix_agent.rc|int != 0
 
 - name: Install Zabbix repository
   shell: dpkg -i /tmp/zabbix-release_3.0-1+xenial_all.deb
-  when: zabbix_agent.rc|int != 0
 
 - name: Update repository
   shell: apt-get update
   ignore_errors: true
-  when: zabbix_agent.rc|int != 0
 
 - name: Install zabbix-agent
   shell: apt-get install zabbix-agent -y
-  when: zabbix_agent.rc|int != 0
 
 - name: Install CNC Zabbix custom scripts
   shell: apt-get install nc-zabbix-custom-scripts -y
