@@ -32,30 +32,26 @@
     - user: nccheckdb
       pass: '{{ mysql_nccheckdb_pass }}'
 
-
 # Import SYS Schema
-- name: Ensure git installed
-  yum: name=git state=present
-  when: {{ enable_sys }} == "Need"
+- block:
+   - name: Ensure git installed
+     yum: name=git state=present
 
-- name: Git clone mysql sys code
-  git: repo=https://github.com/mysql/mysql-sys
-    dest=/tmp/mysql-sys
-    accept_hostkey=yes
-    force=yes
-  when: {{ enable_sys }} == "Need"
+   - name: Git clone mysql sys code
+     git: repo=https://github.com/mysql/mysql-sys
+       dest=/tmp/mysql-sys
+       accept_hostkey=yes
+       force=yes
 
-- name: ensure performance_schema is ON
-  mysql_variables: performance_schema=ON config_file={{ my_cnf_file }}
-  when: {{ enable_sys }} == "Need"
+   - name: ensure performance_schema is ON
+     mysql_variables: performance_schema=ON config_file={{ my_cnf_file }}
 
-- name: import sys database
-  mysql_db: state=import name=sys target=/tmp/mysql-sys/sys_56.sql config_file={{ my_cnf_file }}
-  when: {{ enable_sys }} == "Need"
+   - name: import sys database
+     mysql_db: state=import name=sys target=/tmp/mysql-sys/sys_56.sql config_file={{ my_cnf_file }}
 
-- name: Remove mysql_sys git code
-  file: path=/tmp/mysql-sys state=absent
-  when: {{ enable_sys }} == "Need"
+   - name: Remove mysql_sys git code
+     file: path=/tmp/mysql-sys state=absent
+ when: {{ enable_sys }} == "Need"
 
 - name: Remove my_cnf file
   file: path={{ mycnf_file }} state=absent
