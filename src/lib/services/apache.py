@@ -53,7 +53,7 @@ class Apache(abstract.Abstract):
                 pass
         # Make sure binary file is executable
         while True:
-            if bin_path == '' or bin_path is None:
+            if bin_path == '' or bin_path is None or (bin_path and not utils.executable(bin_path)):
                 if utils.executable('apache2ctl'):
                     bin_path = 'apache2ctl'
                     break
