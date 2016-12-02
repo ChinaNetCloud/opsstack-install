@@ -36,6 +36,18 @@ package:
 		$(REQUIRES) \
 		--iteration "1.ubuntu" \
 		--force
+	fpm -C $(SRC_DIR)/src/ \
+		-s dir -t deb \
+		-n $(NAME) \
+		-v $(VERSION) \
+		--prefix $(PREFIX) \
+		-a $(ARCHITECTURE) \
+		$(AFTER_INSTALL) \
+		$(BEFORE_REMOVE) \
+		--template-scripts \
+		$(REQUIRES) \
+		--iteration "1.debian" \
+		--force
 
 deploy:
 	mv $(SRC_DIR)/*.rpm $(AGGREGATE_PATH)/ || true
