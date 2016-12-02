@@ -38,6 +38,17 @@ class MySQL(abstract.Abstract):
         pars = {}
         mysql_root_pass = ''
         port = None
+        rc, out, err = utils.execute("mysql --version | awk -F'Distrib |,' '{print $2}'")
+        if rc != 0 or out.strip() == '':
+            utils.err("FAILED_GET_MYSQL_VERSION")
+        else:
+            if out.startswith('5.6.'):
+                pars['enable_sys'] = "Need"
+            elif out.startswith('5.7.'):
+                pars['enable_sys'] = "NO Need"
+            else:
+                pars['enable_sys'] = "NOT Support"
+
         rc, out, err = utils.execute(
             "ss -ntlp -A inet | grep mysqld |awk '{print $5}'|awk -F: '{print $NF}'|head -1")
         if rc != 0 or out.strip() == '':
