@@ -6,7 +6,7 @@ ARCHITECTURE=all
 AFTER_INSTALL=--after-install $(SRC_DIR)/after_install.sh
 BEFORE_REMOVE=--before-remove $(SRC_DIR)/before_remove.sh
 REQUIRES=-d opsstack-common -d opsstack-configure
-AGGREGATE_PATH=/repo-aggregate
+AGGREGATE_PATH=$(DEPLOY_PATH)
 
 .PHONY: package
 package:
@@ -35,6 +35,18 @@ package:
 		--template-scripts \
 		$(REQUIRES) \
 		--iteration "1.ubuntu" \
+		--force
+	fpm -C $(SRC_DIR)/src/ \
+		-s dir -t deb \
+		-n $(NAME) \
+		-v $(VERSION) \
+		--prefix $(PREFIX) \
+		-a $(ARCHITECTURE) \
+		$(AFTER_INSTALL) \
+		$(BEFORE_REMOVE) \
+		--template-scripts \
+		$(REQUIRES) \
+		--iteration "1.debian" \
 		--force
 
 deploy:
