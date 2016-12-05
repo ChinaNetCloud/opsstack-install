@@ -145,7 +145,7 @@ def ansible_play(name, extra_vars=None):
     if extra_vars is None:
         playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml"
     else:
-        playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\""
+        playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \'" + extra_vars + "\'"
     rc, stdout, stderr = execute(playbook_cmd)
     if rc != 0:
         log.get_logger().log("Running playbook %s failed. Please see output below" % name)

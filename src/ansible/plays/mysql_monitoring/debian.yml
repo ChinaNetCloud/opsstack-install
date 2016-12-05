@@ -20,11 +20,12 @@
   with_items:
     - user: nccheckdb
       pass: '{{ mysql_nccheckdb_pass }}'
+      port: '{{ mysql_port }}'
 
 # Import SYS Schema
 - block:
     - name: Ensure git installed
-      yum: name=git state=present
+      shell: apt-get install git -y
 
     - name: Git clone mysql sys code
       git: repo=https://github.com/mysql/mysql-sys
@@ -40,7 +41,11 @@
 
     - name: Remove mysql_sys git code
       file: path=/tmp/mysql-sys state=absent
-  when: {{ enable_sys }} == "Need"
+  when: enable_sys == "Need"
 
 - name: Remove my_cnf file
   file: path={{ mycnf_file }} state=absent
+
+
+
+

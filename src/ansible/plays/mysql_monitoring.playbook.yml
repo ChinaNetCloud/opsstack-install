@@ -10,6 +10,10 @@
       fail: msg="mycnf_file variable for mysql configure is not defined"
       when: mycnf_file is not defined
 
+    - name: Verify extra-vars
+      fail: msg="mysql port is not defined"
+      when: mysql_port is not defined
+
     - include: ./mysql_monitoring/rhel.yml
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
