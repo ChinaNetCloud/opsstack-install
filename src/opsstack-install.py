@@ -196,17 +196,6 @@ def choose_language():
 
 def check_compatibility():
     result = True
-    if not utils.lock_file_exists("zabbix"):
-        if system.System.is_app_installed("\"zabbix-agent\""):
-            result = False
-            log.get_logger().log("Zabbix already installed. Not by us. Aborting.")
-        if system.System.is_proc_running("zabbix_agentd"):
-            result = False
-            log.get_logger().log("Zabbix agent is already running and is not installed by us. Aborting.")
-        if not system.System.is_port_free(10050):
-            result = False
-            log.get_logger().log("Zabbix port is already taken. And it is not us. Aborting.")
-    # FIXME: Add more checks?
     return result
 
 
