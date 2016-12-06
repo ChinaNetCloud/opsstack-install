@@ -17,13 +17,13 @@
   mysql_user:
     name=nccheckdb
     password={{ mysql_nccheckdb_pass }}
-    priv="*.*:PROCESS,REPLICATION CLIENT,SELECT"
+    priv="*.*:PROCESS,REPLICATION CLIENT,SELECT,EXECUTE"
     state=present
     config_file={{ mycnf_file }}
 
 - name: Prepare zabbix mysql_credentials
   template:
-    src=../../templates/client.my.cnf.j2
+    src=../templates/client.my.cnf.j2
     dest=/home/zabbix/conf/mysql_credentials
     owner=zabbix
     group=zabbix
@@ -31,6 +31,7 @@
   with_items:
     - user: nccheckdb
       pass: '{{ mysql_nccheckdb_pass }}'
+      port: '{{ mysql_port }}'
 
 # Import SYS Schema
 - block:
@@ -51,7 +52,7 @@
 
     - name: Remove mysql_sys git code
       file: path=/tmp/mysql-sys state=absent
-  when: {{ enable_sys }} == "Need"
+  when: enable_sys == "Need"
 
 - name: Remove my_cnf file
   file: path={{ mycnf_file }} state=absent

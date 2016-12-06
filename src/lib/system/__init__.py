@@ -50,6 +50,10 @@ class System:
             elif distribution == "Ubuntu" and (version.startswith("12.") or version.startswith("14.") or version.startswith("16.")):
                 self.distribution = "ubuntu"
                 self.version = version
+            # Support Debian version 7 and 8
+            elif distribution == "debian" and (version.startswith("7.") or version.startswith("8.")):
+                self.distribution = distribution
+                self.version = version
             # FIXME: Add other supported system below as elif statement
             else:
                 log.get_logger().log("Detected OS: %s, distribution: %s, version: %s" % (os, distribution, version))
@@ -172,7 +176,7 @@ class System:
     def is_app_installed(app_name):
         result = True
         rc, stdout, stderr = utils.ansible_play("is_app_installed", "package_name=%s" % app_name)
-        if rc == 1:
+        if rc != 0:
             # app_name is not installed
             result = False
         return result
