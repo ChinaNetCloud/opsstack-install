@@ -9,8 +9,8 @@ server {
     listen 81;
     server_name     localhost 127.0.0.1;
 
-    access_log   /var/log/nginx/zabbix/access_zabbix-check.log;
-    error_log    /var/log/nginx/zabbix/error_zabbix-check.log;
+    access_log   /var/log/nginx/nc_zabbix/access_zabbix-check.log;
+    error_log    /var/log/nginx/nc_zabbix/error_zabbix-check.log;
 
     location /nginx_status {
         stub_status on;
@@ -33,8 +33,8 @@ server {
     listen 81;
     server_name     localhost 127.0.0.1;
 
-    access_log   /var/log/nginx/zabbix/access_zabbix-check.log;
-    error_log   /var/log/nginx/zabbix/error_zabbix-check.log;
+    access_log   /var/log/nginx/nc_zabbix/access_zabbix-check.log;
+    error_log   /var/log/nginx/nc_zabbix/error_zabbix-check.log;
 
     root /var/www/html;
 
