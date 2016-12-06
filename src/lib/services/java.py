@@ -45,7 +45,7 @@ class Java(abstract.Abstract):
             utils.out(utils.print_str("CONFIGURE_JAVA_MANUALLY"))
         else:
             for port in jmxout.strip().split('\n'):
-                cmd_jmxcheck = "%s -jar /home/zabbix/bin/cmdline-jmxclient-0.10.3.jar " \
+                cmd_jmxcheck = "%s -jar /var/lib/nc_zabbix/bin/cmdline-jmxclient-0.10.3.jar " \
                           "zabbix_check:zabbix_check 127.0.0.1:%s" % (java_bin, port)
                 rc, out, err = utils.execute(cmd_jmxcheck)
                 if rc != 0:

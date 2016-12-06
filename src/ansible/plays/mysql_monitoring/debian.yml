@@ -15,8 +15,8 @@
   template:
     src=../templates/client.my.cnf.j2
     dest=/var/lib/nc_zabbix/conf/mysql_credentials
-    owner=zabbix
-    group=zabbix
+    owner=nc-zabbix
+    group=nc-zabbix
     mode=0600
   with_items:
     - user: nccheckdb
