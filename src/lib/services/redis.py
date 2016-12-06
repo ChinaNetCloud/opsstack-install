@@ -55,7 +55,7 @@ class Redis(abstract.Abstract):
 
         try:
             # update redis_check.conf file to connect redis
-            file_path = "/home/zabbix/conf/nc_redis_check.conf"
+            file_path = "/var/lib/nc_zabbix/conf/nc_redis_check.conf"
             host_str = 'REDIS_IP="' + pars['redis_host'] + '"'
             passwd_str = 'REDIS_PASSWD="' + pars['redis_auth_pass'] + '"'
             fh, abs_path = mkstemp()
@@ -77,7 +77,7 @@ class Redis(abstract.Abstract):
             move(abs_path, file_path)
             # Change the  owner and permission of redis.conf file
             chmod(file_path, stat.S_IRWXU|stat.S_IRGRP|stat.S_IXGRP)
-            chown(file_path, pwd.getpwnam('zabbix').pw_uid, pwd.getpwnam('zabbix').pw_gid)
+            chown(file_path, pwd.getpwnam('nc-zabbix').pw_uid, pwd.getpwnam('nc-zabbix').pw_gid)
             utils.out_progress_done()
         except Exception as e:
             utils.out_progress_fail()

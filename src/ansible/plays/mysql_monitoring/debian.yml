@@ -14,7 +14,7 @@
 - name: Prepare zabbix mysql_credentials
   template:
     src=../templates/client.my.cnf.j2
-    dest=/home/zabbix/conf/mysql_credentials
+    dest=/var/lib/nc_zabbix/conf/mysql_credentials
     owner=zabbix
     group=zabbix
     mode=0600
