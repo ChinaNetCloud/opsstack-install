@@ -9,6 +9,7 @@ import os
 import fcntl
 import struct
 import psutil
+import args as arguments
 
 from lib import log
 
@@ -128,6 +129,9 @@ def print_str(s, *args):
 
 
 def confirm(prompt_string, *args):
+    # If assume-yes is on, don't prompt, return True
+    if arguments.get_args().assume_yes is True:
+        return True
     prompt_string = language_translation(prompt_string)
     while True:
         result = prompt(prompt_string + " [Y/n]")
