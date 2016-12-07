@@ -35,10 +35,10 @@
         force=yes
 
     - name: ensure performance_schema is ON
-      mysql_variables: performance_schema=ON config_file={{ my_cnf_file }}
+      mysql_variables: variable=performance_schema value=ON config_file={{ mycnf_file }}
 
     - name: import sys database
-      mysql_db: state=import name=sys target=/tmp/mysql-sys/sys_56.sql config_file={{ my_cnf_file }}
+      mysql_db: state=import name=sys target=/tmp/mysql-sys/sys_56.sql config_file={{ mycnf_file }}
 
     - name: Remove mysql_sys git code
       file: path=/tmp/mysql-sys state=absent
