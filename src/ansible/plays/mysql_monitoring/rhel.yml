@@ -39,16 +39,16 @@
       yum: name=git state=present
 
     - name: Git clone mysql sys code
-      git: repo=https://github.com/mysql/mysql-sys
-        dest=/tmp/mysql-sys
-        accept_hostkey=yes
-        force=yes
+      git: repo=https://github.com/mysql/mysql-sys dest=/tmp/mysql-sys accept_hostkey=yes force=yes
+
+    - name: sys_56.sql file use absolute path
+      replace: dest=/tmp/mysql-sys/sys_56.sql regexp='SOURCE ./' replace='SOURCE /tmp/mysql-sys/'
 
     - name: ensure performance_schema is ON
       mysql_variables: variable=performance_schema value=ON config_file={{ mycnf_file }}
 
     - name: import sys database
-      mysql_db: state=import name=sys target=/tmp/mysql-sys/sys_56.sql config_file={{ mycnf_file }}
+      mysql_db: state=import name=all target=/tmp/mysql-sys/sys_56.sql config_file={{ mycnf_file }}
 
     - name: Remove mysql_sys git code
       file: path=/tmp/mysql-sys state=absent
