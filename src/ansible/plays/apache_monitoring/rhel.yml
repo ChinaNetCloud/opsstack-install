@@ -4,7 +4,7 @@
   file: path=/var/www/html state=directory
 
 - name: register apache_include_zabbix info
-  command: grep -q "Include {{ httpd_dir }}/zabbix.conf" {{ httpd_conf }}
+  command: grep -q "Include {{ httpd_dir }}/nc_zabbix.conf" {{ httpd_conf }}
   register: apache_include_zabbix
   ignore_errors: yes
 
@@ -14,20 +14,20 @@
     backup=yes
     state=present
     insertafter='EOF'
-    line='#cnc monitoring configuration\nInclude {{ httpd_dir }}/zabbix.conf'
+    line='#cnc monitoring configuration\nInclude {{ httpd_dir }}/nc_zabbix.conf'
   when:
     apache_include_zabbix.rc|int != 0
 
 - name: ensure httpd monitoring configuration
   template:
     src=../templates/httpd_zabbix.conf.j2
-    dest={{ httpd_dir }}/zabbix.conf
+    dest={{ httpd_dir }}/nc_zabbix.conf
     owner=root
     group=root
     mode=0644
 
 - name: ensure zabbix vhost log folder and create zabbix log folder
-  file: dest=/var/log/httpd/zabbix owner=root group=root state=directory
+  file: dest=/var/log/httpd/nc_zabbix owner=root group=root state=directory
 
 - name: ensure http configuration is valid
   command: "{{ httpd_bin }} -t"

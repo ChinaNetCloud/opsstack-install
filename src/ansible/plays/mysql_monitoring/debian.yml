@@ -6,20 +6,47 @@
   mysql_user:
     name=nccheckdb
     password={{ mysql_nccheckdb_pass }}
-    priv="*.*:PROCESS,REPLICATION CLIENT,SELECT"
+    priv="*.*:PROCESS,REPLICATION CLIENT,SELECT,EXECUTE"
+    host=127.0.0.1
     state=present
     config_file={{ mycnf_file }}
 
 - name: Prepare zabbix mysql_credentials
   template:
-    src=../../templates/client.my.cnf.j2
-    dest=/home/zabbix/conf/mysql_credentials
-    owner=zabbix
-    group=zabbix
+    src=../templates/client.my.cnf.j2
+    dest=/var/lib/nc_zabbix/conf/mysql_credentials
+    owner=nc-zabbix
+    group=nc-zabbix
     mode=0600
   with_items:
     - user: nccheckdb
       pass: '{{ mysql_nccheckdb_pass }}'
+      port: '{{ mysql_port }}'
+
+# Import SYS Schema
+- block:
+    - name: Ensure git installed
+      shell: apt-get install git -y
+
+    - name: Git clone mysql sys code
+      git: repo=https://github.com/mysql/mysql-sys dest=/tmp/mysql-sys accept_hostkey=yes force=yes
+
+    - name: sys_56.sql file use absolute path
+      replace: dest=/tmp/mysql-sys/sys_56.sql regexp='SOURCE ./' replace='SOURCE /tmp/mysql-sys/'
+
+    - name: ensure performance_schema is ON
+      mysql_variables: variable=performance_schema value=ON config_file={{ mycnf_file }}
+
+    - name: import sys database
+      mysql_db: state=import name=all target=/tmp/mysql-sys/sys_56.sql config_file={{ mycnf_file }}
+
+    - name: Remove mysql_sys git code
+      file: path=/tmp/mysql-sys state=absent
+  when: enable_sys == "Need"
 
 - name: Remove my_cnf file
   file: path={{ mycnf_file }} state=absent
+
+
+
+

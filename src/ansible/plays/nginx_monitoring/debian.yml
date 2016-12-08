@@ -3,7 +3,7 @@
   file: path={{ nginx_conf_dir }}/cnc-conf.d state=directory
 
 - name: confirm nginx whether include zabbix configuration
-  command: grep -q "include {{ nginx_conf_dir }}/cnc-conf.d/zabbix.conf" {{ nginx_conf_file }}
+  command: grep -q "include {{ nginx_conf_dir }}/cnc-conf.d/nc_zabbix.conf" {{ nginx_conf_file }}
   register: nginx_include_zabbix
   ignore_errors: yes
 
@@ -13,20 +13,20 @@
     backup=yes
     state=present
     insertbefore='^\s*\t*\}'
-    line='\n        include {{ nginx_conf_dir }}/cnc-conf.d/zabbix.conf;'
+    line='\n        include {{ nginx_conf_dir }}/cnc-conf.d/nc_zabbix.conf;'
   when:
     nginx_include_zabbix.rc|int != 0
 
 - name: ensure nginx monitoring configuration
   template:
     src=../templates/nginx_zabbix.conf.j2
-    dest={{ nginx_conf_dir }}/cnc-conf.d/zabbix.conf
+    dest={{ nginx_conf_dir }}/cnc-conf.d/nc_zabbix.conf
     owner=root
     group=root
     mode=0644
 
 - name: ensure zabbix vhost log folder and create zabbix log folder
-  file: dest=/var/log/nginx/zabbix owner=root group=root state=directory
+  file: dest=/var/log/nginx/nc_zabbix owner=root group=root state=directory
 
 - name: test nginx configuration file
   command: "{{ nginx_bin_path }} -t"

@@ -38,6 +38,17 @@ class MySQL(abstract.Abstract):
         pars = {}
         mysql_root_pass = ''
         port = None
+        rc, out, err = utils.execute("mysql --version | awk -F'Distrib |,' '{print $2}'")
+        if rc != 0 or out.strip() == '':
+            utils.err("FAILED_GET_MYSQL_VERSION")
+        else:
+            if out.startswith('5.6.'):
+                pars['enable_sys'] = 'Need'
+            elif out.startswith('5.7.'):
+                pars['enable_sys'] = 'NO Need'
+            else:
+                pars['enable_sys'] = 'NOT Support'
+
         rc, out, err = utils.execute(
             "ss -ntlp -A inet | grep mysqld |awk '{print $5}'|awk -F: '{print $NF}'|head -1")
         if rc != 0 or out.strip() == '':
@@ -84,10 +95,10 @@ class MySQL(abstract.Abstract):
             mycnf.write("[client]\n")
             mycnf.write("user=%s\n" % pars['user'])
             mycnf.write("password=%s\n" % pars['mysql_root_pass'])
-            mycnf.write("host=127.0.0.1")
+            mycnf.write("host=localhost\n")
             mycnf.write("port=%s" % pars['mysql_port'])
         utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), pars['mysql_port']))
-        del pars['mysql_root_pass'], pars['user'], pars['mysql_port']
+        del pars['mysql_root_pass'], pars['user'], pars['slave']
         pars_json = json.dumps(pars)
         rc, out, err = utils.ansible_play("mysql_monitoring", pars_json)
         if rc != 0:

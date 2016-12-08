@@ -5,9 +5,6 @@
       fail: msg="Hostname for Opsstack config is not defined"
       when: opsstack_hostname is not defined
 
-    - name: Create lock file
-      file: path=../locks/zabbix.lock state=touch mode=0000
-
     - name: Save SELinux settings
       set_fact: selinux="{{ ansible_selinux }}"
       when: ansible_selinux and ansible_selinux.status != "disabled"

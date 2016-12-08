@@ -1,43 +1,23 @@
 ---
 
-- name: Download Zabbix repository Ubuntu1204
-  shell: wget -q http://repo.zabbix.com/zabbix/3.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_3.0-1+xenial_all.deb -O /tmp/zabbix-release_3.0-1+xenial_all.deb
+- name: Ensure CNC repository exist
+  shell: wget -q http://repo.service.chinanetcloud.com/apt/ubuntu/pool/xenial/main/nc-repo_1.0.0-1.ubuntu+xenial_all.deb -O /tmp/nc-repo_1.0.0-1.ubuntu+xenial_all.deb
 
 - name: Install Zabbix repository
-  shell: dpkg -i /tmp/zabbix-release_3.0-1+xenial_all.deb
+  shell: dpkg -i /tmp/nc-repo_1.0.0-1.ubuntu+xenial_all.deb
 
 - name: Update repository
   shell: apt-get update
   ignore_errors: true
 
-- name: Install zabbix-agent
-  shell: apt-get install zabbix-agent -y
+- name: Install nc-zabbix-agent
+  shell: apt-get install nc-zabbix-agent nc-zabbix-scripts -y
 
-- name: Install CNC Zabbix custom scripts
-  shell: apt-get install nc-zabbix-custom-scripts -y
-  ignore_errors: true
-
-- name: Fix Zabbix config file
-  lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^Hostname=(.*)$' line='Hostname={{ opsstack_hostname }}' backrefs=yes
-
-- name: Change Zabbix Server to default
-  lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^Server\=(.*)$' line='Server=127.0.0.1' backrefs=yes
-
-- name: Remove ServerActive line
-  lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=absent regexp='^ServerActive=(.*)$'
-
-- name: Change Zabbix to active agent
-  lineinfile: dest=/etc/zabbix/zabbix_agentd.conf state=present regexp='^Server\=(.*)$' line='Server=\1\nServerActive=proxy1.zabbix.service.chinanetcloud.com,proxy2.zabbix.service.chinanetcloud.com,proxy3.zabbix.service.chinanetcloud.com,proxy4.zabbix.service.chinanetcloud.com,proxy5.zabbix.service.chinanetcloud.com,proxy6.zabbix.service.chinanetcloud.com,proxy7.zabbix.service.chinanetcloud.com,proxy8.zabbix.service.chinanetcloud.com,proxy9.zabbix.service.chinanetcloud.com,proxy10.zabbix.service.chinanetcloud.com,proxy11.zabbix.service.chinanetcloud.com,proxy12.zabbix.service.chinanetcloud.com,proxy13.zabbix.service.chinanetcloud.com,proxy14.zabbix.service.chinanetcloud.com,proxy15.zabbix.service.chinanetcloud.com,proxy16.zabbix.service.chinanetcloud.com,proxy17.zabbix.service.chinanetcloud.com,proxy18.zabbix.service.chinanetcloud.com,proxy19.zabbix.service.chinanetcloud.com,proxy20.zabbix.service.chinanetcloud.com' backrefs=yes
-
-- name: Fix Zabbix config file permissions
-  file: path=/etc/zabbix/zabbix_agentd.conf owner=root group=root mode="u=rw,g=r,o=r"
-
-- name: Fix Zabbix HOME
-  lineinfile: dest=/etc/passwd state=present regexp='^(.*)\/var\/lib\/zabbix(.*)$' line='\1/home/zabbix\2' backrefs=yes
+- name: Setup nc-zabbix hostname
+  replace: dest=/etc/nc_zabbix/nc_zabbix_agentd.conf regexp='# Hostname=' replace="Hostname={{opsstack_hostname}}" backup=yes
 
 - name: Restart crond to use new locations
   service: name=cron state=restarted
 
 - name: Enable Zabbix agent
-  service: name=zabbix-agent state=restarted enabled=yes
-
+  service: name=nc-zabbix-agent state=restarted enabled=yes

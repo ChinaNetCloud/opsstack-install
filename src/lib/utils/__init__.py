@@ -9,6 +9,7 @@ import os
 import fcntl
 import struct
 import psutil
+import args as arguments
 
 from lib import log
 
@@ -128,6 +129,9 @@ def print_str(s, *args):
 
 
 def confirm(prompt_string, *args):
+    # If assume-yes is on, don't prompt, return True
+    if arguments.get_args().assume_yes is True:
+        return True
     prompt_string = language_translation(prompt_string)
     while True:
         result = prompt(prompt_string + " [Y/n]")
@@ -145,7 +149,7 @@ def ansible_play(name, extra_vars=None):
     if extra_vars is None:
         playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml"
     else:
-        playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \"" + extra_vars + "\""
+        playbook_cmd = "ansible-playbook " + plays_folder + name + ".playbook.yml" + " --extra-vars \'" + extra_vars + "\'"
     rc, stdout, stderr = execute(playbook_cmd)
     if rc != 0:
         log.get_logger().log("Running playbook %s failed. Please see output below" % name)
