@@ -2,6 +2,9 @@ import abstract
 from random import choice
 import string
 import json
+import MySQLdb
+import os
+from lib import log
 
 from lib import utils
 
@@ -98,6 +101,8 @@ class MySQL(abstract.Abstract):
             mycnf.write("host=localhost\n")
             mycnf.write("port=%s" % pars['mysql_port'])
         utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), pars['mysql_port']))
+        # Check slow log path as rsyslog requires
+        MySQL.slow_log(pars['mycnf_file'])
         del pars['mysql_root_pass'], pars['user'], pars['slave']
         pars_json = json.dumps(pars)
         rc, out, err = utils.ansible_play("mysql_monitoring", pars_json)
@@ -107,6 +112,23 @@ class MySQL(abstract.Abstract):
         else:
             utils.out_progress_done()
 
-
-
+    @staticmethod
+    def slow_log(config_file):
+        try:
+            db = MySQLdb.connect(read_default_file=config_file)
+            cur = db.cursor()
+            cur.execute("SHOW VARIABLES WHERE variable_name = 'slow_query_log'")
+            if cur.fetchone()[1].lower() == "on":
+                cur.execute("SHOW VARIABLES WHERE variable_name = 'slow_query_log_file'")
+                slow_log_file = cur.fetchone()[1]
+                if slow_log_file.startswith('/') and os.path.isfile(slow_log_file):
+                    os.environ['MYSQL_SLOW_LOG_PATH'] = slow_log_file
+                else:
+                    cur.execute("SHOW VARIABLES WHERE variable_name = 'datadir'")
+                    mysql_data_dir = cur.fetchone()[1]
+                    os.environ['MYSQL_SLOW_LOG_PATH'] = os.path.join(mysql_data_dir, slow_log_file)
+            db.close()
+        except Exception as e:
+            log.get_logger().debug("Couldn't detect slow log path, see error below:")
+            log.get_logger().debug(e)
 
