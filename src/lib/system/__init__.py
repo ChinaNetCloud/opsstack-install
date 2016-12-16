@@ -82,7 +82,8 @@ class System:
                 'ip6': iface_info['ipv6'],
                 'mac': iface_info['mac']
             }
-            self.interfaces.append(result)
+            if result['ipv4'] != '':
+                self.interfaces.append(result)
 
     def service_discovery(self):
         for service in services.servicelist:
