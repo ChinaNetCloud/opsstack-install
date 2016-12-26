@@ -2,7 +2,6 @@ import abstract
 from random import choice
 import string
 import json
-import MySQLdb
 import os
 from lib import log
 
@@ -114,21 +113,22 @@ class MySQL(abstract.Abstract):
 
     @staticmethod
     def slow_log(config_file):
-        try:
-            db = MySQLdb.connect(read_default_file=config_file)
-            cur = db.cursor()
-            cur.execute("SHOW VARIABLES WHERE variable_name = 'slow_query_log'")
-            if cur.fetchone()[1].lower() == "on":
-                cur.execute("SHOW VARIABLES WHERE variable_name = 'slow_query_log_file'")
-                slow_log_file = cur.fetchone()[1]
-                if slow_log_file.startswith('/') and os.path.isfile(slow_log_file):
-                    os.environ['MYSQL_SLOW_LOG_PATH'] = slow_log_file
-                else:
-                    cur.execute("SHOW VARIABLES WHERE variable_name = 'datadir'")
-                    mysql_data_dir = cur.fetchone()[1]
-                    os.environ['MYSQL_SLOW_LOG_PATH'] = os.path.join(mysql_data_dir, slow_log_file)
-            db.close()
-        except Exception as e:
+        mysql_conn = "mysql --defaults-extra-file=%s" % config_file
+        status_cmd = "echo 'SHOW VARIABLES WHERE variable_name = \"slow_query_log\"' | %s | awk '/slow_query_log/{print $2}'" % mysql_conn
+        path_cmd = "echo 'SHOW VARIABLES WHERE variable_name = \"slow_query_log_file\"' | %s | awk '/slow_query_log_file/{print $2}'" % mysql_conn
+        dir_cmd = "echo 'SHOW VARIABLES WHERE variable_name = \"datadir\"' | %s | awk '/datadir/{print $2}'" % mysql_conn
+        rc1, out1, err1 = utils.execute(status_cmd)
+        # Check if slow log is turned on
+        if rc1 == 0 and out1.strip().lower() == 'on':
+            rc2, out2, err2 = utils.execute(path_cmd)
+            if rc2 == 0 and out2.strip().startswith('/') and os.path.isfile(out2.strip()):
+                os.environ['MYSQL_SLOW_LOG_PATH'] = out2.strip()
+            else:
+                rc3, out3, err3 = utils.execute(dir_cmd)
+                if rc3 == 0 and os.path.isdir(out3.strip()):
+                    os.environ['MYSQL_SLOW_LOG_PATH'] = os.path.join(out3.strip(), out2.strip())
+        # If failed to connect to mysql, then log the errmsg
+        elif rc1 != 0:
             log.get_logger().debug("Couldn't detect slow log path, see error below:")
-            log.get_logger().debug(e)
+            log.get_logger().debug(err1)
 
