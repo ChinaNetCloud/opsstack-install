@@ -144,6 +144,14 @@ def confirm(prompt_string, *args):
             continue
 
 
+def batch_install_tag():
+    # If batch_install is on, batch-install, return True
+    if arguments.get_args().batch_install is True:
+        return True
+    else:
+        return False
+
+
 def ansible_play(name, extra_vars=None):
     plays_folder = PLAYS_PATH + "/"
     if extra_vars is None:
