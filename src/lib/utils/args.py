@@ -47,4 +47,5 @@ if _args is None:
     parser.add_argument('--config', help="OpsStack configuration file location", required=False, action='store', default="/etc/opsstack/opsstack.conf", type=file_validation, dest='conf_file')
     parser.add_argument('--log-level', help="Logging level", required=False, action='store', default="info", choices=['debug', 'info'], dest='log_level')
     parser.add_argument('-y', '--assume-yes', help="Do not prompt for confirmation, always assume yes", required=False, action='store_true', default=False, dest='assume_yes')
+    parser.add_argument('-b', '--batch-install', help="Add batch install tag", required=False, action='store_true', default=False, dest='batch_install')
     _args = parser.parse_args()
