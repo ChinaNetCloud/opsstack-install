@@ -225,33 +225,33 @@ def get_iface_list():
 
 
 def iface_get_info(ifname):
-    iface_info = {}
+    iface_info = {
+        'ipv4': '',
+        'ipv6': '',
+        'mac': '',
+        'type': 'physical'
+    }
     try:
         if_info = psutil.net_if_addrs()[ifname]
-        # Interface is not started up
-        if len(if_info) == 1:
-            iface_info['ipv4'] = ""
-            iface_info['ipv6'] = ""
-            iface_info['mac'] = if_info[0].address
-        # ipv6 is disabled
-        elif len(if_info) == 2:
-            iface_info['ipv4'] = if_info[0].address
-            iface_info['ipv6'] = ""
-            iface_info['mac'] = if_info[1].address
-        else:
-            iface_info['ipv4'] = if_info[0].address
-            iface_info['ipv6'] = if_info[1].address.split('%')[0]
-            iface_info['mac'] = if_info[2].address
-    except (KeyError, IndexError) as e:
-        iface_info['ipv4'] = ""
-        iface_info['ipv6'] = ""
-        iface_info['mac'] = ""
+        for info in if_info:
+            # If family is 2, then it's the ipv4 address.
+            # There might be more one ipv4 address in one interface,
+            # we will only get the first one as the others might be virtual ip, see example below:
+            '''[snic(family=2, address='43.254.52.101', netmask='255.255.255.224', broadcast='43.254.52.127', ptp=None),
+                snic(family=2, address='43.254.52.99', netmask='255.255.255.255', broadcast='43.254.52.99', ptp=None),
+                snic(family=10, address='fe80::f21f:afff:fede:e7bc%em1', netmask='ffff:ffff:ffff:ffff::', broadcast=None, ptp=None),
+                snic(family=17, address='f0:1f:af:de:e7:bc', netmask=None, broadcast='ff:ff:ff:ff:ff:ff', ptp=None)]'''
+            if info.family == 2 and iface_info['ipv4'] == '':
+                iface_info['ipv4'] = info.address
+            # if family is 10, then it's the ipv6 address
+            elif info.family == 10:
+                iface_info['ipv6'] = info.address.split('%')[0]
+            # if family is 17, then it's the mac address
+            elif info.family == 17:
+                iface_info['mac'] = info.address
+    except KeyError as e:
         log.get_logger().log("Failed to get ip address info for interface %s. Please see output below" % ifname)
         log.get_logger().log(e)
-    iface_info['type'] = 'physical'
-    # lo interface doesn't have mac address
-    if ifname == 'lo':
-        iface_info['mac'] = ""
     return iface_info
 
 
