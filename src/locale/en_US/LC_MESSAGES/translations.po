@@ -249,3 +249,6 @@ msgstr "Couldn't detect %s service binary file"
 
 msgid "REDIS_AUTH_PASSWD"
 msgstr "Redis [Port %s] auth password"
+
+msgid "CAN_NOT_FOUND_CNF"
+msgstr "Can not found custom %s config file"

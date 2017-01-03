@@ -64,7 +64,7 @@ class MySQL(abstract.Abstract):
         if utils.batch_install_tag():
             if not os.path.exists(config_file):
                 utils.out_progress_fail()
-                utils.err(utils.print_str("CAN_NOT_FOUND_MYSQL_CLIENT_CNF", MySQL.getname()))
+                utils.err(utils.print_str("CAN_NOT_FOUND_CNF", MySQL.getname()))
             else:
                 pars['mycnf_file'] = "/tmp/.ansible_my_cnf"
                 mysql_conn = "mysql --defaults-extra-file=%s" % config_file
