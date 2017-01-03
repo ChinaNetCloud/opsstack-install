@@ -4,6 +4,7 @@ from lib import utils
 from tempfile import mkstemp
 from shutil import move
 from os import remove, close, chmod, chown
+from os.path import exists
 import re
 import stat
 import pwd
@@ -30,7 +31,6 @@ class Redis(abstract.Abstract):
     @staticmethod
     def get_pars():
         pars = {}
-        redis_auth_pass = ''
         # port = None
         rc, out, err = utils.execute(
             "ss -ntlp -A inet | grep redis |awk '{print $5}'|head -1")
@@ -40,11 +40,7 @@ class Redis(abstract.Abstract):
         else:
             host = out.split(':')[-2]
             port = out.split(':')[-1].rstrip()
-        passwd = utils.prompt_pass(utils.print_str("REDIS_AUTH_PASSWD", port))
-        if passwd != '':
-            redis_auth_pass = passwd
         pars['redis_host'] = host
-        pars['redis_auth_pass'] = redis_auth_pass
         pars['redis_port'] = port
         return pars
 
@@ -53,11 +49,29 @@ class Redis(abstract.Abstract):
         pars = Redis.get_pars()
         utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", Redis.getname(), pars['redis_port']))
 
+        # cat /tmp/.ansible_redis_cnf << EOF
+        # > redis_auth_pass
+        # > EOF
+        redis_config_file = '/tmp/.ansible_redis_cnf'
+        redis_auth_pass = ''
+        if utils.batch_install_tag():
+            if not exists(redis_config_file):
+                utils.out_progress_fail()
+                utils.err(utils.print_str("CAN_NOT_FOUND_CNF", Redis.getname()))
+            else:
+                f1 = open(redis_config_file, 'r')
+                if len(f1.readlines()) > 0:
+                    f1.seek(0)
+                    redis_auth_pass = f1.readlines()[0].split('\n')[0].strip()
+                f1.close()
+        else:
+            redis_auth_pass = utils.prompt_pass(utils.print_str("REDIS_AUTH_PASSWD", port))
+
         try:
             # update redis_check.conf file to connect redis
             file_path = "/var/lib/nc_zabbix/conf/nc_redis_check.conf"
             host_str = 'REDIS_IP="' + pars['redis_host'] + '"'
-            passwd_str = 'REDIS_PASSWD="' + pars['redis_auth_pass'] + '"'
+            passwd_str = 'REDIS_PASSWD="' + redis_auth_pass + '"'
             fh, abs_path = mkstemp()
             with open(abs_path, 'w') as new_file:
                 with open(file_path) as old_file:
