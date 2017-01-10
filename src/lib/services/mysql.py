@@ -63,6 +63,7 @@ class MySQL(abstract.Abstract):
         config_file = '/tmp/.ansible_my_cnf'
         if utils.batch_install_tag():
             if not os.path.exists(config_file):
+                utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), port))
                 utils.out_progress_fail()
                 utils.err(utils.print_str("CAN_NOT_FOUND_CNF", MySQL.getname()))
             else:
@@ -93,8 +94,6 @@ class MySQL(abstract.Abstract):
             pars['user'] = user
             pars['mysql_root_pass'] = mysql_root_pass
         pars['mysql_port'] = port
-        pars['user'] = ""
-        pars['mysql_root_pass'] = ""
         pars['mysql_nccheckdb_pass'] = MySQL.generate_passwd()
         return pars
 
@@ -123,7 +122,11 @@ class MySQL(abstract.Abstract):
         utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), pars['mysql_port']))
         # Check slow log path as rsyslog requires
         MySQL.slow_log(pars['mycnf_file'])
-        del pars['mysql_root_pass'], pars['user'], pars['slave']
+
+        # remove some key
+        pars.pop("mysql_root_pass", None)
+        pars.pop("user", None)
+        pars.pop("slave", None)
         pars_json = json.dumps(pars)
         rc, out, err = utils.ansible_play("mysql_monitoring", pars_json)
 

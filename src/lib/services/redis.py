@@ -47,7 +47,6 @@ class Redis(abstract.Abstract):
     @staticmethod
     def configure(system):
         pars = Redis.get_pars()
-        utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", Redis.getname(), pars['redis_port']))
 
         # cat /tmp/.ansible_redis_cnf << EOF
         # > redis_auth_pass
@@ -56,6 +55,7 @@ class Redis(abstract.Abstract):
         redis_auth_pass = ''
         if utils.batch_install_tag():
             if not exists(redis_config_file):
+                utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", Redis.getname(), pars['redis_port']))
                 utils.out_progress_fail()
                 utils.err(utils.print_str("CAN_NOT_FOUND_CNF", Redis.getname()))
             else:
@@ -65,8 +65,9 @@ class Redis(abstract.Abstract):
                     redis_auth_pass = f1.readlines()[0].split('\n')[0].strip()
                 f1.close()
         else:
-            redis_auth_pass = utils.prompt_pass(utils.print_str("REDIS_AUTH_PASSWD", port))
+            redis_auth_pass = utils.prompt_pass(utils.print_str("REDIS_AUTH_PASSWD", pars['redis_port']))
 
+        utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", Redis.getname(), pars['redis_port']))
         try:
             # update redis_check.conf file to connect redis
             file_path = "/var/lib/nc_zabbix/conf/nc_redis_check.conf"
