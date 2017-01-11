@@ -19,8 +19,15 @@
     - name: Check that only one is running
       fail: msg="Found both rsyslog and syslog-ng running. Aborting."
       when: rsyslog_running.rc==0 and syslogng_running.rc==0
+    - name: Create /opt/ncscripts folder for cmd_track
+      file: dest=/opt/ncscripts owner=root group=root state=directory
+    - name: Copy nc_profile to the server for generating cmd_track
+      template: src=../files/nc_profile.sh dest=/etc/profile.d/nc_profile.sh owner=root group=root backup=yes mode=0644
     - name: Install CNC rsyslog configuration file
       template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf owner=root group=root backup=yes mode=0644
+      when: rsyslog_running.rc==0
+    - name: Install CNC cmd_track configuration file
+      template: src=../templates/10-cmd_track.conf.j2 dest=/etc/rsyslog.d/10-cmd_track.conf owner=root group=root backup=yes mode=0644
       when: rsyslog_running.rc==0
     - name: Send mysql slow log to cnc syslog server
       template: src=../templates/rmysql_slow.conf.j2 dest=/etc/rsyslog.d/slow_log.conf owner=root group=root backup=yes mode=0644
