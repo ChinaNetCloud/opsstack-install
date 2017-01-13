@@ -59,21 +59,40 @@ class MySQL(abstract.Abstract):
             port = 3306
         else:
             port = out.strip()
-        confirm_slave_str = utils.print_str("SLAVE_CHECK", MySQL.getname(), port)
-        slave_confirmation = utils.confirm(confirm_slave_str)
-        if slave_confirmation is True:
-            pars['slave'] = True
-            return pars
+
+        config_file = '/tmp/.ansible_my_cnf'
+        if utils.batch_install_tag():
+            if not os.path.exists(config_file):
+                utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), port))
+                utils.out_progress_fail()
+                utils.err(utils.print_str("CAN_NOT_FOUND_CNF", MySQL.getname()))
+            else:
+                pars['mycnf_file'] = "/tmp/.ansible_my_cnf"
+                mysql_conn = "mysql --defaults-extra-file=%s" % config_file
+                slave_cmd = "echo 'show slave status \G' | %s " % mysql_conn
+                rc1, out1, err1 = utils.execute(slave_cmd)
+                if rc1 == 0 and out1.find('Slave_SQL_Running') != -1:
+                    pars['slave'] = True
+                    return pars
+                else:
+                    pars['slave'] = False
         else:
-            pars['slave'] = False
-        user = utils.prompt(utils.print_str("MYSQL_USER"))
-        if user == '':
-            user = 'root'
-        passwd = utils.prompt_pass(utils.print_str("MYSQL_USER_PASSWD", port, user))
-        if passwd != '':
-            mysql_root_pass = passwd
-        pars['user'] = user
-        pars['mysql_root_pass'] = mysql_root_pass
+            confirm_slave_str = utils.print_str("SLAVE_CHECK", MySQL.getname(), port)
+            slave_confirmation = utils.confirm(confirm_slave_str)
+
+            if slave_confirmation is True:
+                pars['slave'] = True
+                return pars
+            else:
+                pars['slave'] = False
+            user = utils.prompt(utils.print_str("MYSQL_USER"))
+            if user == '':
+                user = 'root'
+            passwd = utils.prompt_pass(utils.print_str("MYSQL_USER_PASSWD", port, user))
+            if passwd != '':
+                mysql_root_pass = passwd
+            pars['user'] = user
+            pars['mysql_root_pass'] = mysql_root_pass
         pars['mysql_port'] = port
         pars['mysql_nccheckdb_pass'] = MySQL.generate_passwd()
         return pars
@@ -91,20 +110,26 @@ class MySQL(abstract.Abstract):
             utils.out(utils.print_str("SLAVE_SKIP", MySQL.getname()))
             utils.out(utils.print_str("CREATE_USER_DOC", MySQL.getname()))
             return True
-        # Create .my.cnf file to connect mysql
-        pars['mycnf_file'] = "/tmp/.ansible_my_cnf"
-        with open(pars['mycnf_file'], 'w') as mycnf:
-            mycnf.write("[client]\n")
-            mycnf.write("user=%s\n" % pars['user'])
-            mycnf.write("password=%s\n" % pars['mysql_root_pass'])
-            mycnf.write("host=localhost\n")
-            mycnf.write("port=%s" % pars['mysql_port'])
+        # Create .my.cnf file to connect mysql if not batch-install.
+        if not utils.batch_install_tag():
+            pars['mycnf_file'] = "/tmp/.ansible_my_cnf"
+            with open(pars['mycnf_file'], 'w') as mycnf:
+                mycnf.write("[client]\n")
+                mycnf.write("user=%s\n" % pars['user'])
+                mycnf.write("password=%s\n" % pars['mysql_root_pass'])
+                mycnf.write("host=localhost\n")
+                mycnf.write("port=%s" % pars['mysql_port'])
         utils.out_progress_wait(utils.print_str("CONFIGURE_DATABASE_MONITOR", MySQL.getname(), pars['mysql_port']))
         # Check slow log path as rsyslog requires
         MySQL.slow_log(pars['mycnf_file'])
-        del pars['mysql_root_pass'], pars['user'], pars['slave']
+
+        # remove some key
+        pars.pop("mysql_root_pass", None)
+        pars.pop("user", None)
+        pars.pop("slave", None)
         pars_json = json.dumps(pars)
         rc, out, err = utils.ansible_play("mysql_monitoring", pars_json)
+
         if rc != 0:
             utils.out_progress_fail()
             utils.err(utils.print_str("FAILED_CREATE_USER", MySQL.getname()))

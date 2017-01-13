@@ -184,7 +184,10 @@ def choose_language():
     for i in lang_dict:
         utils.out(i + ". " + lang_dict[i]["name"])
     while True:
-        lang_num = utils.prompt("CHOOSE_LANG")
+        if utils.batch_install_tag():
+            lang_num = "1"
+        else:
+            lang_num = utils.prompt("CHOOSE_LANG")
         if lang_num not in lang_dict.keys():
             utils.out("LANG_SUPPORT_ONLY")
             continue

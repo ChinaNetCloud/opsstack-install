@@ -248,3 +248,6 @@ msgstr "无法找到%s 服务的二进制文件"
 
 msgid "REDIS_AUTH_PASSWD"
 msgstr "Redis [端口 %s] 验证密码"
+
+msgid "CAN_NOT_FOUND_CNF"
+msgstr "不能找到自定义的 %s 配置文件"
