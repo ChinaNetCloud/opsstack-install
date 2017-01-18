@@ -1,0 +1,15 @@
+---
+
+- name: Add Official GoAccess' Debian/Ubuntu Repository to install goaccess version 1.0+
+  shell: echo "deb http://deb.goaccess.io/ $(lsb_release -cs) main" | tee -a /etc/apt/sources.list.d/goaccess.list
+
+- name: Import gpg key
+  shell: wget -O - https://deb.goaccess.io/gnugpg.key | apt-key add -
+
+- name: Update repository
+  shell: apt-get update
+  ignore_errors: true
+
+- name: Install goaccess
+  shell: apt-get install goaccess -y
+

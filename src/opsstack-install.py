@@ -163,6 +163,20 @@ def main():
             utils.err("FAILED_RUN_NC_COLLECTOR")
             raise Exception(e)
 
+        # Install goaccess
+        utils.out_progress_wait("INSTALL_GOACCESS")
+        try:
+            if utils.lock_file_exists("goaccess"):
+                utils.out_progress_skip()
+            else:
+                system.load().install_goaccess()
+                utils.lock_file_create("goaccess")
+                utils.out_progress_done()
+        except Exception as e:
+            utils.out_progress_fail()
+            utils.err("FAILED_INSTALL_GOACCESS")
+            raise Exception(e)
+
         utils.out("FINISHED_INSTALLATION")
 
         log.get_logger().log("Finished installation process")
