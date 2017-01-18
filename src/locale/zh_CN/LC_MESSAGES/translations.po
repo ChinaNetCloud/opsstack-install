@@ -251,3 +251,9 @@ msgstr "Redis [端口 %s] 验证密码"
 
 msgid "CAN_NOT_FOUND_CNF"
 msgstr "不能找到自定义的 %s 配置文件"
+
+msgid "INSTALL_GOACCESS"
+msgstr "正在安装GoAccess..."
+
+msgid "FAILED_INSTALL_GOACCESS"
+msgstr "GoAccess安装失败"

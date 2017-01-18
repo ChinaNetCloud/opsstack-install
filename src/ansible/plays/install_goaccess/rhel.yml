@@ -1,0 +1,13 @@
+---
+
+- name: Ensure EPEL repo are present for goaccess on rhel6 and aws ami
+  yum: name=http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm state=present
+  when: ansible_distribution_major_version|int == 6 or ansible_distribution == 'Amazon'
+
+- name: Ensure EPEL repo are present for goaccess on rhel7
+  yum: name=https://mirrors.tuna.tsinghua.edu.cn/epel/7/x86_64/e/epel-release-7-9.noarch.rpm state=present
+  when: ansible_distribution_major_version|int == 7
+
+- name: Install goaccess 1.0 version from epel-testing repository, epel repository only provides the verion 0.9 of goaccess
+  yum: name=goaccess enablerepo=epel-testing state=latest
+
