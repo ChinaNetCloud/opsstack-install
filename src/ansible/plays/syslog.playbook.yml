@@ -19,6 +19,12 @@
     - name: Check that only one is running
       fail: msg="Found both rsyslog and syslog-ng running. Aborting."
       when: rsyslog_running.rc==0 and syslogng_running.rc==0
+    - name: Install pstree for command track on rhel as command track uses pstree to fetch pppid
+      package: name=psmisc state=latest
+      when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
+    - name: Install pstree for command track on debian as command track uses pstree to fetch pppid
+      shell: apt-get install psmisc -y
+      when: ansible_os_family == "Debian"
     - name: Create /opt/ncscripts folder for cmd_track
       file: dest=/opt/ncscripts owner=root group=root state=directory
     - name: Copy nc_profile to the server for generating cmd_track
