@@ -2,6 +2,9 @@
 #local4.notice /var/log/cmd_track.log
 :msg, contains, "REM" /opt/ncscripts/cmd_track.log
 
+# Send to syslog server
+*.* @@syslog.service.chinanetcloud.com:514
+
 # Uncomment the following to stop logging anything that matches the last rule.
 # Doing this will stop logging kernel generated UFW log messages to the file
 # normally containing kern.* messages (eg, /var/log/kern.log)

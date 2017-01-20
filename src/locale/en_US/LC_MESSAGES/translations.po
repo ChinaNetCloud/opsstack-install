@@ -252,3 +252,10 @@ msgstr "Redis [Port %s] auth password"
 
 msgid "CAN_NOT_FOUND_CNF"
 msgstr "Can not found custom %s config file"
+
+msgid "INSTALL_GOACCESS"
+msgstr "Installing GoAccess..."
+
+msgid "FAILED_INSTALL_GOACCESS"
+msgstr "Failed to install GoAccess"
+

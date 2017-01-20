@@ -1,0 +1,11 @@
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Make sure boto module is installed in the virtual environment
+      pip: name=boto version=2.45.0
+
+    - include: ./install_goaccess/rhel.yml
+      when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
+
+    - include: ./install_goaccess/debian.yml
+      when: ansible_os_family == "Debian"
