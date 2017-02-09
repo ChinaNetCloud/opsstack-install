@@ -1,5 +1,7 @@
 import json
 from urllib2 import urlopen
+from urllib2 import Request
+from urllib2 import HTTPError
 
 from lib import config
 from lib import log
@@ -65,6 +67,7 @@ class _Api:
     def _api_call(self, method, post_data=None):
         result = (False, None)
         url = self.api_url % (method, self.token)
+        header = {"Accept": "application/json"}
         log.get_logger().debug("Executing API call to %s" % url)
         if post_data is not None:
             log.get_logger().debug("Payload is %s" % json.dumps(post_data))
@@ -72,9 +75,11 @@ class _Api:
             log.get_logger().debug("No payload for request. Will use GET instead of POST")
         try:
             if post_data is not None:
-                response = urlopen(url, json.dumps(post_data))
+                req = Request(url, data=json.dumps(post_data), headers=header)
+                response = urlopen(req)
             else:
-                response = urlopen(url)
+                req = Request(url, data=None, headers=header)
+                response = urlopen(req)
             if response is not None:
                 if response.getcode() == 200:
                     rc = True
@@ -91,6 +96,10 @@ class _Api:
             else:
                 result = (False, None)
                 log.get_logger().debug("API request failed.")
+        except HTTPError, e:
+            log.get_logger().debug("API request failed with below error")
+            log.get_logger().debug("HTTP Error %s: %s" % (e.code, e.reason))
+            log.get_logger().debug("Error Message: %s" % json.loads(e.read())['message'])
         except Exception as e:
             log.get_logger().debug("API request failed with below error")
             log.get_logger().debug(e)
