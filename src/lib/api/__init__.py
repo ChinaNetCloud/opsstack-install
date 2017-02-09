@@ -100,6 +100,9 @@ class _Api:
             log.get_logger().debug("API request failed with below error")
             log.get_logger().debug("HTTP Error %s: %s" % (e.code, e.reason))
             log.get_logger().debug("Error Message: %s" % json.loads(e.read())['message'])
+        except Exception as e:
+            log.get_logger().debug("API request failed with below error")
+            log.get_logger().debug(e)
         return result
 
 
