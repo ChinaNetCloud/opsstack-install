@@ -22,6 +22,8 @@ class _Api:
         else:
             if args.get_args().DEV is True:
                 self.api_url = "https://opsstack-dev.service.chinanetcloud.com/api/v1%s?apikey=%s"
+            elif args.get_args().USA is True:
+                self.api_url = "https://api.sys.opsstack.io%s?apikey=%s"
             else:
                 self.api_url = "https://opsstack.chinanetcloud.com/api/v1%s?apikey=%s"
         pass

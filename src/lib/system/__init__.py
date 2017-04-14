@@ -43,7 +43,7 @@ class System:
                 self.distribution = distribution
                 self.version = version
             # Amazon Linux 2015 and 2016 is based off the centos 6
-            elif distribution == "system" and (version.startswith("2016.") or version.startswith("2015.")):
+            elif distribution == "system" and (version.startswith("2016.") or version.startswith("2015.") or version.startswith("2017.")):
                 self.distribution = "amazon"
                 self.version = version
             # Support Ubuntu 12.04, 14.04 and 16.04
