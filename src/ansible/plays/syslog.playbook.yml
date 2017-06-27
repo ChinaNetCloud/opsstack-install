@@ -1,12 +1,25 @@
 - hosts: localhost
+  
   connection: local
+  
   vars:
     mysql_slow_log: "{{ lookup('env', 'MYSQL_SLOW_LOG_PATH') }}"
+    
   tasks:
     - name: Check for require variables
       fail: msg="Cannot find required variable"
       when: opsstack_hostname is undefined
-      
+
+    # Set location
+    - name: Check if usa
+      register: usa
+      when location == "USA"
+
+    - name: Check if prc
+      register: prc
+      when location == "PRC"
+
+    # Check if we have rsyslog, syslog-ng, or both      
     - name: Detect rssylog running
       shell: ps faux | grep -v grep | grep rsyslog
       register: rsyslog_running
@@ -23,6 +36,7 @@
       fail: msg="Found both rsyslog and syslog-ng running. Aborting."
       when: rsyslog_running.rc==0 and syslogng_running.rc==0
       
+    # Command Track installation  
     - name: Install pstree for command track on rhel as command track uses pstree to fetch pppid
       package: name=psmisc state=latest
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
@@ -37,10 +51,19 @@
     - name: Copy nc_profile to the server for generating cmd_track
       template: src=../files/nc_profile.sh dest=/etc/profile.d/nc_profile.sh owner=root group=root backup=yes mode=0644
       
+    # Install the right config file - rsyslog block
     - name: Install CNC rsyslog configuration file
       template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf owner=root group=root backup=yes mode=0644
       when: rsyslog_running.rc==0
       
+    - name: Install CNC rsyslog configuration file
+      template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf owner=root group=root backup=yes mode=0644
+      when: rsyslog_running.rc==0 and location == "PRC"
+
+    - name: Install CNC rsyslog configuration file
+      template: src=../templates/rsyslog.usa.conf.j2 dest=/etc/rsyslog.conf owner=root group=root backup=yes mode=0644
+      when: rsyslog_running.rc==0 and location == "USA"
+
     - name: Install CNC cmd_track configuration file
       template: src=../templates/10-cmd_track.conf.j2 dest=/etc/rsyslog.d/10-cmd_track.conf owner=root group=root backup=yes mode=0644
       when: rsyslog_running.rc==0
@@ -53,10 +76,15 @@
       service: name=rsyslog state=restarted
       when: rsyslog_running.rc==0
       
+    # Install the right config file - syslog-ng block
     - name: Install CNC syslog-ng configuration file
       template: src=../templates/syslog-ng.conf.j2 dest=/etc/syslog-ng/syslog-ng.conf owner=root group=root backup=yes mode=0644
-      when: syslogng_running.rc==0
+      when: syslogng_running.rc==0 and location = "PRC"
       
+    - name: Install CNC syslog-ng configuration file
+      template: src=../templates/syslog-ng.usa.conf.j2 dest=/etc/syslog-ng/syslog-ng.conf owner=root group=root backup=yes mode=0644
+      when: syslogng_running.rc==0 and location = "USA"
+
     - name: Send mysql slow log to cnc syslog server
       lineinfile: dest=/etc/syslog-ng/syslog-ng.conf backup=yes state=present insertafter='EOF' line='source mysql_slow_log {file("{{ mysql_slow_log }}" default-facility(user) program_override("[mysql-slow]") flags(no-parse) );};\nlog { source(mysql_slow_log); destination(d_remote_netcloud); };'
       when: syslogng_running.rc==0 and mysql_slow_log != ""
