@@ -165,9 +165,11 @@ class System:
             raise Exception("run nc-collector cron failed")
 
     def install_goaccess(self):
-        rc, out, err = utils.ansible_play("install_goaccess")
-        if not rc == 0:
-            raise Exception("goaccess installation failed")
+        # Skip GoAccess if in USA
+        if args.get_args().USA is not True:
+            rc, out, err = utils.ansible_play("install_goaccess")
+            if not rc == 0:
+                raise Exception("goaccess installation failed")
 
     @staticmethod
     def is_proc_running(proc_name):

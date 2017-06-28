@@ -9,5 +9,5 @@
   when: ansible_distribution_major_version|int == 7
 
 - name: Install goaccess 1.0 version from epel-testing repository, epel repository only provides the verion 0.9 of goaccess
-  yum: name=goaccess enablerepo=epel-testing state=latest
+  yum: name=goaccess enablerepo=epel state=latest
 
