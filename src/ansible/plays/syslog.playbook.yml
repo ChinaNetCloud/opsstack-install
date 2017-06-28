@@ -10,15 +10,6 @@
       fail: msg="Cannot find required variable"
       when: opsstack_hostname is undefined
 
-    # Set location
-    - name: Check if usa
-      register: usa
-      when location == "USA"
-
-    - name: Check if prc
-      register: prc
-      when location == "PRC"
-
     # Check if we have rsyslog, syslog-ng, or both      
     - name: Detect rssylog running
       shell: ps faux | grep -v grep | grep rsyslog
@@ -56,14 +47,10 @@
       template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf owner=root group=root backup=yes mode=0644
       when: rsyslog_running.rc==0
       
-    - name: Install CNC rsyslog configuration file
-      template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf owner=root group=root backup=yes mode=0644
-      when: rsyslog_running.rc==0
-
     - name: Edit CNC rsyslog configuration file for USA
       replace:
-        path: /etc/rsyslog.conf
-        regexp: '*.* @@syslog.service.chinanetcloud.com:514'
+        dest: /etc/rsyslog.conf
+        regexp: '^\*\.\* @@syslog\.service\.chinanetcloud\.com:514'
         replace: '*.* @@syslog.sys.opsstack.io:601'
         backup: no
       when: rsyslog_running.rc==0 and location == "USA"
@@ -87,8 +74,8 @@
       
     - name: Edit CNC syslog-ng configuration file for USA
       replace:
-        path: /etc/syslog-ng/syslog-ng.conf
-        regexp: 'destination d_remote_netcloud { tcp(syslog.service.chinanetcloud.com port(514)); };'
+        dest: /etc/syslog-ng/syslog-ng.conf
+        regexp: 'destination d_remote_netcloud \{ tcp\(syslog\.service\.chinanetcloud\.com port\(514\)\); \};'
         replace: 'destination d_remote_netcloud { tcp(syslog.sys.opsstack.io port(601)); };'
         backup: no
       when: syslogng_running.rc==0 and location == "USA"
