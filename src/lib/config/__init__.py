@@ -35,6 +35,8 @@ class _Configuration:
         # Machine ID must be matching
         machine_id = utils.get_machine_id()
         conf_machine_id = self.get("machine_id")
+        # Need to print ID to test on Vagrant, as need ID in config file
+        # print machine_id
         if not machine_id == conf_machine_id:
             result = False
         # OpsStack URL must be set and be either production or DEV
