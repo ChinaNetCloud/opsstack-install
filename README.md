@@ -10,13 +10,13 @@ Install the following (someone please fill in the details):
 
 ### Clone the repository
 
-Open a terminal window and execute the following to clone the repository into a new `opsstack-configure` directory:
+Open a terminal window and execute the following to clone the repository into a new `opsstack-install` directory:
 
 
 ```Bash
 cd ~/Projects/
-git clone https://gitlab.service.chinanetcloud.com/opsstack-tools/opsstack-configure.git
-cd opsstack-configure/
+git clone https://gitlab.service.chinanetcloud.com/opsstack-tools/opsstack-install.git
+cd opsstack-install/
 ```
 
 ### Start the Vagrant box
@@ -40,10 +40,10 @@ vagrant ssh centos7
 
 You are now connected to the virtual machine
 
-### Run the configure script
+### Run the install script
 
 ```Bash
-sudo opsstack-configure
+sudo opsstack-install
 ```
 
 
