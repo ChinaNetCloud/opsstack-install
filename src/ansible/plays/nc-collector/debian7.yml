@@ -3,9 +3,6 @@
 - name: Install nc-collector package
   shell: apt-get install nc-collector -y
 
-- name: Modify nc-collector file to place correct hostname
-  lineinfile: dest=/opt/netcloud/nc_collector/collector.py state=present regexp='^hostname = (.*)$' line='hostname = \"{{ opsstack_hostname }}\"' backrefs=yes
-
 - name: Reload cron daemon
   service: name=cron state=restarted
 
