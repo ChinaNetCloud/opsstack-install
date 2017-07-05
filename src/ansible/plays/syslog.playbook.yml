@@ -42,6 +42,25 @@
     - name: Copy nc_profile to the server for generating cmd_track
       template: src=../files/nc_profile.sh dest=/etc/profile.d/nc_profile.sh owner=root group=root backup=yes mode=0644
       
+      
+    # Check if have old rsyslog version; matches any 5.x version
+    - name: Check if old rsyslog version
+      shell: yum list installed rsyslog | grep ' 5' | wc -l
+      register: rsyslog_oldver
+      ignore_errors: yes
+
+    # Remove old rsyslog; can't use yum as will remove deps like crontabs!
+    - name: Remove old syslog
+      shell: rpm -e --nodeps rsyslog
+      when: rsyslog_running.rc == 0 and rsyslog_oldver.stdout == '1'
+
+    # Have to hard-code URL for now as don't want to install repo on customer server
+    - name: Upgrade rsyslog from remote repo
+      yum:
+        name: http://rpms.adiscon.com/v8-stable/epel-6/x86_64/RPMS/rsyslog-8.28.0-1.el6.x86_64.rpm
+        state: installed
+      when: rsyslog_running.rc == 0 and rsyslog_oldver.stdout == '1'
+      
     # Install the right config file - rsyslog block
     - name: Install CNC rsyslog configuration file
       template: src=../templates/rsyslog.conf.j2 dest=/etc/rsyslog.conf owner=root group=root backup=yes mode=0644
