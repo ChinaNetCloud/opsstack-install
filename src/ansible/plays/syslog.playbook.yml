@@ -55,6 +55,20 @@
       when: rsyslog_running.rc == 0 and rsyslog_oldver.stdout == '1'
 
     # Have to hard-code URL for now as don't want to install repo on customer server
+    - name: Install upgraded rsyslog dependencies - libestr
+      yum:
+        name: http://rpms.adiscon.com/v8-stable/epel-6/x86_64/RPMS/libestr-0.1.10-1.el6.x86_64.rpm
+        state: installed
+      when: rsyslog_running.rc == 0 and rsyslog_oldver.stdout == '1'
+
+    # Have to hard-code URL for now as don't want to install repo on customer server
+    - name: Install upgraded rsyslog dependencies - libfastjson
+      yum:
+        name: http://rpms.adiscon.com/v8-stable/epel-6/x86_64/RPMS/libfastjson4-0.99.5-1.el6.x86_64.rpm
+        state: installed
+      when: rsyslog_running.rc == 0 and rsyslog_oldver.stdout == '1'
+
+    # Have to hard-code URL for now as don't want to install repo on customer server
     - name: Upgrade rsyslog from remote repo
       yum:
         name: http://rpms.adiscon.com/v8-stable/epel-6/x86_64/RPMS/rsyslog-8.28.0-1.el6.x86_64.rpm
