@@ -164,10 +164,16 @@ class System:
             raise Exception("Configuring syslog failed")
 
     def install_collector(self):
+        if args.get_args().USA is True:
+            location = "USA"
+        else:
+            location = "PRC"
         hn = config.get("opsstack_host_name")
+        extravars = "opsstack_hostname=%s" % hn
+        extravars = extravars + " location=%s" % location
         if hn is None or hn == "":
             raise Exception("Cannot get hostname from config")
-        rc, out, err = utils.ansible_play("nc-collector", "opsstack_hostname=%s" % hn)
+        rc, out, err = utils.ansible_play("nc-collector", extravars)
         if not rc == 0:
             raise Exception("nc-collector installation failed")
 
