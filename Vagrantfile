@@ -28,6 +28,13 @@ Vagrant.configure(2) do |config|
     ubuntu1604.vm.provision "shell",
       inline: "ln -s /home/vagrant/sync/src/opsstack-install.py /usr/bin/opsstack-install"
   end
+  config.vm.define "ubuntu1404" do |ubuntu1404|
+    ubuntu1404.vm.box = "ubuntu/trusty64"
+    ubuntu1404.vm.hostname = "ubuntu1404.example.com"
+    ubuntu1404.ssh.shell = "bash -c 'BASH_ENV=/etc/profile exec bash'"
+    ubuntu1404.vm.provision "shell",
+       inline: "wget http://repo.service.chinanetcloud.com/apt/ubuntu/pool/trusty/main/nc-repo_1.0.0-1.ubuntu+trusty_all.deb && dpkg -i nc-repo_1.0.0-1.ubuntu+trusty_all.deb; apt-get install opsstack-common -y;ln -s /vagrant/src/opsstack-install.py /var/lib/opsstack/common/env/bin/opsstack-install"
+  end
   config.vm.define "ubuntu1204" do |ubuntu1204|
     ubuntu1204.vm.box = "ubuntu/precise64"
     ubuntu1204.vm.hostname = "ubuntu1204.example.com"
@@ -35,5 +42,4 @@ Vagrant.configure(2) do |config|
     ubuntu1204.vm.provision "shell",
        inline: "wget http://repo.service.chinanetcloud.com/apt/ubuntu/pool/precise/main/nc-repo_1.0.0-1.ubuntu+precise_all.deb && dpkg -i nc-repo_1.0.0-1.ubuntu+precise_all.deb; apt-get install opsstack-common -y;ln -s /vagrant/src/opsstack-install.py /var/lib/opsstack/common/env/bin/opsstack-install"
   end
-  config.trigger.reject [:destroy]
 end

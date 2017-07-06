@@ -35,10 +35,12 @@ class _Configuration:
         # Machine ID must be matching
         machine_id = utils.get_machine_id()
         conf_machine_id = self.get("machine_id")
+        # Need to print ID to test on Vagrant, as need ID in config file
+        # print machine_id
         if not machine_id == conf_machine_id:
             result = False
         # OpsStack URL must be set and be either production or DEV
-        if self.get("opsstack_api_url") not in ["https://opsstack.chinanetcloud.com", "https://opsstack-dev.service.chinanetcloud.com"]:
+        if self.get("opsstack_api_url") not in ["https://opsstack.chinanetcloud.com", "https://opsstack-dev.service.chinanetcloud.com", "https://api.sys.opsstack.io", "https://web.sys.opsstack.io"]:
             result = False
         # OpsStack API token must be set
         if self.get("opsstack_api_token") is None:

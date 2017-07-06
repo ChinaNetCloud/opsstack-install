@@ -16,6 +16,9 @@ msgstr "Checking permissions..."
 msgid "CHECK_SYS_COMPATIBILITY"
 msgstr "Checking system compatibility..."
 
+msgid "CONFIG_FILE_INVALID"
+msgstr "Config file is not valid."
+
 msgid "CANNOT_CONNECT_INTERNET"
 msgstr "Cannot connect to Internet"
 

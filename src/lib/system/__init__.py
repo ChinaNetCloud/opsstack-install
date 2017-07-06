@@ -1,12 +1,12 @@
 from lib import log
 from lib import utils
+from lib.utils import args
 from lib import services
 from lib import config
 import platform
 import socket
 
 _singleton = None
-
 
 class System:
     def __init__(self):
@@ -43,7 +43,7 @@ class System:
                 self.distribution = distribution
                 self.version = version
             # Amazon Linux 2015 and 2016 is based off the centos 6
-            elif distribution == "system" and (version.startswith("2016.") or version.startswith("2015.")):
+            elif distribution == "system" and (version.startswith("2016.") or version.startswith("2015.") or version.startswith("2017.")):
                 self.distribution = "amazon"
                 self.version = version
             # Support Ubuntu 12.04, 14.04 and 16.04
@@ -112,10 +112,16 @@ class System:
         return result
 
     def install_base_monitoring(self):
+        if args.get_args().USA is True:
+            location = "USA"
+        else:
+            location = "PRC"
         hn = config.get("opsstack_host_name")
         if hn is None or hn == "":
             raise Exception("Cannot get hostname from config")
-        rc, out, err = utils.ansible_play("base_monitoring", "opsstack_hostname=%s" % hn)
+        extravars = "opsstack_hostname=%s" % hn
+        extravars = extravars + " location=%s" % location
+        rc, out, err = utils.ansible_play("base_monitoring", extravars)
         if not rc == 0:
             raise Exception("Installing basic monitoring failed")
 
@@ -144,18 +150,30 @@ class System:
                 utils.out_progress_skip()
 
     def install_syslog(self):
+        if args.get_args().USA is True:
+            location = "USA"
+        else:
+            location = "PRC"
         hn = config.get("opsstack_host_name")
         if hn is None or hn == "":
             raise Exception("Cannot get hostname from config")
-        rc, out, err = utils.ansible_play("syslog", "opsstack_hostname=%s" % hn)
+        extravars = "opsstack_hostname=%s" % hn
+        extravars = extravars + " location=%s" % location
+        rc, out, err = utils.ansible_play("syslog", extravars)
         if not rc == 0:
             raise Exception("Configuring syslog failed")
 
     def install_collector(self):
+        if args.get_args().USA is True:
+            location = "USA"
+        else:
+            location = "PRC"
         hn = config.get("opsstack_host_name")
+        extravars = "opsstack_hostname=%s" % hn
+        extravars = extravars + " location=%s" % location
         if hn is None or hn == "":
             raise Exception("Cannot get hostname from config")
-        rc, out, err = utils.ansible_play("nc-collector", "opsstack_hostname=%s" % hn)
+        rc, out, err = utils.ansible_play("nc-collector", extravars)
         if not rc == 0:
             raise Exception("nc-collector installation failed")
 
@@ -165,9 +183,11 @@ class System:
             raise Exception("run nc-collector cron failed")
 
     def install_goaccess(self):
-        rc, out, err = utils.ansible_play("install_goaccess")
-        if not rc == 0:
-            raise Exception("goaccess installation failed")
+        # Skip GoAccess if in USA
+        if args.get_args().USA is not True:
+            rc, out, err = utils.ansible_play("install_goaccess")
+            if not rc == 0:
+                raise Exception("goaccess installation failed")
 
     @staticmethod
     def is_proc_running(proc_name):
