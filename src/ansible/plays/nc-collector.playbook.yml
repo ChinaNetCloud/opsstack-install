@@ -42,6 +42,6 @@
       replace:
         dest: /etc/nc_collector/collector.conf
         regexp: 'https://audit\.service\.chinanetcloud\.com/cmdbapi'
-        replace: 'https://audit.sys.opsstack.io/cmdbapi/cmdbapi'
+        replace: 'https://audit.sys.opsstack.io/cmdbapi'
         backup: no
       when: location == "USA"
