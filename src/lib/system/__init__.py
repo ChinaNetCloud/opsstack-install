@@ -92,8 +92,9 @@ class System:
                 self.services.append(services.servicelist[service])
 
     def get_info(self):
+        # Changed thsi to hostname, not FQDN to CMDB reporter matches
         result = {
-            "hostname": self.local_fqdn,
+            "hostname": self.local_hostname,
             "os": [{
                 "name": self.os,
                 "distribution": self.distribution,
