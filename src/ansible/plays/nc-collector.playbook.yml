@@ -45,3 +45,12 @@
         replace: 'https://audit.sys.opsstack.io/cmdbapi'
         backup: no
       when: location == "USA"
+      
+    - name: Edit configuration zabbix credentials file for USA
+      replace:
+        dest: /etc/nc_collector/collector.conf
+        regexp: '/home/zabbix/conf/mysql_credentials'
+        replace: '/var/lib/nc_zabbix/conf/mysql_credentials'
+        backup: no
+      when: location == "USA"
+      
