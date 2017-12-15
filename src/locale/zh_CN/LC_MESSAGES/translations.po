@@ -257,3 +257,10 @@ msgstr "正在安装GoAccess..."
 
 msgid "FAILED_INSTALL_GOACCESS"
 msgstr "GoAccess安装失败"
+
+msgid "INSTALL_FILEBEAT"
+msgstr "正在安装FileBeat..."
+
+msgid "FAILED_INSTALL_FILEBEAT"
+msgstr "FileBeat安装失败"
+
