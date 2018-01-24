@@ -190,6 +190,11 @@ class System:
             if not rc == 0:
                 raise Exception("goaccess installation failed")
 
+    def install_filebeat(self):
+        rc, out, err = utils.ansible_play("install_filebeat")
+        if not rc == 0:
+            raise Exception("filebeat installation failed")
+
     @staticmethod
     def is_proc_running(proc_name):
         result = True

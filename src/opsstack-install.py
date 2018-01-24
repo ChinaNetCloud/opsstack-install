@@ -177,6 +177,20 @@ def main():
             utils.err("FAILED_INSTALL_GOACCESS")
             raise Exception(e)
 
+        # Install Filebeat
+        utils.out_progress_wait("INSTALL_FILEBEAT")
+        try:
+            if utils.lock_file_exists("filebeat"):
+                utils.out_progress_skip()
+            else:
+                system.load().install_filebeat()
+                utils.lock_file_create("filebeat")
+                utils.out_progress_done()
+        except Exception as e:
+            utils.out_progress_fail()
+            utils.err("FAILED_INSTALL_FILEBEAT")
+            raise Exception(e)
+
         utils.out("FINISHED_INSTALLATION")
 
         log.get_logger().log("Finished installation process")
