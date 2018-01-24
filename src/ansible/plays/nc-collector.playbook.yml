@@ -9,10 +9,9 @@
       set_fact: selinux="{{ ansible_selinux }}"
       when: ansible_selinux and ansible_selinux.status != "disabled"
 
-# Disable changing this for now, as failing at some customers
-#    - name: Disable SElinux
-#      selinux: state=disabled
-#      when: selinux is defined
+    - name: Disable SElinux
+      selinux: state=disabled
+      when: selinux is defined
 
     - include: ./nc-collector/rhel6.yml
       when: (ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 6) or ansible_distribution == 'Amazon'
@@ -35,9 +34,9 @@
     - include: ./nc-collector/ubuntu1604.yml
       when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 16
 
-#    - name: Enable SElinux
-#      selinux: state="{{ selinux.config_mode }}" policy="{{ selinux.type }}"
-#      when: selinux is defined
+    - name: Enable SElinux
+      selinux: state="{{ selinux.config_mode }}" policy="{{ selinux.type }}"
+      when: selinux is defined
 
     - name: Edit CNC syslog-ng configuration file for USA
       replace:
