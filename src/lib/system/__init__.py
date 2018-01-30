@@ -92,7 +92,7 @@ class System:
                 self.services.append(services.servicelist[service])
 
     def get_info(self):
-        # Changed thsi to hostname, not FQDN to CMDB reporter matches
+        # Changed this to hostname, not FQDN to CMDB reporter matches
         result = {
             "hostname": self.local_hostname,
             "os": [{
@@ -113,15 +113,14 @@ class System:
         return result
 
     def install_base_monitoring(self):
-        if args.get_args().USA is True:
-            location = "USA"
-        else:
-            location = "PRC"
+        zabbix_host_list = config.get('zabbix_host_list')
+        if zabbix_host_list is None or zabbix_host_list == "":
+            raise Exception("Cannot get Zabbix hosts from config")
         hn = config.get("opsstack_host_name")
         if hn is None or hn == "":
             raise Exception("Cannot get hostname from config")
         extravars = "opsstack_hostname=%s" % hn
-        extravars = extravars + " location=%s" % location
+        extravars += " zabbix_host_list=%s" % zabbix_host_list
         rc, out, err = utils.ansible_play("base_monitoring", extravars)
         if not rc == 0:
             raise Exception("Installing basic monitoring failed")
@@ -151,15 +150,14 @@ class System:
                 utils.out_progress_skip()
 
     def install_syslog(self):
-        if args.get_args().USA is True:
-            location = "USA"
-        else:
-            location = "PRC"
+        syslog_target = config.get('syslog_target')
+        if syslog_target is None or syslog_target == "":
+            raise Exception("Cannot get syslog target from config")
         hn = config.get("opsstack_host_name")
         if hn is None or hn == "":
             raise Exception("Cannot get hostname from config")
         extravars = "opsstack_hostname=%s" % hn
-        extravars = extravars + " location=%s" % location
+        extravars += " syslog_target=%s" % syslog_target
         rc, out, err = utils.ansible_play("syslog", extravars)
         if not rc == 0:
             raise Exception("Configuring syslog failed")
