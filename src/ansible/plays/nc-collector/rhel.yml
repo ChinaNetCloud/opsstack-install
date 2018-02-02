@@ -1,0 +1,11 @@
+---
+
+- name: Install nc-collector package
+  package:
+    name: nc-collector
+    state: latest
+
+- name: Reload cron daemon
+  service:
+    name: crond
+    state: restarted

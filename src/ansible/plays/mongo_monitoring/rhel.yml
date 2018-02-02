@@ -1,8 +1,8 @@
 ---
 - name: ensure pymongo installed
   pip:
-    name=pymongo
-    state=present
+    name: pymongo
+    state: present
 
 - name: Create Mongo monitor user with-admin-passwd
   mongodb_user:
@@ -30,11 +30,8 @@
 
 - name: create nc_mongo_check file
   template:
-    src=../../templates/nc.mongo.cnf.j2
-    dest=/home/zabbix/conf/nc_mongo_check.conf
-    owner=zabbix
-    group=zabbix
-    mode=0600
-
-
-
+    src: ../../templates/nc.mongo.cnf.j2
+    dest: /home/zabbix/conf/nc_mongo_check.conf
+    owner: zabbix
+    group: zabbix
+    mode: 0600

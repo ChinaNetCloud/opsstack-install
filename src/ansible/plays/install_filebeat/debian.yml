@@ -1,8 +1,6 @@
 ---
 
-- name: Install filebeat - note hard-coded version
-  shell: apt-get install https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.1.0-amd64.deb -y
-
-# Install OpsStack's Filebeat configs
-#- name: Install goaccess
-#  shell: apt-get install NEED RPM -y
+- name: Install filebeat
+  apt:
+    name: filebeat
+    state: latest
