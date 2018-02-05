@@ -13,26 +13,31 @@
       selinux: state=disabled
       when: selinux is defined
 
-    - include: ./base_monitoring/rhel6.yml
-      when: (ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 6) or ansible_distribution == 'Amazon'
+    - name: Ensure nc-zabbix-agent is installed
+      package: name={{item}} state=latest
+      with_items:
+        - nc-zabbix-agent
+        - nc-zabbix-scripts
 
-    - include: ./base_monitoring/rhel7.yml
-      when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 7
+    - name: Setup nc-zabbix hostname
+      replace:
+        dest: /etc/nc_zabbix/nc_zabbix_agentd.conf
+        regexp: '# Hostname='
+        replace: "Hostname={{opsstack_hostname}}"
+        backup: no
 
-    - include: ./base_monitoring/debian8.yml
-      when: ansible_distribution == "Debian" and ansible_distribution_major_version|int == 8
+    - name: Change Server Active list
+      replace:
+        dest: /etc/nc_zabbix/nc_zabbix_agentd.conf
+        regexp: '^ServerActive.*'
+        replace: 'ServerActive = {{ zabbix_host_list }}'
+        backup: no
 
-    - include: ./base_monitoring/debian7.yml
-      when: ansible_distribution == "Debian" and ansible_distribution_major_version|int == 7
+    - name: Restart crond to use new locations
+      service: name=crond state=restarted
 
-    - include: ./base_monitoring/ubuntu1204.yml
-      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 12
-
-    - include: ./base_monitoring/ubuntu1404.yml
-      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 14
-
-    - include: ./base_monitoring/ubuntu1604.yml
-      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 16
+    - name: Enable Zabbix agent
+      service: name=nc-zabbix-agent state=restarted enabled=yes
 
     - name: Enable SElinux
       selinux: state="{{ selinux.config_mode }}" policy="{{ selinux.type }}"

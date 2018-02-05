@@ -1,8 +1,6 @@
 ---
 
-- name: Install FileBeat - this is hard-coded version
-  yum: name=https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.1.0-x86_64.rpm state=latest
-
-# Install OpsStack Filebeat config files
-# - name: Install FileBeat - this is hard-coded version
-#  yum: name= RPM HERE  state=latest
+- name: Install FileBeat
+  yum:
+    name: filebeat-6.1.0-x86_64.rpm
+    state: latest

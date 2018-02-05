@@ -65,7 +65,7 @@ local7.*                                                /var/log/boot.log
 
 
 # Send to syslog server
-*.* @@syslog.service.chinanetcloud.com:514
+*.* @@{{ syslog_target }}
 
 # ### begin forwarding rule ###
 # The statement between the begin ... end define a SINGLE forwarding

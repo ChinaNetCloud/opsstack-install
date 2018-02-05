@@ -6,6 +6,7 @@ from urllib2 import HTTPError
 from lib import config
 from lib import log
 from lib.utils import args
+from lib import utils
 
 
 _singleton = None
@@ -20,12 +21,7 @@ class _Api:
         elif config.get("opsstack_api_url") is not None:
             self.api_url = config.get("opsstack_api_url") + "/api/v1%s?apikey=%s"
         else:
-            if args.get_args().DEV is True:
-                self.api_url = "https://opsstack-dev.service.chinanetcloud.com/api/v1%s?apikey=%s"
-            elif args.get_args().USA is True:
-                self.api_url = "https://api.sys.opsstack.io%s?apikey=%s"
-            else:
-                self.api_url = "https://opsstack.chinanetcloud.com/api/v1%s?apikey=%s"
+            utils.err("ERR_BAD_OPSSTACK_API_URL")
         pass
 
     def verify_token(self):

@@ -1,7 +1,9 @@
 ---
 
 - name: ensure root directory exist
-  file: path=/var/www/html state=directory
+  file:
+    path: /var/www/html
+    state: directory
 
 - name: register apache_include_zabbix info
   command: grep -q "Include {{ httpd_dir }}/nc_zabbix.conf" {{ httpd_conf }}
@@ -10,24 +12,28 @@
 
 - name: ensure apache monitoring folder is included by httpd.conf
   lineinfile:
-    dest={{ httpd_conf }}
-    backup=yes
-    state=present
-    insertafter='EOF'
-    line='#cnc monitoring configuration\nInclude {{ httpd_dir }}/nc_zabbix.conf'
+    dest: "{{ httpd_conf }}"
+    backup: yes
+    state: present
+    insertafter: 'EOF'
+    line: '#cnc monitoring configuration\nInclude {{ httpd_dir }}/nc_zabbix.conf'
   when:
     apache_include_zabbix.rc|int != 0
 
 - name: ensure httpd monitoring configuration
   template:
-    src=../templates/httpd_zabbix.conf.j2
-    dest={{ httpd_dir }}/nc_zabbix.conf
-    owner=root
-    group=root
-    mode=0644
+    src: '../templates/httpd_zabbix.conf.j2'
+    dest: '"{{ httpd_dir }}"/nc_zabbix.conf'
+    owner: root
+    group: root
+    mode: 0644
 
 - name: ensure zabbix vhost log folder and create zabbix log folder
-  file: dest=/var/log/httpd/nc_zabbix owner=root group=root state=directory
+  file:
+    dest: /var/log/httpd/nc_zabbix
+    owner: root
+    group: root
+    state: directory
 
 - name: ensure http configuration is valid
   command: "{{ httpd_bin }} -t"
@@ -36,11 +42,15 @@
     "{{ httpd_restart }} == true or {{ httpd_start }} == true"
 
 - name: restart httpd
-  service: name={{ service_name }} state=restarted
+  service:
+    name: "{{ service_name }}"
+    state: restarted
   when:
     "{{ httpd_restart }} == true and httpd_test.rc|int == 0"
 
 - name: start httpd if httpd was stopped
-  service: name={{ service_name }} state=started
+  service:
+    name: "{{ service_name }}"
+    state: started
   when:
     "{{ httpd_start }} == true and httpd_test.rc|int == 0"
