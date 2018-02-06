@@ -2,5 +2,5 @@
 
 - name: Install FileBeat
   yum:
-    name: filebeat-6.1.0-x86_64.rpm
+    name: filebeat
     state: latest
