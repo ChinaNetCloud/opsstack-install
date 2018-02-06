@@ -13,7 +13,7 @@
       selinux: state=disabled
       when: selinux is defined
 
-    - include: ./nc-collector/rhel7.yml
+    - include: ./nc-collector/rhel.yml
       when: ansible_os_family == "RedHat"
 
     - include: ./nc-collector/debian.yml
