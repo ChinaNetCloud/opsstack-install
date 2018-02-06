@@ -1,6 +1,0 @@
----
-
-- name: Install filebeat
-  apt:
-    name: filebeat
-    state: latest

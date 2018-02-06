@@ -1,6 +1,0 @@
----
-
-- name: Install FileBeat
-  yum:
-    name: filebeat
-    state: latest
