@@ -43,15 +43,15 @@ class System:
                 self.distribution = distribution
                 self.version = version
             # Amazon Linux 2015 and 2016 is based off the centos 6
-            elif distribution == "system" and (version.startswith("2016.") or version.startswith("2015.") or version.startswith("2017.")):
+            elif distribution == "system" and (version.startswith("2016.") or version.startswith("2015.") or version.startswith("2017.") or version.startswith("2018.")):
                 self.distribution = "amazon"
                 self.version = version
             # Support Ubuntu 12.04, 14.04 and 16.04
-            elif distribution == "Ubuntu" and (version.startswith("12.") or version.startswith("14.") or version.startswith("16.")):
+            elif distribution == "Ubuntu" and (version.startswith("12.") or version.startswith("14.") or version.startswith("16.") or version.startswith("18.")):
                 self.distribution = "ubuntu"
                 self.version = version
             # Support Debian version 7 and 8
-            elif distribution == "debian" and (version.startswith("7.") or version.startswith("8.")):
+            elif distribution == "debian" and (version.startswith("7.") or version.startswith("8.") or version.startswith("9.")):
                 self.distribution = distribution
                 self.version = version
             # FIXME: Add other supported system below as elif statement
