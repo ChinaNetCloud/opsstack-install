@@ -22,7 +22,7 @@
     - name: Setup nc-zabbix hostname
       replace:
         dest: /etc/nc_zabbix/nc_zabbix_agentd.conf
-        regexp: '# Hostname='
+        regexp: '^Hostname=.*'
         replace: "Hostname={{opsstack_hostname}}"
         backup: no
 
