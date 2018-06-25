@@ -42,8 +42,6 @@ def dir_validation(value):
 
 if _args is None:
     parser = argparse.ArgumentParser(prog="opsstack-configure", description="OpsStack installation tool. It will install required software such as monitoring etc")
-    parser.add_argument('--dev', help=argparse.SUPPRESS, required=False, action='store_true', default=False, dest='DEV')
-    parser.add_argument('--usa', help=argparse.SUPPRESS, required=False, action='store_true', default=False, dest='USA')
     parser.add_argument('--dry-run', help=argparse.SUPPRESS, required=False, action='store_true', default=False, dest='DRY_RUN')
     parser.add_argument('--config', help="OpsStack configuration file location", required=False, action='store', default="/etc/opsstack/opsstack.conf", type=file_validation, dest='conf_file')
     parser.add_argument('--log-level', help="Logging level", required=False, action='store', default="info", choices=['debug', 'info'], dest='log_level')

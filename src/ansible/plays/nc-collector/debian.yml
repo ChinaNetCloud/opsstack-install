@@ -4,4 +4,7 @@
   shell: apt-get install nc-collector -y
 
 - name: Reload cron daemon
-  service: name=cron state=restarted
+  service:
+    name: cron
+    state: restarted
+

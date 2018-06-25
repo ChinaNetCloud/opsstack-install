@@ -13,44 +13,26 @@
       selinux: state=disabled
       when: selinux is defined
 
-    - include: ./nc-collector/rhel6.yml
-      when: (ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 6) or ansible_distribution == 'Amazon'
+    - include: ./nc-collector/rhel.yml
+      when: ansible_os_family == "RedHat"
 
-    - include: ./nc-collector/rhel7.yml
-      when: ansible_os_family == "RedHat" and ansible_distribution_major_version|int == 7
-
-    - include: ./nc-collector/debian8.yml
-      when: ansible_distribution == "Debian" and ansible_distribution_major_version|int == 8
-
-    - include: ./nc-collector/debian7.yml
-      when: ansible_distribution == "Debian" and ansible_distribution_major_version|int == 7
-
-    - include: ./nc-collector/ubuntu1204.yml
-      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 12
-
-    - include: ./nc-collector/ubuntu1404.yml
-      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 14
-
-    - include: ./nc-collector/ubuntu1604.yml
-      when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int == 16
+    - include: ./nc-collector/debian.yml
+      when: ansible_os_family == "Debian"
 
     - name: Enable SElinux
       selinux: state="{{ selinux.config_mode }}" policy="{{ selinux.type }}"
       when: selinux is defined
 
-    - name: Edit CNC syslog-ng configuration file for USA
+    - name: Edit CNC syslog-ng configuration file
       replace:
         dest: /etc/nc_collector/collector.conf
         regexp: 'https://audit\.service\.chinanetcloud\.com/cmdbapi'
-        replace: 'https://audit.sys.opsstack.io/cmdbapi'
+        replace: "{{ collector_api_url }}"
         backup: no
-      when: location == "USA"
-      
-    - name: Edit configuration zabbix credentials file for USA
+
+    - name: Edit configuration zabbix credentials file
       replace:
         dest: /etc/nc_collector/collector.conf
         regexp: '/home/zabbix/conf/mysql_credentials'
         replace: '/var/lib/nc_zabbix/conf/mysql_credentials'
         backup: no
-      when: location == "USA"
-      

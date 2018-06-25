@@ -1,0 +1,12 @@
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: Install FileBeat
+      package:
+        name: filebeat
+        state: latest
+
+    - name: Start FileBeat
+      service:
+        name: filebeat
+        state: started

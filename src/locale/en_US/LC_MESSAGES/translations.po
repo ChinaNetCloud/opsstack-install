@@ -262,3 +262,8 @@ msgstr "Installing GoAccess..."
 msgid "FAILED_INSTALL_GOACCESS"
 msgstr "Failed to install GoAccess"
 
+msgid "INSTALL_FILEBEAT"
+msgstr "Installing FileBeat..."
+
+msgid "FAILED_INSTALL_FILEBEAT"
+msgstr "Failed to install FileBeat"

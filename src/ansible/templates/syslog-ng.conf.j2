@@ -75,5 +75,5 @@ filter f_cmd { facility(local4) and level(notice) and message("REMOTE_USER"); };
 log { source(s_sys); filter(f_cmd); destination(d_cmd); };
 
 rewrite r_host { set("{{ opsstack_hostname }}", value("HOST")); };
-destination d_remote_netcloud { tcp(syslog.service.chinanetcloud.com port(514)); };
+destination d_remote_netcloud { tcp({{ syslog_target }} port(514)); };
 log { source(s_sys); destination(d_remote_netcloud); rewrite(r_host); };
