@@ -39,13 +39,6 @@
         state: latest
       ignore_errors: yes
 
-    - name: Create /opt/ncscripts folder for cmd_track
-      file:
-        dest: /opt/ncscripts
-        owner: root
-        group: root
-        state: directory
-      
     - name: Copy nc_profile to the server for generating cmd_track
       template:
         src: ../files/nc_profile.sh
