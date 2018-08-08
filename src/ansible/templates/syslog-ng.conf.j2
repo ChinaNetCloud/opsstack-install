@@ -70,7 +70,7 @@ filter f_firewall { facility(kern) and level(debug) and message("IPTFW"); };
 log { source(s_sys); filter(f_firewall); destination(d_firewall); };
 
 # Get cmd filter
-destination d_cmd { file("/opt/ncscripts/cmd_track.log"); };
+destination d_cmd { file("/var/log/cmd_track.log"); };
 filter f_cmd { facility(local4) and level(notice) and message("REMOTE_USER"); };
 log { source(s_sys); filter(f_cmd); destination(d_cmd); };
 

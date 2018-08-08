@@ -1,6 +1,6 @@
 # Log nc_profile generated CMD log messages to file
 #local4.notice /var/log/cmd_track.log
-:msg, contains, "REM" /opt/ncscripts/cmd_track.log
+:msg, contains, "REM" /var/log/cmd_track.log
 
 # Send to syslog server
 *.* @@{{ syslog_target }}
