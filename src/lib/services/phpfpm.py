@@ -20,7 +20,7 @@ class Phpfpm(abstract.Abstract):
         result = False
         if system.os == 'linux':
             # Changed to check if bot installed and running, as it's aways installed with PHP
-            if system.is_app_installed("php5?\.?[3-6]?-fpm") and system.is_proc_running("php5?\.?[3-6]?-fpm"):
+            if system.is_app_installed("php5?\.?[3-6]?-fpm") or system.is_proc_running("php5?\.?[3-6]?-fpm"):
                 result = True
         return result
 
