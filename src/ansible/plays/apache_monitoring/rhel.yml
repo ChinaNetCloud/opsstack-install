@@ -16,10 +16,7 @@
     backup: yes
     state: present
     insertafter: 'EOF'
-    line: "{{item}}"
-  with_items:
-    - "#cnc monitoring configuration"
-    - "Include {{ httpd_dir }}/nc_zabbix.conf"
+    line: "#cnc monitoring configuration\nInclude {{ httpd_dir }}/nc_zabbix.conf"
   when:
     apache_include_zabbix.rc|int != 0
 
