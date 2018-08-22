@@ -4,14 +4,14 @@
     name=MySQL-python.x86_64
     state=present
   when:
-    ansible_distribution != "Amazon"
+    ansible_distribution != "Amazon" or ( ansible_distribution == "Amazon" and ansible_distribution_version == '2' )
 
 - name: Ensure mysql python installed (amzn)
   yum:
     name=MySQL-python27.x86_64
     state=present
   when:
-    ansible_distribution == "Amazon"
+    ansible_distribution == "Amazon" and ansible_distribution_version != '2'
 
 - name: Create nccheckdb user for mysql
   mysql_user:

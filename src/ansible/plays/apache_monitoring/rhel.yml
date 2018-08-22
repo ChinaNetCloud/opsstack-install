@@ -16,14 +16,14 @@
     backup: yes
     state: present
     insertafter: 'EOF'
-    line: '#cnc monitoring configuration\nInclude {{ httpd_dir }}/nc_zabbix.conf'
+    line: "#cnc monitoring configuration\nInclude {{ httpd_dir }}/nc_zabbix.conf"
   when:
     apache_include_zabbix.rc|int != 0
 
 - name: ensure httpd monitoring configuration
   template:
     src: '../templates/httpd_zabbix.conf.j2'
-    dest: '"{{ httpd_dir }}"/nc_zabbix.conf'
+    dest: '{{ httpd_dir }}/nc_zabbix.conf'
     owner: root
     group: root
     mode: 0644
