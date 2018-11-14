@@ -18,6 +18,11 @@
       with_items:
         - nc-zabbix-agent
         - nc-zabbix-scripts
+      when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
+
+    - name: Ensure nc-zabbix-agent is installed on apt
+      shell: apt-get update && apt-get install nc-zabbix-agent nc-zabbix-scripts
+      when: ansible_os_family == "Debian"
 
     - name: Setup nc-zabbix hostname
       replace:
@@ -35,6 +40,11 @@
 
     - name: Restart crond to use new locations
       service: name=crond state=restarted
+      when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
+
+    - name: Restart crond to use new locations
+      service: name=cron state=restarted
+      when: ansible_os_family == "Debian"
 
     - name: Enable Zabbix agent
       service: name=nc-zabbix-agent state=restarted enabled=yes
