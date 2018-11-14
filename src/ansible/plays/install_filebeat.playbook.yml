@@ -8,7 +8,7 @@
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
     - name: Ensure nc-zabbix-agent is installed on apt
-      shell: apt-get update && apt-get install filebeat
+      shell: apt-get update && apt-get install -y filebeat
       when: ansible_os_family == "Debian"
 
     - name: Start FileBeat
