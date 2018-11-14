@@ -21,7 +21,7 @@
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
     - name: Ensure nc-zabbix-agent is installed on apt
-      shell: apt-get update && apt-get install nc-zabbix-agent nc-zabbix-scripts
+      shell: apt-get update && apt-get install -y nc-zabbix-agent nc-zabbix-scripts
       when: ansible_os_family == "Debian"
 
     - name: Setup nc-zabbix hostname
