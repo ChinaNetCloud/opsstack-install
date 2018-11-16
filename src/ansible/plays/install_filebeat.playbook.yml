@@ -1,13 +1,13 @@
 - hosts: localhost
   connection: local
   tasks:
-    - name: Install FileBeat
+    - name: Install FileBeat (rhel)
       package:
         name: filebeat
         state: latest
       when: ansible_os_family == "RedHat" or ansible_distribution == 'Amazon'
 
-    - name: Ensure nc-zabbix-agent is installed on apt
+    - name: Install FileBeat (debian)
       shell: apt-get update && apt-get install -y filebeat
       when: ansible_os_family == "Debian"
 
