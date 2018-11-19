@@ -126,6 +126,10 @@ class System:
             raise Exception("Installing basic monitoring failed")
 
     def install_services_monitoring(self):
+        # If running in batch-install mode,
+        # skip the service configuration
+        if utils.batch_install_tag():
+            return
         for service in self.services:
             if service.getname() == "memcached":
                 continue
