@@ -7,7 +7,7 @@
 
     - name: Stat config file
       stat:
-        path: {{ config_file }}
+        path: "{{ config_file }}"
       register: stat_result
 
     - name: Verify config file exists

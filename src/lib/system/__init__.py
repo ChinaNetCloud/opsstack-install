@@ -196,11 +196,14 @@ class System:
         if config is None:
             raise Exception("filebeat installation failed")
         # Write retrieved config to tmp file
-        with tempfile.NamedTemporaryFile() as tmp_config:
-            tmp_config.write(config)
-            rc, out, err = utils.ansible_play("install_filebeat", "config_file=%s" % tmp_config.name)
-            if not rc == 0:
-                raise Exception("filebeat installation failed")
+        tmp_config = tempfile.NamedTemporaryFile()
+        tmp_config.write(config)
+        # Run installation
+        rc, out, err = utils.ansible_play("install_filebeat", "config_file=%s" % tmp_config.name)
+        if not rc == 0:
+            raise Exception("filebeat installation failed")
+        # Close tmp file
+        tmp_config.close()
 
     @staticmethod
     def is_proc_running(proc_name):
