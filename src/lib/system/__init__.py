@@ -3,8 +3,10 @@ from lib import utils
 from lib.utils import args
 from lib import services
 from lib import config
+from lib import api
 import platform
 import socket
+import tempfile
 
 _singleton = None
 
@@ -189,9 +191,16 @@ class System:
         pass
 
     def install_filebeat(self):
-        rc, out, err = utils.ansible_play("install_filebeat")
-        if not rc == 0:
+        # Get config file from API
+        config = api.load().get_filebeat_config()
+        if config is None:
             raise Exception("filebeat installation failed")
+        # Write retrieved config to tmp file
+        with tempfile.NamedTemporaryFile() as tmp_config:
+            tmp_config.write(config)
+            rc, out, err = utils.ansible_play("install_filebeat", "config_file=%s" % tmp_config.name)
+            if not rc == 0:
+                raise Exception("filebeat installation failed")
 
     @staticmethod
     def is_proc_running(proc_name):

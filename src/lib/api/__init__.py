@@ -62,10 +62,20 @@ class _Api:
             result = True
         return result
 
-    def _api_call(self, method, post_data=None):
+    def get_filebeat_config(self):
+        if args.get_args().DRY_RUN:
+            return "# Fake YAML config"
+        method = "/service/%s" % config.get('opsstack_host_id')
+        success, response = self._api_call(method, accept="text/yaml, application/x-yaml")
+        if success:
+            return response
+        else:
+            return None
+
+    def _api_call(self, method, post_data=None, accept="application/json"):
         result = (False, None)
         url = self.api_url % (method, self.token)
-        header = {"Accept": "application/json"}
+        header = {"Accept": accept}
         log.get_logger().debug("Executing API call to %s" % url)
         if post_data is not None:
             log.get_logger().debug("Payload is %s" % json.dumps(post_data))
@@ -84,7 +94,10 @@ class _Api:
                 else:
                     rc = False
                 try:
-                    data = json.loads(response.read())
+                    if response.headers.get("content-type").startswith('application/json'):
+                        data = json.loads(response.read())
+                    else:
+                        data = response.read()
                 except (TypeError, ValueError):
                     data = response.read()
                 result = (rc, data)
