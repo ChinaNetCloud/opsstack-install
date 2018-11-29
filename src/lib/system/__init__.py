@@ -6,7 +6,8 @@ from lib import config
 from lib import api
 import platform
 import socket
-import tempfile
+import base64
+import yaml
 
 _singleton = None
 
@@ -195,15 +196,18 @@ class System:
         config = api.load().get_filebeat_config()
         if config is None:
             raise Exception("filebeat installation failed")
-        # Write retrieved config to tmp file
-        tmp_config = tempfile.NamedTemporaryFile()
-        tmp_config.write(config)
+        # Dump config as YAML and write into base64 encoded string variable
+        encoded_config = base64.standard_b64encode(yaml.safe_dump(
+            config,
+            stream=None,
+            default_style='"',
+            default_flow_style=False,
+            explicit_start=True,
+            explicit_end=True))
         # Run installation
-        rc, out, err = utils.ansible_play("install_filebeat", "config_file=%s" % tmp_config.name)
+        rc, out, err = utils.ansible_play("install_filebeat", "FILEBEAT_CONF=%s" % encoded_config)
         if not rc == 0:
             raise Exception("filebeat installation failed")
-        # Close tmp file
-        tmp_config.close()
 
     @staticmethod
     def is_proc_running(proc_name):

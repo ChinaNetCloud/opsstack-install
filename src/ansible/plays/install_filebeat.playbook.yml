@@ -1,18 +1,9 @@
 - hosts: localhost
   connection: local
   tasks:
-    - name: Verify extra-vars
-      fail: msg="Filebeat config file is not defined"
-      when: config_file is not defined
-
-    - name: Stat config file
-      stat:
-        path: "{{ config_file }}"
-      register: stat_result
-
-    - name: Verify config file exists
-      fail: msg="Filebeat config file not exists"
-      when: stat_result.stat.exists == False
+    - name: Check Filebeat config is provided
+      fail: msg="FILEBEAT_CONF is undefined"
+      when: FILEBEAT_CONF is undefined
 
     - name: Install FileBeat (rhel)
       package:
@@ -24,15 +15,11 @@
       shell: apt-get update && apt-get install -y filebeat
       when: ansible_os_family == "Debian"
 
-    - name: Set filebeat config
+    - name: Backup and replace Filebeat config
       copy:
-        remote_src: yes
-        src: "{{ config_file }}"
-        dest: "/etc/filebeat/filebeat.yml"
-        owner: root
-        mode: 0644
-        force: yes
         backup: yes
+        dest: "/etc/filebeat/filebeat.yml"
+        content: "{{ FILEBEAT_CONF | b64decode }}"
 
     - name: Start FileBeat
       service:
