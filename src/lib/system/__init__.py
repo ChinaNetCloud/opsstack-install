@@ -198,7 +198,7 @@ class System:
             raise Exception("filebeat installation failed")
         # Dump config as YAML and write into base64 encoded string variable
         encoded_config = base64.standard_b64encode(yaml.safe_dump(
-            config,
+            config["main_data"],
             stream=None,
             default_style='"',
             default_flow_style=False,
